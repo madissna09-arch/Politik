@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UN MAINFRAME // GLOBAL CRISIS MONITOR</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Boot sequence styles */
+    #boot-screen {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3rem;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .boot-line {
+      font-size: 0.82rem;
+      color: #00ff41;
+      margin-bottom: 0.25rem;
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+
+    .boot-line.dim { color: #00aa2a; }
+    .boot-line.warn { color: #ffcc00; }
+    .boot-line.err  { color: #ff2222; }
+
+    #main-screen {
+      display: none;
+    }
+
+    .intro-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      width: 100%;
+      max-width: 720px;
+    }
+
+    .signal-bars {
+      display: flex;
+      gap: 4px;
+      align-items: flex-end;
+      height: 30px;
+    }
+
+    .signal-bar {
+      width: 6px;
+      background: var(--green-dim);
+      border-radius: 1px;
+      animation: signal-pulse 1.2s ease-in-out infinite;
+    }
+
+    .signal-bar:nth-child(1) { height: 30%; animation-delay: 0s; }
+    .signal-bar:nth-child(2) { height: 55%; animation-delay: 0.15s; }
+    .signal-bar:nth-child(3) { height: 80%; animation-delay: 0.3s; }
+    .signal-bar:nth-child(4) { height: 100%; animation-delay: 0.45s; }
+    .signal-bar:nth-child(5) { height: 65%; animation-delay: 0.6s; }
+
+    @keyframes signal-pulse {
+      0%, 100% { background: var(--green-dim); }
+      50% { background: var(--green); box-shadow: 0 0 6px var(--green); }
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+      width: 100%;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid var(--border);
+      color: var(--green-dim);
+    }
+
+    .status-item .val { color: var(--red); }
+    .status-item .val.ok { color: var(--green); }
+
+    .warning-box {
+      border: 1px solid var(--red);
+      padding: 1.2rem;
+      width: 100%;
+      background: rgba(255,34,34,0.03);
+    }
+
+    .warning-box p {
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: #ffaaaa;
+    }
+
+    .warning-box .warn-title {
+      color: var(--red);
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    @keyframes warning-blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .blink { animation: warning-blink 1s infinite; }
+  </style>
+</head>
+<body>
+
+  <!-- BOOT SEQUENCE -->
+  <div id="boot-screen">
+    <div id="boot-lines"></div>
+  </div>
+
+  <!-- MAIN INTRO SCREEN -->
+  <div id="main-screen" class="screen">
+    <div class="intro-container">
+
+      <div class="signal-bars">
+        <div class="signal-bar"></div>
+        <div class="signal-bar"></div>
+        <div class="signal-bar"></div>
+        <div class="signal-bar"></div>
+        <div class="signal-bar"></div>
+      </div>
+
+      <div>
+        <div class="logo flicker">GLOBAL CRISIS MONITOR</div>
+        <div class="subtitle">UN Mainframe Recovery System // v4.7.2</div>
+      </div>
+
+      <div class="panel" style="width:100%">
+        <div class="panel-title">SYSTEM STATUS — KRITISCHER FEHLER ERKANNT</div>
+
+        <div class="status-grid">
+          <div class="status-item">
+            <span>Sicherheitsrat-Protokolle</span>
+            <span class="val">OFFLINE</span>
+          </div>
+          <div class="status-item">
+            <span>Menschenrechtsdatenbank</span>
+            <span class="val">KORRUPT</span>
+          </div>
+          <div class="status-item">
+            <span>SDG-Relaisstation</span>
+            <span class="val">INSTABIL</span>
+          </div>
+          <div class="status-item">
+            <span>Generalversammlung Feed</span>
+            <span class="val">GETRENNT</span>
+          </div>
+          <div class="status-item">
+            <span>Audio-Verbindung</span>
+            <span class="val ok">AKTIV</span>
+          </div>
+          <div class="status-item">
+            <span>Rettungs-Agent</span>
+            <span class="val ok">VERBUNDEN</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="warning-box">
+        <div class="warn-title">
+          <span class="blink">⚠</span>
+          KRITISCHE SYSTEMMELDUNG
+        </div>
+        <p>
+          Der UN-Mainframe ist abgestürzt. Jahrzehnte diplomatischer Protokolle,
+          Menschenrechtsdaten und SDG-Berichte sind vom Verlust bedroht.
+          Du bist als Rettungs-Agent eingesetzt worden.
+          <br><br>
+          Stabilisiere alle vier Systemsektoren — und entscheide am Ende selbst,
+          ob das System es wert ist, gerettet zu werden.
+        </p>
+      </div>
+
+      <!-- AUDIO PLACEHOLDER — Intro-Podcast -->
+      <div class="audio-placeholder" style="width:100%">
+        <span class="audio-icon">📻</span>
+        <div>GLOBAL CRISIS MONITOR — FOLGE 47</div>
+        <div style="font-size:0.7rem; margin-top:0.3rem; color:#aa8800">
+          [ Audiodatei: audio/intro.mp3 — wird nach Fertigstellung eingebunden ]
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="startGame()">
+        [ SYSTEM BETRETEN ]
+      </button>
+
+    </div>
+  </div>
+
+  <script>
+    // ── BOOT SEQUENCE ──
+    const bootMessages = [
+      { text: 'BIOS v2.4.1 initialisiert...', cls: 'dim', delay: 0 },
+      { text: 'RAM-Check: 16384 MB OK', cls: '', delay: 180 },
+      { text: 'Netzwerkverbindung aufgebaut: 192.168.UN.1', cls: '', delay: 320 },
+      { text: 'Verbinde mit UN-Mainframe...', cls: '', delay: 500 },
+      { text: 'FEHLER: Hauptknoten antwortet nicht', cls: 'err', delay: 900 },
+      { text: 'FEHLER: Backup-Server offline', cls: 'err', delay: 1100 },
+      { text: 'WARNUNG: Datenverlust erkannt — Sektoren 1-4', cls: 'warn', delay: 1350 },
+      { text: 'Aktiviere Notfall-Wiederherstellungsprotokoll...', cls: 'warn', delay: 1700 },
+      { text: 'Suche Rettungs-Agent...', cls: 'dim', delay: 2100 },
+      { text: 'Agent gefunden. Authentifizierung läuft...', cls: '', delay: 2500 },
+      { text: 'Zugang gewährt.', cls: 'bright', delay: 3000 },
+      { text: '', cls: '', delay: 3200 },
+      { text: '> WILLKOMMEN IM SYSTEM', cls: 'bright', delay: 3300 },
+    ];
+
+    const bootContainer = document.getElementById('boot-lines');
+
+    bootMessages.forEach(({ text, cls, delay }) => {
+      setTimeout(() => {
+        const line = document.createElement('div');
+        line.className = `boot-line ${cls}`;
+        line.textContent = text;
+        bootContainer.appendChild(line);
+        // fade in
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => { line.style.opacity = '1'; });
+        });
+        // scroll to bottom
+        line.scrollIntoView({ behavior: 'smooth' });
+      }, delay);
+    });
+
+    // After boot, show main screen
+    setTimeout(() => {
+      const boot = document.getElementById('boot-screen');
+      boot.style.transition = 'opacity 0.8s';
+      boot.style.opacity = '0';
+      setTimeout(() => {
+        boot.style.display = 'none';
+        const main = document.getElementById('main-screen');
+        main.style.display = 'flex';
+        main.style.opacity = '0';
+        main.style.transition = 'opacity 0.8s';
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => { main.style.opacity = '1'; });
+        });
+      }, 800);
+    }, 4000);
+
+    function startGame() {
+      window.location.href = 'phases/phase1.html';
+    }
+  </script>
+
+</body>
+</html>

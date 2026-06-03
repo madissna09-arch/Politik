@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sektor 1 — Initialisierung</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .game-header {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .phase-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.7rem;
+      color: var(--green);
+      letter-spacing: 0.2em;
+    }
+
+    .mini-counter {
+      font-size: 0.7rem;
+      color: var(--green-dim);
+      letter-spacing: 0.1em;
+    }
+
+    /* Minigame 1: Drag & Drop */
+    .items-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 1.5rem;
+      min-height: 50px;
+      padding: 0.8rem;
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+    }
+
+    .drop-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 500px) {
+      .drop-columns { grid-template-columns: 1fr; }
+    }
+
+    /* Minigame 2: Passwort */
+    .password-display {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.4rem;
+      color: var(--green);
+      text-align: center;
+      letter-spacing: 0.4em;
+      padding: 1.2rem;
+      border: 1px solid var(--border);
+      background: var(--bg-panel);
+      margin-bottom: 1.5rem;
+      text-shadow: 0 0 10px var(--green);
+    }
+
+    /* Minigame 3: Lückentext */
+    .word-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      padding: 0.8rem;
+      border: 1px dashed var(--border);
+      border-radius: 4px;
+    }
+
+    .word-chip {
+      padding: 0.3rem 0.8rem;
+      border: 1px solid var(--green-dim);
+      border-radius: 2px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+      background: var(--bg-panel);
+    }
+
+    .word-chip:hover:not(.used) {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .word-chip.used {
+      opacity: 0.3;
+      cursor: default;
+    }
+
+    .gap {
+      display: inline-block;
+      min-width: 100px;
+      border-bottom: 2px solid var(--green-dim);
+      margin: 0 4px;
+      text-align: center;
+      cursor: pointer;
+      color: var(--green);
+      transition: border-color 0.2s;
+      vertical-align: bottom;
+      padding: 0 4px;
+    }
+
+    .gap:hover { border-color: var(--green); }
+    .gap.filled { border-color: var(--green); background: rgba(0,255,65,0.05); }
+
+    /* Interrupt screen */
+    #interrupt-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .interrupt-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1rem, 5vw, 2rem);
+      color: var(--red);
+      text-shadow: 0 0 20px var(--red);
+      animation: glitch 0.2s infinite;
+      text-align: center;
+    }
+
+    .interrupt-sub {
+      font-size: 0.8rem;
+      color: var(--yellow);
+      letter-spacing: 0.2em;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Interrupt screen shown between audio segments -->
+<div id="interrupt-screen">
+  <div class="interrupt-title">⚠ SIGNAL UNTERBROCHEN ⚠</div>
+  <div class="interrupt-sub">SYSTEMSTABILISIERUNG ERFORDERLICH</div>
+  <div class="interrupt-sub cursor"></div>
+</div>
+
+<div class="screen" id="game-area">
+
+  <!-- Header -->
+  <div class="game-header">
+    <div class="phase-label">SEKTOR 01 // INITIALISIERUNG</div>
+    <div class="mini-counter" id="mini-counter">AUFGABE 1 / 3</div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap" style="max-width:720px; width:100%">
+    <div class="progress-label">
+      <span>SEKTOR-STABILITÄT</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- Phase dots -->
+  <div class="phase-indicator">
+    <div class="phase-dot active"></div>
+    <div class="phase-dot"></div>
+    <div class="phase-dot"></div>
+    <div class="phase-dot"></div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       MINIGAME 1 — Organe identifizieren
+  ════════════════════════════════════════ -->
+  <div class="minigame-wrap" id="mg1">
+    <div class="panel">
+      <div class="panel-title">AUFGABE 1 — SYSTEM-SCAN: STRUKTURDATEN REKONSTRUIEREN</div>
+
+      <div class="minigame-title">Korrupte Datenpakete sortieren</div>
+      <div class="minigame-desc">
+        Der System-Scan hat 6 UN-Organe als beschädigte Datenpakete gefunden.
+        Ordne sie den richtigen Kategorien zu, um die Grundstruktur wiederherzustellen.
+      </div>
+
+      <!-- Items pool -->
+      <div class="items-pool" id="pool">
+        <div class="drag-item" draggable="true" data-id="gv" data-cat="haupt">Generalversammlung</div>
+        <div class="drag-item" draggable="true" data-id="sr" data-cat="haupt">Sicherheitsrat</div>
+        <div class="drag-item" draggable="true" data-id="sg" data-cat="haupt">Sekretariat</div>
+        <div class="drag-item" draggable="true" data-id="igH" data-cat="haupt">Internationaler Gerichtshof</div>
+        <div class="drag-item" draggable="true" data-id="wsR" data-cat="haupt">Wirtschafts- und Sozialrat</div>
+        <div class="drag-item" draggable="true" data-id="tR" data-cat="haupt">Treuhandrat</div>
+      </div>
+
+      <!-- Drop zones -->
+      <div class="drop-columns">
+        <div class="drop-zone" id="zone-haupt">
+          <div class="drop-zone-title">⬡ Hauptorgane der UN</div>
+        </div>
+        <div class="drop-zone" id="zone-neben">
+          <div class="drop-zone-title">⬡ Sonderorganisationen / Nebenorgane</div>
+        </div>
+      </div>
+
+      <div class="feedback" id="mg1-feedback"></div>
+
+      <button class="btn btn-primary" id="mg1-btn" onclick="checkMG1()">
+        [ DATEN ÜBERMITTELN ]
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       MINIGAME 2 — Passwort-Rekonstruktion
+  ════════════════════════════════════════ -->
+  <div class="minigame-wrap hidden" id="mg2">
+    <div class="panel">
+      <div class="panel-title">AUFGABE 2 — PASSWORT-REKONSTRUKTION: ABSTIMMUNGSPRINZIP</div>
+
+      <div class="minigame-title">Zugangs-Code entschlüsseln</div>
+      <div class="minigame-desc">
+        Der Sicherheitsrat-Sektor ist passwortgeschützt. Um Zugang zu erhalten,
+        musst du das Abstimmungsprinzip korrekt identifizieren.
+      </div>
+
+      <div class="password-display" id="pw-display">_ _ _ _ _ _</div>
+
+      <div class="minigame-desc" style="margin-bottom:1rem">
+        Im UN-Sicherheitsrat braucht eine Resolution mindestens 9 von 15 Stimmen.
+        Was macht die 5 permanenten Mitglieder (P5) dabei besonders?
+      </div>
+
+      <div class="mc-options" id="mg2-options">
+        <div class="mc-option" onclick="selectMC2(this, false)">
+          Sie müssen einstimmig abstimmen, damit eine Resolution gilt.
+        </div>
+        <div class="mc-option" onclick="selectMC2(this, true)">
+          Jedes P5-Mitglied kann eine Resolution alleine blockieren — durch sein Veto.
+        </div>
+        <div class="mc-option" onclick="selectMC2(this, false)">
+          Sie haben drei Stimmen statt einer, aber kein Einzelveto.
+        </div>
+        <div class="mc-option" onclick="selectMC2(this, false)">
+          Sie können Resolutionen verzögern, aber nicht dauerhaft blockieren.
+        </div>
+      </div>
+
+      <div class="feedback" id="mg2-feedback"></div>
+
+      <button class="btn btn-primary hidden" id="mg2-btn" onclick="completeMG2()">
+        [ ZUGANG GEWÄHREN ]
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       MINIGAME 3 — Lückentext Gründung
+  ════════════════════════════════════════ -->
+  <div class="minigame-wrap hidden" id="mg3">
+    <div class="panel">
+      <div class="panel-title">AUFGABE 3 — DATEI-WIEDERHERSTELLUNG: GRÜNDUNGSPROTOKOLL</div>
+
+      <div class="minigame-title">Beschädigte Gründungsdatei reparieren</div>
+      <div class="minigame-desc">
+        Das Gründungsprotokoll der UN ist fragmentiert. Wähle die richtigen Begriffe
+        aus dem Wortarchiv und setze sie in die Lücken ein.
+      </div>
+
+      <!-- Word bank -->
+      <div class="word-bank" id="word-bank">
+        <div class="word-chip" data-word="1945" onclick="selectWord(this)">1945</div>
+        <div class="word-chip" data-word="San Francisco" onclick="selectWord(this)">San Francisco</div>
+        <div class="word-chip" data-word="Zweiten Weltkrieg" onclick="selectWord(this)">Zweiten Weltkrieg</div>
+        <div class="word-chip" data-word="New York" onclick="selectWord(this)">New York</div>
+        <div class="word-chip" data-word="1919" onclick="selectWord(this)">1919</div>
+        <div class="word-chip" data-word="Ersten Weltkrieg" onclick="selectWord(this)">Ersten Weltkrieg</div>
+        <div class="word-chip" data-word="Genf" onclick="selectWord(this)">Genf</div>
+      </div>
+
+      <!-- Gap text -->
+      <div class="gap-text">
+        Die Vereinten Nationen wurden im Jahr
+        <span class="gap" data-answer="1945" id="gap1" onclick="fillGap(this)">____</span>
+        in
+        <span class="gap" data-answer="San Francisco" id="gap2" onclick="fillGap(this)">____</span>
+        gegründet. Auslöser war der
+        <span class="gap" data-answer="Zweiten Weltkrieg" id="gap3" onclick="fillGap(this)">____</span>,
+        der gezeigt hatte, dass eine internationale Ordnung notwendig ist,
+        um zukünftige Konflikte zu verhindern.
+      </div>
+
+      <div class="feedback" id="mg3-feedback"></div>
+
+      <button class="btn btn-primary" id="mg3-btn" onclick="checkMG3()">
+        [ DATEI WIEDERHERSTELLEN ]
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════
+       SEKTOR 1 ABGESCHLOSSEN
+  ════════════════════════════════════════ -->
+  <div class="minigame-wrap hidden" id="phase1-complete">
+    <div class="panel" style="text-align:center">
+      <div class="panel-title" style="justify-content:center">SEKTOR 1 — STABILISIERT</div>
+
+      <div style="font-size:2rem; margin:1rem 0; color:var(--green); text-shadow:0 0 20px var(--green)">
+        ✓
+      </div>
+
+      <div class="terminal-line bright" style="margin-bottom:0.5rem">
+        INITIALISIERUNG ABGESCHLOSSEN
+      </div>
+      <div class="terminal-line dim" style="margin-bottom:2rem">
+        Grundstruktur der UN erfolgreich rekonstruiert.
+      </div>
+
+      <!-- AUDIO PLACEHOLDER — Segment 1 des Podcasts -->
+      <div class="audio-placeholder">
+        <span class="audio-icon">📻</span>
+        <div>GLOBAL CRISIS MONITOR — Segment 1</div>
+        <div style="font-size:0.75rem; margin-top:0.5rem; line-height:1.5">
+          Marco, Lukas und Sarah diskutieren die UN-Grundstruktur und den Sicherheitsrat.
+        </div>
+        <div style="font-size:0.7rem; margin-top:0.3rem; color:#aa8800">
+          [ Audiodatei: ../audio/segment1.mp3 — wird nach Fertigstellung eingebunden ]
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="goToPhase2()" style="margin-top:1rem">
+        [ SEKTOR 2 BETRETEN ]
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ── STATE ──
+  let mg2Correct = false;
+  let selectedWord = null;
+  const gaps = {};
+
+  // ── PROGRESS ──
+  function setProgress(pct) {
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent = pct + '%';
+  }
+
+  function setCounter(n) {
+    document.getElementById('mini-counter').textContent = `AUFGABE ${n} / 3`;
+  }
+
+  // ── DRAG & DROP (MG1) ──
+  document.querySelectorAll('.drag-item').forEach(item => {
+    item.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('text/plain', item.dataset.id);
+      item.classList.add('dragging');
+    });
+    item.addEventListener('dragend', () => item.classList.remove('dragging'));
+  });
+
+  document.querySelectorAll('.drop-zone').forEach(zone => {
+    zone.addEventListener('dragover', e => {
+      e.preventDefault();
+      zone.classList.add('drag-over');
+    });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      const id = e.dataTransfer.getData('text/plain');
+      const item = document.querySelector(`[data-id="${id}"]`);
+      if (item) zone.appendChild(item);
+    });
+  });
+
+  function checkMG1() {
+    const hauptZone = document.getElementById('zone-haupt');
+    const items = hauptZone.querySelectorAll('.drag-item');
+
+    // All 6 items are main organs — if all 6 are in hauptZone: correct
+    if (items.length === 6) {
+      showFeedback('mg1-feedback', true,
+        '✓ Korrekt. Die Generalversammlung, der Sicherheitsrat, das Sekretariat, der Internationale Gerichtshof, der Wirtschafts- und Sozialrat und der Treuhandrat sind die sechs Hauptorgane der UN.');
+      document.getElementById('mg1-btn').disabled = true;
+      setTimeout(() => showMG(2), 1200);
+      setProgress(33);
+    } else {
+      showFeedback('mg1-feedback', false,
+        '✗ Nicht alle Datenpakete korrekt zugeordnet. Alle sechs Organe sind Hauptorgane der UN.');
+    }
+  }
+
+  // ── MULTIPLE CHOICE (MG2) ──
+  function selectMC2(el, correct) {
+    document.querySelectorAll('#mg2-options .mc-option').forEach(o => {
+      o.classList.remove('selected');
+      o.onclick = null;
+    });
+    el.classList.add('selected');
+    mg2Correct = correct;
+
+    if (correct) {
+      el.classList.add('correct');
+      showFeedback('mg2-feedback', true,
+        '✓ Korrekt. Jedes der fünf permanenten Mitglieder (USA, Russland, China, Großbritannien, Frankreich) kann durch sein Veto jede Resolution alleine blockieren — unabhängig davon, wie viele andere dafür stimmen.');
+      document.getElementById('mg2-btn').classList.remove('hidden');
+    } else {
+      el.classList.add('wrong');
+      showFeedback('mg2-feedback', false,
+        '✗ Nicht korrekt. Versuch es nochmal — das Veto ist der Schlüssel.');
+      setTimeout(() => {
+        el.classList.remove('wrong', 'selected');
+        document.querySelectorAll('#mg2-options .mc-option').forEach(o => {
+          o.onclick = function() { selectMC2(this, this.textContent.includes('blockieren')); };
+        });
+      }, 1000);
+    }
+  }
+
+  // Fix MC2 onclick after reset
+  document.querySelectorAll('#mg2-options .mc-option').forEach((o, i) => {
+    const correct = i === 1;
+    o.onclick = function() { selectMC2(this, correct); };
+  });
+
+  function completeMG2() {
+    setProgress(66);
+    setTimeout(() => showMG(3), 400);
+  }
+
+  // ── LÜCKENTEXT (MG3) ──
+  function selectWord(el) {
+    if (el.classList.contains('used')) return;
+    document.querySelectorAll('.word-chip').forEach(c => c.style.outline = '');
+    el.style.outline = '2px solid var(--green)';
+    selectedWord = el.dataset.word;
+  }
+
+  function fillGap(gapEl) {
+    if (!selectedWord) return;
+    gapEl.textContent = selectedWord;
+    gapEl.classList.add('filled');
+    gaps[gapEl.id] = selectedWord;
+
+    // Mark word as used
+    document.querySelectorAll('.word-chip').forEach(c => {
+      if (c.dataset.word === selectedWord) {
+        c.classList.add('used');
+        c.style.outline = '';
+      }
+    });
+    selectedWord = null;
+  }
+
+  function checkMG3() {
+    const correct =
+      gaps['gap1'] === '1945' &&
+      gaps['gap2'] === 'San Francisco' &&
+      gaps['gap3'] === 'Zweiten Weltkrieg';
+
+    if (correct) {
+      showFeedback('mg3-feedback', true,
+        '✓ Korrekt. Die UN wurde 1945 in San Francisco gegründet — unmittelbar nach dem Zweiten Weltkrieg, der über 60 Millionen Menschenleben kostete.');
+      document.getElementById('mg3-btn').disabled = true;
+      setProgress(100);
+      setTimeout(() => completePhase1(), 1200);
+    } else {
+      showFeedback('mg3-feedback', false,
+        '✗ Nicht alle Lücken korrekt ausgefüllt. Überprüfe Jahr, Ort und Ereignis.');
+    }
+  }
+
+  // ── HELPERS ──
+  function showFeedback(id, success, msg) {
+    const el = document.getElementById(id);
+    el.className = `feedback show ${success ? 'success' : 'error'}`;
+    el.textContent = msg;
+  }
+
+  function showMG(n) {
+    document.getElementById('mg1').classList.add('hidden');
+    document.getElementById('mg2').classList.add('hidden');
+    document.getElementById('mg3').classList.add('hidden');
+    document.getElementById(`mg${n}`).classList.remove('hidden');
+    setCounter(n);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function completePhase1() {
+    document.getElementById('mg3').classList.add('hidden');
+    document.getElementById('phase1-complete').classList.remove('hidden');
+    document.getElementById('mini-counter').textContent = 'SEKTOR 1 ABGESCHLOSSEN';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goToPhase2() {
+    window.location.href = 'phase2.html';
+  }
+</script>
+
+</body>
+</html>
