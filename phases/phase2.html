@@ -3,642 +3,427 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sektor 2 — Juristische Datenbank</title>
+  <title>SEKTOR 02 // JURISTISCHE DATENBANK</title>
   <link rel="stylesheet" href="../style.css">
-  <style>
-    .game-header {
-      width: 100%; max-width: 720px;
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 1.5rem; padding-bottom: 0.8rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .phase-label { font-family: 'Orbitron', monospace; font-size: 0.7rem; color: var(--green); letter-spacing: 0.2em; }
-    .mini-counter { font-size: 0.7rem; color: var(--green-dim); letter-spacing: 0.1em; }
-
-    /* MG2.1 Veto Simulator */
-    .case-card {
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 1.2rem;
-      margin-bottom: 1rem;
-      background: var(--bg-panel);
-      transition: border-color 0.2s;
-    }
-    .case-card.solved { border-color: var(--green-dim); opacity: 0.6; }
-    .case-title { font-size: 0.85rem; color: var(--green); margin-bottom: 0.4rem; font-family: 'Orbitron', monospace; font-size: 0.75rem; }
-    .case-desc { font-size: 0.78rem; color: var(--text); line-height: 1.6; margin-bottom: 0.8rem; }
-    .case-options { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-    .case-btn {
-      padding: 0.4rem 0.8rem; border: 1px solid var(--border);
-      border-radius: 2px; cursor: pointer; font-size: 0.75rem;
-      font-family: 'Share Tech Mono', monospace;
-      background: var(--bg); color: var(--text); transition: all 0.2s;
-    }
-    .case-btn:hover { border-color: var(--green-dim); }
-    .case-btn.correct { border-color: var(--green); color: var(--green); background: rgba(0,255,65,0.08); }
-    .case-btn.wrong { border-color: var(--red); color: var(--red); background: rgba(255,34,34,0.08); }
-
-    /* MG2.2 Klassifizierung */
-    .classify-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 0.8rem 1rem; border: 1px solid var(--border);
-      border-radius: 2px; margin-bottom: 0.6rem;
-      background: var(--bg-panel); gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .classify-text { font-size: 0.82rem; flex: 1; min-width: 200px; }
-    .classify-btns { display: flex; gap: 0.4rem; flex-shrink: 0; }
-    .cl-btn {
-      padding: 0.3rem 0.6rem; border: 1px solid var(--border);
-      border-radius: 2px; cursor: pointer; font-size: 0.7rem;
-      font-family: 'Share Tech Mono', monospace;
-      background: var(--bg); color: var(--text); transition: all 0.2s;
-    }
-    .cl-btn:hover { border-color: var(--green-dim); }
-    .cl-btn.selected-correct { border-color: var(--green); color: var(--green); background: rgba(0,255,65,0.1); }
-    .cl-btn.selected-wrong { border-color: var(--red); color: var(--red); background: rgba(255,34,34,0.1); }
-
-    /* MG2.3 Chronologie */
-    .timeline-pool {
-      display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;
-    }
-    .timeline-item {
-      padding: 0.7rem 1rem; border: 1px solid var(--border);
-      border-radius: 2px; cursor: grab; font-size: 0.82rem;
-      background: var(--bg-panel); display: flex; align-items: center; gap: 0.8rem;
-      transition: all 0.2s; user-select: none;
-    }
-    .timeline-item:hover { border-color: var(--green-dim); }
-    .timeline-item.dragging { opacity: 0.4; cursor: grabbing; }
-    .timeline-num {
-      font-family: 'Orbitron', monospace; font-size: 0.7rem;
-      color: var(--green-dim); min-width: 20px;
-    }
-    .drop-slot {
-      padding: 0.7rem 1rem; border: 1px dashed var(--border);
-      border-radius: 2px; min-height: 48px; margin-bottom: 0.5rem;
-      transition: all 0.2s; font-size: 0.82rem;
-      background: var(--bg-panel);
-    }
-    .drop-slot.drag-over { border-color: var(--green); background: rgba(0,255,65,0.03); }
-    .drop-slot .slot-label { font-size: 0.65rem; color: var(--green-dim); margin-bottom: 0.3rem; }
-
-    /* MG2.4 Reformvorschläge */
-    .reform-card {
-      border: 1px solid var(--border); border-radius: 4px;
-      padding: 1rem; margin-bottom: 1rem; background: var(--bg-panel);
-    }
-    .reform-title { font-size: 0.82rem; color: var(--green); margin-bottom: 0.4rem; }
-    .reform-desc { font-size: 0.75rem; color: var(--green-dim); margin-bottom: 0.8rem; line-height: 1.5; }
-    .reform-options { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-    .reform-btn {
-      padding: 0.4rem 0.9rem; border: 1px solid var(--border);
-      border-radius: 2px; cursor: pointer; font-size: 0.75rem;
-      font-family: 'Share Tech Mono', monospace;
-      background: var(--bg); color: var(--text); transition: all 0.2s;
-    }
-    .reform-btn:hover { border-color: var(--green-dim); }
-    .reform-btn.correct { border-color: var(--green); color: var(--green); background: rgba(0,255,65,0.08); }
-    .reform-btn.wrong { border-color: var(--red); color: var(--red); background: rgba(255,34,34,0.08); }
-
-    /* MG2.5 Weltkarte-Fakten */
-    .stat-grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.5rem;
-    }
-    @media (max-width: 500px) { .stat-grid { grid-template-columns: 1fr; } }
-    .stat-box {
-      border: 1px solid var(--border); border-radius: 4px;
-      padding: 1rem; text-align: center; background: var(--bg-panel);
-    }
-    .stat-num { font-family: 'Orbitron', monospace; font-size: 1.4rem; color: var(--green); text-shadow: 0 0 10px var(--green); }
-    .stat-label { font-size: 0.7rem; color: var(--green-dim); margin-top: 0.3rem; line-height: 1.4; }
-    .veto-visual {
-      border: 1px solid var(--red); border-radius: 4px;
-      padding: 1rem; margin-bottom: 1.5rem; background: rgba(255,34,34,0.03);
-    }
-    .veto-title { font-size: 0.7rem; color: var(--red); letter-spacing: 0.2em; margin-bottom: 0.8rem; }
-    .veto-bar-wrap { margin-bottom: 0.5rem; }
-    .veto-bar-label { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--text); margin-bottom: 0.3rem; }
-    .veto-bar { height: 8px; background: var(--green-dark); border-radius: 2px; overflow: hidden; }
-    .veto-bar-fill { height: 100%; border-radius: 2px; transition: width 1s ease; }
-    .veto-bar-fill.red { background: var(--red); box-shadow: 0 0 6px var(--red); }
-    .veto-bar-fill.green { background: var(--green); box-shadow: 0 0 6px var(--green); }
-  </style>
 </head>
 <body>
 
 <div class="screen" id="game-area">
 
   <div class="game-header">
-    <div class="phase-label">SEKTOR 02 // JURISTISCHE DATENBANK</div>
-    <div class="mini-counter" id="mini-counter">AUFGABE 1 / 5</div>
+    <div class="phase-label">// SEKTOR_02 :: JURISTISCHE DATENBANK</div>
+    <div class="mini-counter" id="mini-counter">TASK 01 / 05</div>
   </div>
 
-  <div class="progress-wrap" style="max-width:720px; width:100%">
-    <div class="progress-label">
-      <span>SEKTOR-STABILITÄT</span>
-      <span id="progress-pct">0%</span>
-    </div>
-    <div class="progress-bar">
-      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
-    </div>
+  <div class="progress-wrap">
+    <div class="progress-label"><span>SEKTOR-STABILITÄT</span><span id="progress-pct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
   </div>
 
   <div class="phase-indicator">
     <div class="phase-dot done"></div>
+    <div class="phase-dot-line"></div>
     <div class="phase-dot active"></div>
+    <div class="phase-dot-line"></div>
     <div class="phase-dot"></div>
+    <div class="phase-dot-line"></div>
     <div class="phase-dot"></div>
   </div>
 
-  <!-- ════════════════════
-       MG 2.1 — Veto-Simulator
-  ════════════════════ -->
+  <!-- ══════ TASK 1 — VETO-SIMULATOR ══════ -->
   <div class="minigame-wrap" id="mg1">
     <div class="panel">
-      <div class="panel-title">AUFGABE 1 — VETO-SIMULATOR: BLOCKIERTE RESOLUTIONEN</div>
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_01 :: VETO-SIMULATOR — BLOCKIERTE RESOLUTIONEN</div>
       <div class="minigame-title">Gesperrte Datensätze entschlüsseln</div>
-      <div class="minigame-desc">
-        Drei UN-Resolutionen sind als "GEBLOCKT" markiert. Identifiziere für jeden Fall:
-        Wurde die Resolution verabschiedet — oder von wem vetot?
-      </div>
+      <div class="minigame-desc">Drei UN-Resolutionen sind als BLOCKIERT markiert. Identifiziere für jeden Fall: verabschiedet — oder von wem vetot? Alle drei müssen korrekt sein.</div>
 
-      <!-- Case 1 -->
-      <div class="case-card" id="case1">
-        <div class="case-title">DATEI #SYR-2012 — Syrien-Waffenstillstand</div>
-        <div class="case-desc">2012. Der syrische Bürgerkrieg eskaliert. Der Sicherheitsrat versucht, einen Waffenstillstand durchzusetzen. Was passierte?</div>
-        <div class="case-options">
-          <button class="case-btn" onclick="checkCase(1, this, false)">Verabschiedet</button>
-          <button class="case-btn" onclick="checkCase(1, this, true)">Vetot — Russland & China</button>
-          <button class="case-btn" onclick="checkCase(1, this, false)">Vetot — USA</button>
-          <button class="case-btn" onclick="checkCase(1, this, false)">Abgestimmt, gescheitert an Mehrheit</button>
+      <div class="data-card" id="case1">
+        <div class="data-card-title">DATEI #SYR-2012 — Syrien-Waffenstillstand</div>
+        <div class="data-card-body">2012. Bürgerkrieg eskaliert. Zehntausende Tote. Der Sicherheitsrat versucht einen Waffenstillstand durchzusetzen. <span class="data-card-highlight">Status: BLOCKIERT</span></div>
+        <div class="opt-group">
+          <button class="opt-btn" data-n="1" data-correct="false">Verabschiedet</button>
+          <button class="opt-btn" data-n="1" data-correct="true">Vetot — Russland &amp; China</button>
+          <button class="opt-btn" data-n="1" data-correct="false">Vetot — USA</button>
+          <button class="opt-btn" data-n="1" data-correct="false">Gescheitert an Mehrheit</button>
         </div>
       </div>
 
-      <!-- Case 2 -->
-      <div class="case-card" id="case2">
-        <div class="case-title">DATEI #KRI-2014 — Krim-Annexion</div>
-        <div class="case-desc">2014. Russland annektiert die Krim — nach Meinung der meisten Experten ein Verstoß gegen das Völkerrecht. Der Sicherheitsrat reagiert. Was passierte?</div>
-        <div class="case-options">
-          <button class="case-btn" onclick="checkCase(2, this, false)">Verabschiedet — Russland verurteilt</button>
-          <button class="case-btn" onclick="checkCase(2, this, true)">Vetot — Russland</button>
-          <button class="case-btn" onclick="checkCase(2, this, false)">Vetot — China & USA</button>
-          <button class="case-btn" onclick="checkCase(2, this, false)">Nicht eingebracht</button>
+      <div class="data-card" id="case2">
+        <div class="data-card-title">DATEI #KRI-2014 — Krim-Annexion</div>
+        <div class="data-card-body">2014. Russland annektiert die Krim — nach Einschätzung der meisten Völkerrechtsexperten illegal. <span class="data-card-highlight">Status: BLOCKIERT</span></div>
+        <div class="opt-group">
+          <button class="opt-btn" data-n="2" data-correct="false">Verabschiedet — Russland verurteilt</button>
+          <button class="opt-btn" data-n="2" data-correct="true">Vetot — Russland</button>
+          <button class="opt-btn" data-n="2" data-correct="false">Vetot — China &amp; USA</button>
+          <button class="opt-btn" data-n="2" data-correct="false">Nicht eingebracht</button>
         </div>
       </div>
 
-      <!-- Case 3 -->
-      <div class="case-card" id="case3">
-        <div class="case-title">DATEI #GAZ-2023 — Gaza-Waffenstillstand</div>
-        <div class="case-desc">2023. UN-Generalsekretär Guterres ruft Artikel 99 auf — ein seltener Notruf. Ein Waffenstillstand wird gefordert. Was passierte?</div>
-        <div class="case-options">
-          <button class="case-btn" onclick="checkCase(3, this, false)">Verabschiedet</button>
-          <button class="case-btn" onclick="checkCase(3, this, false)">Vetot — Russland & China</button>
-          <button class="case-btn" onclick="checkCase(3, this, true)">Vetot — USA (zweimal)</button>
-          <button class="case-btn" onclick="checkCase(3, this, false)">Nicht eingebracht</button>
+      <div class="data-card" id="case3">
+        <div class="data-card-title">DATEI #GAZ-2023 — Gaza-Waffenstillstand</div>
+        <div class="data-card-body">2023. UN-Generalsekretär Guterres ruft Artikel 99 auf — ein seltener Notruf. Waffenstillstand gefordert. <span class="data-card-highlight">Status: BLOCKIERT</span></div>
+        <div class="opt-group">
+          <button class="opt-btn" data-n="3" data-correct="false">Verabschiedet</button>
+          <button class="opt-btn" data-n="3" data-correct="false">Vetot — Russland &amp; China</button>
+          <button class="opt-btn" data-n="3" data-correct="true">Vetot — USA (zweimal)</button>
+          <button class="opt-btn" data-n="3" data-correct="false">Nicht eingebracht</button>
         </div>
       </div>
 
-      <div class="feedback" id="mg1-feedback"></div>
-      <button class="btn btn-primary hidden" id="mg1-btn" onclick="nextMG(2)">[ WEITER ]</button>
+      <button class="btn btn-primary hidden" id="mg1-next" onclick="showMG('mg2',2,5)">[ WEITER ]</button>
     </div>
   </div>
 
-  <!-- ════════════════════
-       MG 2.2 — Klassifizierung Menschenrechte
-  ════════════════════ -->
+  <!-- ══════ TASK 2 — KLASSIFIZIERUNG ══════ -->
   <div class="minigame-wrap hidden" id="mg2">
     <div class="panel">
-      <div class="panel-title">AUFGABE 2 — DATEI-KLASSIFIZIERUNG: MENSCHENRECHTE</div>
-      <div class="minigame-title">Rechtsstatus der Datenfragmente bestimmen</div>
-      <div class="minigame-desc">
-        Klassifiziere jede Aussage: Ist sie rechtlich bindend für alle UN-Mitglieder (✓),
-        nicht bindend (✗), oder nur unter bestimmten Bedingungen gültig (⚠)?
-      </div>
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_02 :: DATEI-KLASSIFIZIERUNG — MENSCHENRECHTE</div>
+      <div class="minigame-title">Rechtsstatus der Fragmente bestimmen</div>
+      <div class="minigame-desc">Klassifiziere jede Aussage: rechtlich bindend für alle UN-Mitglieder (✓), nicht bindend (✗), oder nur unter bestimmten Bedingungen gültig (⚠)?</div>
 
-      <div id="classify-items">
-        <div class="classify-item" data-answer="check">
+      <div id="classify-list">
+        <div class="classify-row" data-answer="check">
           <div class="classify-text">„Jeder Mensch hat das Recht auf Leben, Freiheit und Sicherheit der Person."</div>
           <div class="classify-btns">
-            <button class="cl-btn" onclick="classify(this, 0, 'check')">✓</button>
-            <button class="cl-btn" onclick="classify(this, 0, 'cross')">✗</button>
-            <button class="cl-btn" onclick="classify(this, 0, 'warn')">⚠</button>
+            <button class="cl-btn" data-idx="0" data-val="check">✓</button>
+            <button class="cl-btn" data-idx="0" data-val="cross">✗</button>
+            <button class="cl-btn" data-idx="0" data-val="warn">⚠</button>
           </div>
         </div>
-        <div class="classify-item" data-answer="cross">
+        <div class="classify-row" data-answer="cross">
           <div class="classify-text">„Staaten müssen Klimaflüchtlinge aufnehmen und ihnen Asyl gewähren."</div>
           <div class="classify-btns">
-            <button class="cl-btn" onclick="classify(this, 1, 'check')">✓</button>
-            <button class="cl-btn" onclick="classify(this, 1, 'cross')">✗</button>
-            <button class="cl-btn" onclick="classify(this, 1, 'warn')">⚠</button>
+            <button class="cl-btn" data-idx="1" data-val="check">✓</button>
+            <button class="cl-btn" data-idx="1" data-val="cross">✗</button>
+            <button class="cl-btn" data-idx="1" data-val="warn">⚠</button>
           </div>
         </div>
-        <div class="classify-item" data-answer="check">
+        <div class="classify-row" data-answer="check">
           <div class="classify-text">„Niemand darf gefoltert oder grausam behandelt werden."</div>
           <div class="classify-btns">
-            <button class="cl-btn" onclick="classify(this, 2, 'check')">✓</button>
-            <button class="cl-btn" onclick="classify(this, 2, 'cross')">✗</button>
-            <button class="cl-btn" onclick="classify(this, 2, 'warn')">⚠</button>
+            <button class="cl-btn" data-idx="2" data-val="check">✓</button>
+            <button class="cl-btn" data-idx="2" data-val="cross">✗</button>
+            <button class="cl-btn" data-idx="2" data-val="warn">⚠</button>
           </div>
         </div>
-        <div class="classify-item" data-answer="warn">
+        <div class="classify-row" data-answer="warn">
           <div class="classify-text">„Angeklagte Kriegsverbrecher können vom IStGH verurteilt werden."</div>
           <div class="classify-btns">
-            <button class="cl-btn" onclick="classify(this, 3, 'check')">✓</button>
-            <button class="cl-btn" onclick="classify(this, 3, 'cross')">✗</button>
-            <button class="cl-btn" onclick="classify(this, 3, 'warn')">⚠</button>
+            <button class="cl-btn" data-idx="3" data-val="check">✓</button>
+            <button class="cl-btn" data-idx="3" data-val="cross">✗</button>
+            <button class="cl-btn" data-idx="3" data-val="warn">⚠</button>
           </div>
         </div>
-        <div class="classify-item" data-answer="cross">
-          <div class="classify-text">„Alle Staaten sind verpflichtet, UN-Resolutionen der Generalversammlung umzusetzen."</div>
+        <div class="classify-row" data-answer="cross">
+          <div class="classify-text">„Alle Staaten sind verpflichtet, Resolutionen der Generalversammlung umzusetzen."</div>
           <div class="classify-btns">
-            <button class="cl-btn" onclick="classify(this, 4, 'check')">✓</button>
-            <button class="cl-btn" onclick="classify(this, 4, 'cross')">✗</button>
-            <button class="cl-btn" onclick="classify(this, 4, 'warn')">⚠</button>
+            <button class="cl-btn" data-idx="4" data-val="check">✓</button>
+            <button class="cl-btn" data-idx="4" data-val="cross">✗</button>
+            <button class="cl-btn" data-idx="4" data-val="warn">⚠</button>
           </div>
         </div>
       </div>
 
-      <div class="feedback" id="mg2-feedback"></div>
-      <button class="btn btn-primary" id="mg2-btn" onclick="checkClassify()">[ KLASSIFIZIERUNG EINREICHEN ]</button>
+      <button class="btn btn-primary" style="margin-top:1rem" onclick="checkClassify()">[ KLASSIFIZIERUNG EINREICHEN ]</button>
     </div>
   </div>
 
-  <!-- ════════════════════
-       MG 2.3 — Chronologie
-  ════════════════════ -->
+  <!-- ══════ TASK 3 — CHRONOLOGIE ══════ -->
   <div class="minigame-wrap hidden" id="mg3">
     <div class="panel">
-      <div class="panel-title">AUFGABE 3 — CHRONOLOGIE-REPARATUR: MENSCHENRECHTSPOLITIK</div>
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_03 :: CHRONOLOGIE-REPARATUR — MENSCHENRECHTSPOLITIK</div>
       <div class="minigame-title">Zeitlinie rekonstruieren</div>
-      <div class="minigame-desc">
-        Die Ereignisse der UN-Menschenrechtspolitik sind in falscher Reihenfolge gespeichert.
-        Bringe sie in die richtige chronologische Reihenfolge.
+      <div class="minigame-desc">Die Ereignisse der UN-Menschenrechtspolitik sind in der falschen Reihenfolge gespeichert. Ziehe sie in die korrekte chronologische Reihenfolge.</div>
+
+      <div class="timeline-list" id="tl-list">
+        <div class="tl-item" draggable="true" data-order="4"><span class="tl-num">?</span><span class="tl-grab">⠿</span>Gründung des Internationalen Strafgerichtshofs (IStGH) — 2002</div>
+        <div class="tl-item" draggable="true" data-order="1"><span class="tl-num">?</span><span class="tl-grab">⠿</span>Gründung der Vereinten Nationen in San Francisco — 1945</div>
+        <div class="tl-item" draggable="true" data-order="5"><span class="tl-num">?</span><span class="tl-grab">⠿</span>Syrien-Konflikt: Erste Vetoblockade im Sicherheitsrat — 2011</div>
+        <div class="tl-item" draggable="true" data-order="2"><span class="tl-num">?</span><span class="tl-grab">⠿</span>Allgemeine Erklärung der Menschenrechte verabschiedet — 1948</div>
+        <div class="tl-item" draggable="true" data-order="3"><span class="tl-num">?</span><span class="tl-grab">⠿</span>Genozid in Ruanda — UN reagieren zu spät — 1994</div>
       </div>
 
-      <div class="timeline-pool" id="timeline-pool">
-        <div class="timeline-item" draggable="true" data-year="2002" data-order="4">
-          <span class="timeline-num">?</span>
-          Gründung des Internationalen Strafgerichtshofs (IStGH)
-        </div>
-        <div class="timeline-item" draggable="true" data-year="1945" data-order="1">
-          <span class="timeline-num">?</span>
-          Gründung der Vereinten Nationen in San Francisco
-        </div>
-        <div class="timeline-item" draggable="true" data-year="2011" data-order="5">
-          <span class="timeline-num">?</span>
-          Syrien-Konflikt: Erste Vetoblockade im Sicherheitsrat
-        </div>
-        <div class="timeline-item" draggable="true" data-year="1948" data-order="2">
-          <span class="timeline-num">?</span>
-          Allgemeine Erklärung der Menschenrechte verabschiedet
-        </div>
-        <div class="timeline-item" draggable="true" data-year="1994" data-order="3">
-          <span class="timeline-num">?</span>
-          Genozid in Ruanda — UN reagieren zu spät
-        </div>
-      </div>
-
-      <div class="feedback" id="mg3-feedback"></div>
-      <button class="btn btn-primary" id="mg3-btn" onclick="checkTimeline()">[ ZEITLINIE BESTÄTIGEN ]</button>
+      <button class="btn btn-primary" onclick="checkTimeline()">[ ZEITLINIE BESTÄTIGEN ]</button>
     </div>
   </div>
 
-  <!-- ════════════════════
-       MG 2.4 — Reformvorschläge
-  ════════════════════ -->
+  <!-- ══════ TASK 4 — REFORMVORSCHLÄGE ══════ -->
   <div class="minigame-wrap hidden" id="mg4">
     <div class="panel">
-      <div class="panel-title">AUFGABE 4 — CODE-KNACKER: REFORMVORSCHLÄGE BEWERTEN</div>
-      <div class="minigame-title">Realismus-Check für Reformdaten</div>
-      <div class="minigame-desc">
-        Drei echte Reformvorschläge wurden gefunden. Bewerte jeden: Realistisch umsetzbar,
-        nicht realistisch, oder umstritten?
-      </div>
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_04 :: CODE-KNACKER — REFORMVORSCHLÄGE BEWERTEN</div>
+      <div class="minigame-title">Realisierbarkeit der Reformdaten prüfen</div>
+      <div class="minigame-desc">Drei echte Reformvorschläge wurden im System gefunden. Berechne für jeden: Realistisch, nicht realistisch, oder umstritten?</div>
 
-      <div class="reform-card" id="rf1">
-        <div class="reform-title">Vorschlag A — Abschaffung des P5-Vetos</div>
-        <div class="reform-desc">Alle fünf permanenten Mitglieder verlieren ihr Einzelveto. Resolutionen gelten bei einfacher Mehrheit.</div>
-        <div class="reform-options">
-          <button class="reform-btn" onclick="checkReform(1, this, false)">Realistisch</button>
-          <button class="reform-btn" onclick="checkReform(1, this, true)">Nicht realistisch</button>
-          <button class="reform-btn" onclick="checkReform(1, this, false)">Umstritten</button>
+      <div class="data-card" id="rf1">
+        <div class="data-card-title">REFORM_A — Abschaffung des P5-Vetos</div>
+        <div class="data-card-body">Alle permanenten Mitglieder verlieren ihr Einzelveto. Resolutionen gelten bei einfacher Mehrheit.</div>
+        <div class="opt-group">
+          <button class="opt-btn" data-rf="1" data-correct="false">Realistisch</button>
+          <button class="opt-btn" data-rf="1" data-correct="true">Nicht realistisch</button>
+          <button class="opt-btn" data-rf="1" data-correct="false">Umstritten</button>
         </div>
       </div>
 
-      <div class="reform-card" id="rf2">
-        <div class="reform-title">Vorschlag B — Erweiterung des Sicherheitsrats auf 25 Mitglieder</div>
-        <div class="reform-desc">Mehr Sitze, mehr Repräsentation — besonders für Afrika, Asien und Lateinamerika.</div>
-        <div class="reform-options">
-          <button class="reform-btn" onclick="checkReform(2, this, false)">Realistisch</button>
-          <button class="reform-btn" onclick="checkReform(2, this, false)">Nicht realistisch</button>
-          <button class="reform-btn" onclick="checkReform(2, this, true)">Umstritten</button>
+      <div class="data-card" id="rf2">
+        <div class="data-card-title">REFORM_B — Erweiterung auf 25 Sicherheitsratsmitglieder</div>
+        <div class="data-card-body">Mehr Sitze für Afrika, Asien und Lateinamerika — bessere Repräsentation der Weltbevölkerung.</div>
+        <div class="opt-group">
+          <button class="opt-btn" data-rf="2" data-correct="false">Realistisch</button>
+          <button class="opt-btn" data-rf="2" data-correct="false">Nicht realistisch</button>
+          <button class="opt-btn" data-rf="2" data-correct="true">Umstritten</button>
         </div>
       </div>
 
-      <div class="reform-card" id="rf3">
-        <div class="reform-title">Vorschlag C — „Uniting for Peace"-Resolution nutzen</div>
-        <div class="reform-desc">Wenn der Sicherheitsrat blockiert ist, kann die Generalversammlung in einer Notstandssitzung handeln — ohne Veto.</div>
-        <div class="reform-options">
-          <button class="reform-btn" onclick="checkReform(3, this, true)">Realistisch</button>
-          <button class="reform-btn" onclick="checkReform(3, this, false)">Nicht realistisch</button>
-          <button class="reform-btn" onclick="checkReform(3, this, false)">Umstritten</button>
+      <div class="data-card" id="rf3">
+        <div class="data-card-title">REFORM_C — „Uniting for Peace"-Resolution nutzen</div>
+        <div class="data-card-body">Wenn der Sicherheitsrat blockiert ist, kann die Generalversammlung in einer Notstandssitzung handeln — ohne Veto.</div>
+        <div class="opt-group">
+          <button class="opt-btn" data-rf="3" data-correct="true">Realistisch</button>
+          <button class="opt-btn" data-rf="3" data-correct="false">Nicht realistisch</button>
+          <button class="opt-btn" data-rf="3" data-correct="false">Umstritten</button>
         </div>
       </div>
 
-      <div class="feedback" id="mg4-feedback"></div>
-      <button class="btn btn-primary hidden" id="mg4-btn" onclick="nextMG(5)">[ WEITER ]</button>
+      <button class="btn btn-primary hidden" id="mg4-next" onclick="showMG('mg5',5,5)">[ WEITER ]</button>
     </div>
   </div>
 
-  <!-- ════════════════════
-       MG 2.5 — Wer hat Macht?
-  ════════════════════ -->
+  <!-- ══════ TASK 5 — MACHTVERTEILUNG ══════ -->
   <div class="minigame-wrap hidden" id="mg5">
     <div class="panel">
-      <div class="panel-title">AUFGABE 5 — ZUGANGS-PROTOKOLL: MACHTVERTEILUNG ANALYSIEREN</div>
-      <div class="minigame-title">Machtverteilung im System berechnen</div>
-      <div class="minigame-desc">
-        Beantworte die Systemfrage, um das Machtverteilungs-Protokoll zu entsperren.
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_05 :: ZUGANGS-PROTOKOLL — MACHTVERTEILUNG BERECHNEN</div>
+      <div class="minigame-title">Systemfrage beantworten</div>
+      <div class="minigame-desc">Berechne die Machtverteilung. Die Antwort schaltet das Protokoll frei.</div>
+
+      <div style="font-size:0.9rem; color:var(--green); margin-bottom:1.2rem; line-height:1.6; border-left:2px solid var(--green-dim); padding-left:0.8rem;">
+        193 Staaten sind UN-Mitglieder. Wie viele sitzen <em>permanent</em> im Sicherheitsrat — mit absolutem Vetorecht?
       </div>
 
-      <div class="minigame-desc" style="color:var(--green); font-size:0.9rem; margin-bottom:1.2rem">
-        193 Staaten sind UN-Mitglieder. Wie viele sitzen <em>permanent</em> im Sicherheitsrat mit Vetorecht?
+      <div class="mc-options" id="mc5">
+        <div class="mc-option" data-correct="false">3 Staaten</div>
+        <div class="mc-option" data-correct="true">5 Staaten</div>
+        <div class="mc-option" data-correct="false">10 Staaten</div>
+        <div class="mc-option" data-correct="false">15 Staaten</div>
       </div>
 
-      <div class="mc-options" id="q5-options">
-        <div class="mc-option" onclick="answerQ5(this, false)">3 Staaten</div>
-        <div class="mc-option" onclick="answerQ5(this, true)">5 Staaten</div>
-        <div class="mc-option" onclick="answerQ5(this, false)">10 Staaten</div>
-        <div class="mc-option" onclick="answerQ5(this, false)">15 Staaten</div>
-      </div>
-
-      <!-- Stats revealed after answer -->
-      <div id="stats-reveal" class="hidden">
-        <div class="stat-grid">
-          <div class="stat-box">
-            <div class="stat-num">193</div>
-            <div class="stat-label">UN-Mitgliedsstaaten mit je einer Stimme in der Generalversammlung</div>
+      <div id="stats-box" class="hidden" style="margin-top:1rem;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin-bottom:1.2rem;">
+          <div style="border:1px solid var(--border); border-radius:4px; padding:1rem; text-align:center; background:var(--bg-panel);">
+            <div style="font-family:'Orbitron',monospace; font-size:1.6rem; color:var(--green); text-shadow:0 0 10px var(--green);">193</div>
+            <div style="font-size:0.65rem; color:var(--green-dim); margin-top:0.3rem; line-height:1.4;">Mitgliedsstaaten — je eine Stimme in der Generalversammlung</div>
           </div>
-          <div class="stat-box">
-            <div class="stat-num" style="color:var(--red); text-shadow:0 0 10px var(--red)">5</div>
-            <div class="stat-label">Permanente Mitglieder mit absolutem Vetorecht im Sicherheitsrat</div>
+          <div style="border:1px solid rgba(255,34,34,0.3); border-radius:4px; padding:1rem; text-align:center; background:rgba(255,34,34,0.02);">
+            <div style="font-family:'Orbitron',monospace; font-size:1.6rem; color:var(--red); text-shadow:0 0 10px var(--red);">5</div>
+            <div style="font-size:0.65rem; color:#aa5555; margin-top:0.3rem; line-height:1.4;">Permanente Mitglieder mit absolutem Vetorecht</div>
           </div>
-          <div class="stat-box">
-            <div class="stat-num">~44%</div>
-            <div class="stat-label">Weltbevölkerung, die diese 5 Staaten repräsentieren</div>
+          <div style="border:1px solid var(--border); border-radius:4px; padding:1rem; text-align:center; background:var(--bg-panel);">
+            <div style="font-family:'Orbitron',monospace; font-size:1.6rem; color:var(--green);">~44%</div>
+            <div style="font-size:0.65rem; color:var(--green-dim); margin-top:0.3rem; line-height:1.4;">Weltbevölkerung, die diese 5 Staaten repräsentieren</div>
           </div>
-          <div class="stat-box">
-            <div class="stat-num" style="color:var(--red); text-shadow:0 0 10px var(--red)">100%</div>
-            <div class="stat-label">Vetoanteil dieser 5 Staaten — niemand sonst kann blockieren</div>
+          <div style="border:1px solid rgba(255,34,34,0.3); border-radius:4px; padding:1rem; text-align:center; background:rgba(255,34,34,0.02);">
+            <div style="font-family:'Orbitron',monospace; font-size:1.6rem; color:var(--red);">100%</div>
+            <div style="font-size:0.65rem; color:#aa5555; margin-top:0.3rem; line-height:1.4;">Vetoanteil — kein anderer Staat kann blockieren</div>
           </div>
         </div>
-
-        <div class="veto-visual">
-          <div class="veto-title">⚡ MACHTVERTEILUNG — VISUALISIERUNG</div>
-          <div class="veto-bar-wrap">
-            <div class="veto-bar-label"><span>5 Staaten — Vetorecht</span><span>100%</span></div>
-            <div class="veto-bar"><div class="veto-bar-fill red" id="bar-veto" style="width:0%"></div></div>
+        <div style="border:1px solid rgba(255,34,34,0.2); border-radius:4px; padding:1rem; background:rgba(255,34,34,0.02); margin-bottom:1rem;">
+          <div style="font-size:0.6rem; color:var(--red); letter-spacing:0.2em; margin-bottom:0.8rem;">⚡ MACHTVERTEILUNG — VISUALISIERUNG</div>
+          <div style="margin-bottom:0.6rem;">
+            <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text); margin-bottom:0.3rem;"><span>5 Staaten — Vetorecht</span><span>100%</span></div>
+            <div style="height:8px; background:#1a0000; border-radius:2px; overflow:hidden;"><div id="bar-veto" style="height:100%; width:0%; background:var(--red); box-shadow:0 0 8px var(--red); transition:width 1.2s ease; border-radius:2px;"></div></div>
           </div>
-          <div class="veto-bar-wrap" style="margin-top:0.8rem">
-            <div class="veto-bar-label"><span>188 Staaten — kein Vetorecht</span><span>0%</span></div>
-            <div class="veto-bar"><div class="veto-bar-fill green" id="bar-rest" style="width:0%"></div></div>
+          <div>
+            <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:var(--text); margin-bottom:0.3rem;"><span>188 Staaten — kein Vetorecht</span><span>0%</span></div>
+            <div style="height:8px; background:#001a00; border-radius:2px; overflow:hidden;"><div id="bar-rest" style="height:100%; width:0%; background:var(--green); box-shadow:0 0 6px var(--green); transition:width 1.2s ease; border-radius:2px;"></div></div>
           </div>
         </div>
       </div>
 
-      <div class="feedback" id="mg5-feedback"></div>
-      <button class="btn btn-primary hidden" id="mg5-btn" onclick="completePhase2()">[ PROTOKOLL GESICHERT ]</button>
+      <button class="btn btn-primary hidden" id="mg5-next" onclick="completePhase()">[ PROTOKOLL GESICHERT ]</button>
     </div>
   </div>
 
-  <!-- ════════════════════
-       PHASE 2 COMPLETE
-  ════════════════════ -->
-  <div class="minigame-wrap hidden" id="phase2-complete">
-    <div class="panel" style="text-align:center">
-      <div class="panel-title" style="justify-content:center">SEKTOR 2 — STABILISIERT</div>
-      <div style="font-size:2rem; margin:1rem 0; color:var(--green); text-shadow:0 0 20px var(--green)">✓</div>
-      <div class="terminal-line bright" style="margin-bottom:0.5rem">JURISTISCHE DATENBANK WIEDERHERGESTELLT</div>
-      <div class="terminal-line dim" style="margin-bottom:2rem">Veto-Protokolle und Menschenrechtsdaten gesichert.</div>
-
+  <!-- ══════ PHASE DONE ══════ -->
+  <div class="minigame-wrap hidden" id="phase-done">
+    <div class="panel" style="text-align:center;">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title" style="justify-content:center;">SEKTOR_02 :: STABILISIERUNG ABGESCHLOSSEN</div>
+      <div style="font-size:3rem; margin:1rem 0; color:var(--green); text-shadow:0 0 30px var(--green);">✓</div>
+      <div class="minigame-title" style="text-align:center; margin-bottom:0.5rem;">JURISTISCHE DATENBANK GESICHERT</div>
+      <div class="terminal-line dim" style="margin-bottom:2rem;">Veto-Protokolle und Menschenrechtsdaten vollständig wiederhergestellt.</div>
       <div class="audio-placeholder">
         <span class="audio-icon">📻</span>
-        <div>GLOBAL CRISIS MONITOR — Segment 2</div>
-        <div style="font-size:0.75rem; margin-top:0.5rem; line-height:1.5">
-          Lukas konfrontiert mit konkreten Vetofällen. Sarah verteidigt IStGH und Menschenrechtserklärung.
-        </div>
-        <div style="font-size:0.7rem; margin-top:0.3rem; color:#aa8800">
-          [ Audiodatei: ../audio/segment2.mp3 — wird nach Fertigstellung eingebunden ]
-        </div>
+        <strong>GLOBAL CRISIS MONITOR — Segment 2</strong>
+        <div style="font-size:0.75rem; margin-top:0.5rem; line-height:1.6; color:#aa8800;">Lukas konfrontiert mit Syrien, Gaza, Ruanda. Sarah verteidigt IStGH und Menschenrechtserklärung.<br>[ ../audio/segment2.mp3 ]</div>
       </div>
-
-      <button class="btn btn-primary" onclick="window.location.href='phase3.html'" style="margin-top:1rem">
-        [ SEKTOR 3 BETRETEN ]
-      </button>
+      <button class="btn btn-primary" onclick="window.location.href='phase3.html'" style="margin-top:1rem;">[ SEKTOR 03 BETRETEN ]</button>
     </div>
   </div>
 
 </div>
 
+<script src="../effects.js"></script>
 <script>
+  // TASK 1 — Veto cases
   let casesCorrect = 0;
-  let classifyAnswers = {};
-  const classifyCorrect = { 0: 'check', 1: 'cross', 2: 'check', 3: 'warn', 4: 'cross' };
-  let reformCorrect = 0;
-
-  function setProgress(pct) {
-    document.getElementById('progress-fill').style.width = pct + '%';
-    document.getElementById('progress-pct').textContent = pct + '%';
-  }
-
-  function setCounter(n) {
-    document.getElementById('mini-counter').textContent = `AUFGABE ${n} / 5`;
-  }
-
-  function showFeedback(id, success, msg) {
-    const el = document.getElementById(id);
-    el.className = `feedback show ${success ? 'success' : 'error'}`;
-    el.textContent = msg;
-  }
-
-  function nextMG(n) {
-    for (let i = 1; i <= 5; i++) document.getElementById(`mg${i}`).classList.add('hidden');
-    document.getElementById(`mg${n}`).classList.remove('hidden');
-    setCounter(n);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  // MG1 — Veto cases
-  function checkCase(n, btn, correct) {
-    const card = document.getElementById(`case${n}`);
-    card.querySelectorAll('.case-btn').forEach(b => b.onclick = null);
-    if (correct) {
-      btn.classList.add('correct');
-      card.classList.add('solved');
-      casesCorrect++;
-      if (casesCorrect === 3) {
-        showFeedback('mg1-feedback', true, '✓ Alle drei Fälle korrekt identifiziert. Das Muster ist klar: Das Veto schützt die Interessen der P5 — nicht zwingend die Interessen der Menschheit.');
-        document.getElementById('mg1-btn').classList.remove('hidden');
-        setProgress(20);
+  document.querySelectorAll('.opt-btn[data-n]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const n = btn.dataset.n;
+      const card = document.getElementById(`case${n}`);
+      if (card.classList.contains('solved')) return;
+      if (btn.dataset.correct === 'true') {
+        btn.classList.add('correct');
+        card.classList.add('solved');
+        casesCorrect++;
+        flashGreen();
+        if (casesCorrect === 3) {
+          showOverlay('granted', 'ALLE DATENSÄTZE ENTSCHLÜSSELT');
+          setProgress(20);
+          setTimeout(() => document.getElementById('mg1-next').classList.remove('hidden'), 1200);
+        }
+      } else {
+        btn.classList.add('wrong');
+        flashRed();
+        shake(card);
+        setTimeout(() => btn.classList.remove('wrong'), 600);
       }
-    } else {
-      btn.classList.add('wrong');
-      setTimeout(() => {
-        btn.classList.remove('wrong');
-        card.querySelectorAll('.case-btn').forEach(b => {
-          b.onclick = function() { checkCase(n, this, this.textContent.includes(getCorrectText(n))); };
-        });
-      }, 800);
-    }
-  }
-
-  function getCorrectText(n) {
-    const map = { 1: 'Russland & China', 2: 'Russland', 3: 'USA (zweimal)' };
-    return map[n];
-  }
-
-  // Fix case btn onclicks
-  document.querySelectorAll('.case-btn').forEach(btn => {
-    const card = btn.closest('.case-card');
-    const n = parseInt(card.id.replace('case',''));
-    btn.onclick = function() { checkCase(n, this, this.textContent.includes(getCorrectText(n))); };
+    });
   });
 
-  // MG2 — Classify
-  function classify(btn, idx, val) {
-    const item = btn.closest('.classify-item');
-    item.querySelectorAll('.cl-btn').forEach(b => b.classList.remove('selected-correct','selected-wrong'));
-    classifyAnswers[idx] = val;
-    const isCorrect = val === classifyCorrect[idx];
-    btn.classList.add(isCorrect ? 'selected-correct' : 'selected-wrong');
-  }
+  // TASK 2 — Classify
+  const classifyCorrect = { 0:'check', 1:'cross', 2:'check', 3:'warn', 4:'cross' };
+  const classifyAnswers = {};
+  document.querySelectorAll('.cl-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = btn.dataset.idx;
+      const row = btn.closest('.classify-row');
+      row.querySelectorAll('.cl-btn').forEach(b => b.classList.remove('sel-correct','sel-wrong'));
+      classifyAnswers[idx] = btn.dataset.val;
+      btn.classList.add(btn.dataset.val === classifyCorrect[idx] ? 'sel-correct' : 'sel-wrong');
+    });
+  });
 
   function checkClassify() {
-    const total = Object.keys(classifyCorrect).length;
+    const total = 5;
     let correct = 0;
-    for (let i = 0; i < total; i++) {
-      if (classifyAnswers[i] === classifyCorrect[i]) correct++;
-    }
+    for (let i = 0; i < total; i++) if (classifyAnswers[i] === classifyCorrect[i]) correct++;
     if (correct === total) {
-      showFeedback('mg2-feedback', true, '✓ Alle korrekt. Wichtig: Die Allgemeine Erklärung der Menschenrechte ist nicht direkt bindend — aber sie hat Verfassungen weltweit beeinflusst. Der IStGH gilt nur für Staaten, die ihn ratifiziert haben.');
-      document.getElementById('mg2-btn').disabled = true;
+      showOverlay('granted', 'KLASSIFIZIERUNG VERIFIZIERT');
+      flashGreen();
       setProgress(40);
-      setTimeout(() => nextMG(3), 1200);
+      setTimeout(() => showMG('mg3',3,5), 1400);
     } else {
-      showFeedback('mg2-feedback', false, `✗ ${correct} von ${total} korrekt. Überprüfe: Was ist rechtlich bindend — und was ist nur eine Empfehlung?`);
+      showOverlay('denied', `${correct}/${total} KORREKT — NOCHMAL PRÜFEN`);
+      flashRed();
     }
   }
 
-  // MG3 — Timeline drag & drop
-  const pool = document.getElementById('timeline-pool');
-  let draggedItem = null;
-
-  pool.querySelectorAll('.timeline-item').forEach(item => {
-    item.addEventListener('dragstart', () => { draggedItem = item; item.classList.add('dragging'); });
+  // TASK 3 — Timeline drag
+  const tlList = document.getElementById('tl-list');
+  let tlDragged = null;
+  tlList.querySelectorAll('.tl-item').forEach(item => {
+    item.addEventListener('dragstart', () => { tlDragged = item; item.classList.add('dragging'); });
     item.addEventListener('dragend', () => item.classList.remove('dragging'));
-    item.addEventListener('dragover', e => e.preventDefault());
+    item.addEventListener('dragover', e => { e.preventDefault(); item.classList.add('drag-target'); });
+    item.addEventListener('dragleave', () => item.classList.remove('drag-target'));
     item.addEventListener('drop', e => {
-      e.preventDefault();
-      if (draggedItem && draggedItem !== item) {
-        const items = [...pool.querySelectorAll('.timeline-item')];
-        const fromIdx = items.indexOf(draggedItem);
-        const toIdx = items.indexOf(item);
-        if (fromIdx < toIdx) item.after(draggedItem);
-        else item.before(draggedItem);
+      e.preventDefault(); item.classList.remove('drag-target');
+      if (tlDragged && tlDragged !== item) {
+        const items = [...tlList.querySelectorAll('.tl-item')];
+        const fi = items.indexOf(tlDragged), ti = items.indexOf(item);
+        if (fi < ti) item.after(tlDragged); else item.before(tlDragged);
       }
     });
   });
 
   function checkTimeline() {
-    const items = [...pool.querySelectorAll('.timeline-item')];
+    const items = [...tlList.querySelectorAll('.tl-item')];
     const orders = items.map(i => parseInt(i.dataset.order));
-    const isSorted = orders.every((v, i) => i === 0 || orders[i-1] <= v);
-    if (isSorted) {
-      items.forEach((item, i) => { item.querySelector('.timeline-num').textContent = orders[i] === 1 ? '①' : orders[i] === 2 ? '②' : orders[i] === 3 ? '③' : orders[i] === 4 ? '④' : '⑤'; });
-      showFeedback('mg3-feedback', true, '✓ Korrekte Reihenfolge: 1945 UN-Gründung → 1948 Menschenrechtserklärung → 1994 Ruanda → 2002 IStGH → 2011 Syrien. Fortschritt — aber auch Versagen.');
-      document.getElementById('mg3-btn').disabled = true;
+    const sorted = orders.every((v,i) => i === 0 || orders[i-1] <= v);
+    if (sorted) {
+      const nums = ['①','②','③','④','⑤'];
+      items.forEach((item,i) => item.querySelector('.tl-num').textContent = nums[i]);
+      showOverlay('granted', 'ZEITLINIE REKONSTRUIERT');
+      flashGreen();
       setProgress(60);
-      setTimeout(() => nextMG(4), 1200);
+      setTimeout(() => showMG('mg4',4,5), 1400);
     } else {
-      showFeedback('mg3-feedback', false, '✗ Reihenfolge nicht korrekt. Denk an die Jahreszahlen: 1945, 1948, 1994, 2002, 2011.');
+      showOverlay('denied', 'REIHENFOLGE INKORREKT');
+      flashRed();
     }
   }
 
-  // MG4 — Reform
-  let reformDone = 0;
-  function checkReform(n, btn, correct) {
-    const card = document.getElementById(`rf${n}`);
-    card.querySelectorAll('.reform-btn').forEach(b => b.onclick = null);
-    btn.classList.add(correct ? 'correct' : 'wrong');
-    if (correct) {
-      reformDone++;
-      if (n === 1) showFeedback('mg4-feedback', false, '');
-      const msgs = {
-        1: 'Korrekt — Nicht realistisch: Eine Charta-Änderung braucht die Zustimmung aller P5. Kein P5-Mitglied stimmt für die Abschaffung seines eigenen Vetos.',
-        2: 'Korrekt — Umstritten: Mehr Sitze würden Repräsentation verbessern, lösen aber das Veto-Problem nicht.',
-        3: 'Korrekt — Realistisch: Wurde bereits genutzt (Korea 1950, Suez 1956). Umgeht das Veto — aber die Resolution bleibt nicht bindend.'
-      };
-      showFeedback('mg4-feedback', true, `✓ ${msgs[n]}`);
-      if (reformDone === 3) {
-        setProgress(80);
-        document.getElementById('mg4-btn').classList.remove('hidden');
+  // TASK 4 — Reforms
+  const rfCorrect = {1:1, 2:2, 3:0};
+  let rfDone = 0;
+  document.querySelectorAll('.opt-btn[data-rf]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const n = btn.dataset.rf;
+      const card = document.getElementById(`rf${n}`);
+      if (card.classList.contains('solved')) return;
+      if (btn.dataset.correct === 'true') {
+        btn.classList.add('correct');
+        card.classList.add('solved');
+        rfDone++;
+        flashGreen();
+        if (rfDone === 3) {
+          showOverlay('granted', 'REFORMDATEN BERECHNET');
+          setProgress(80);
+          setTimeout(() => document.getElementById('mg4-next').classList.remove('hidden'), 1200);
+        }
+      } else {
+        btn.classList.add('wrong');
+        flashRed();
+        shake(btn);
+        setTimeout(() => btn.classList.remove('wrong'), 600);
       }
-    } else {
-      setTimeout(() => {
-        btn.classList.remove('wrong');
-        card.querySelectorAll('.reform-btn').forEach((b, i) => {
-          const correctIdx = { 1: 1, 2: 2, 3: 0 };
-          b.onclick = function() { checkReform(n, this, i === correctIdx[n]); };
-        });
-      }, 800);
-    }
-  }
-
-  // Fix reform onclicks
-  document.querySelectorAll('.reform-card').forEach((card, ci) => {
-    const n = ci + 1;
-    const correctIdx = { 1: 1, 2: 2, 3: 0 };
-    card.querySelectorAll('.reform-btn').forEach((b, i) => {
-      b.onclick = function() { checkReform(n, this, i === correctIdx[n]); };
     });
   });
 
-  // MG5 — Who has power
-  function answerQ5(btn, correct) {
-    document.querySelectorAll('#q5-options .mc-option').forEach(o => o.onclick = null);
-    if (correct) {
-      btn.classList.add('correct');
-      document.getElementById('stats-reveal').classList.remove('hidden');
-      setTimeout(() => {
-        document.getElementById('bar-veto').style.width = '100%';
-        document.getElementById('bar-rest').style.width = '2%';
-      }, 300);
-      showFeedback('mg5-feedback', true, '✓ Korrekt. 5 von 193 Staaten halten 100% der Vetorechte. Diese 5 repräsentieren ~44% der Weltbevölkerung — aber entscheiden über globale Sicherheit für alle.');
-      document.getElementById('mg5-btn').classList.remove('hidden');
-      setProgress(100);
-    } else {
-      btn.classList.add('wrong');
-      setTimeout(() => {
-        btn.classList.remove('wrong');
-        document.querySelectorAll('#q5-options .mc-option').forEach((o, i) => {
-          o.onclick = function() { answerQ5(this, i === 1); };
-        });
-      }, 800);
-    }
-  }
-
-  document.querySelectorAll('#q5-options .mc-option').forEach((o, i) => {
-    o.onclick = function() { answerQ5(this, i === 1); };
+  // TASK 5 — Power
+  document.querySelectorAll('#mc5 .mc-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      if (opt.classList.contains('correct')) return;
+      if (opt.dataset.correct === 'true') {
+        opt.classList.add('correct');
+        document.querySelectorAll('#mc5 .mc-option').forEach(o => o.style.pointerEvents = 'none');
+        document.getElementById('stats-box').classList.remove('hidden');
+        setTimeout(() => {
+          document.getElementById('bar-veto').style.width = '100%';
+          document.getElementById('bar-rest').style.width = '3%';
+        }, 300);
+        showOverlay('granted', 'PROTOKOLL ENTSPERRT');
+        flashGreen();
+        setProgress(100);
+        setTimeout(() => document.getElementById('mg5-next').classList.remove('hidden'), 1500);
+      } else {
+        opt.classList.add('wrong');
+        flashRed();
+        shake(opt);
+        setTimeout(() => opt.classList.remove('wrong'), 600);
+      }
+    });
   });
 
-  function completePhase2() {
-    document.getElementById('mg5').classList.add('hidden');
-    document.getElementById('phase2-complete').classList.remove('hidden');
-    document.getElementById('mini-counter').textContent = 'SEKTOR 2 ABGESCHLOSSEN';
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  function completePhase() {
+    glitchTransition(() => {
+      document.getElementById('mg5').classList.add('hidden');
+      document.getElementById('phase-done').classList.remove('hidden');
+      document.getElementById('mini-counter').textContent = '// SEKTOR GESICHERT';
+    });
+  }
+
+  function showMG(id, n, total) {
+    glitchTransition(() => {
+      document.querySelectorAll('.minigame-wrap').forEach(el => el.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      setCounter(n, total);
+    });
   }
 </script>
-
 </body>
 </html>
