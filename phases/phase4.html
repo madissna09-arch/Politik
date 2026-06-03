@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sektor 4 — Finale Analyse</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    .game-header {
+      width: 100%; max-width: 720px;
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 1.5rem; padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .phase-label { font-family: 'Orbitron', monospace; font-size: 0.7rem; color: var(--green); letter-spacing: 0.2em; }
+    .mini-counter { font-size: 0.7rem; color: var(--green-dim); letter-spacing: 0.1em; }
+
+    /* MG4.1 Stärken & Schwächen */
+    .sort-pool {
+      display: flex; flex-wrap: wrap; gap: 0.5rem;
+      margin-bottom: 1.2rem; padding: 0.8rem;
+      border: 1px dashed var(--border); border-radius: 4px; min-height: 50px;
+    }
+    .sort-chip {
+      padding: 0.4rem 0.9rem; border: 1px solid var(--green-dim);
+      border-radius: 2px; cursor: grab; font-size: 0.78rem;
+      background: var(--bg-panel); transition: all 0.2s; user-select: none;
+    }
+    .sort-chip:hover { border-color: var(--green); }
+    .sort-chip.dragging { opacity: 0.4; cursor: grabbing; }
+    .sort-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+    @media (max-width: 500px) { .sort-columns { grid-template-columns: 1fr; } }
+    .sort-zone {
+      border: 1px dashed var(--border); border-radius: 4px;
+      padding: 0.8rem; min-height: 140px; transition: all 0.2s;
+    }
+    .sort-zone.drag-over { border-color: var(--green); background: rgba(0,255,65,0.03); }
+    .sort-zone-title { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.6rem; }
+    .sort-zone.pro .sort-zone-title { color: var(--green); }
+    .sort-zone.con .sort-zone-title { color: var(--red); }
+    .sort-zone.pro { border-color: rgba(0,255,65,0.2); }
+    .sort-zone.con { border-color: rgba(255,34,34,0.2); }
+
+    /* MG4.2 Verhör */
+    .statement-card {
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 1.2rem; margin-bottom: 0.8rem; background: var(--bg-panel);
+    }
+    .statement-card.solved { opacity: 0.6; }
+    .statement-who { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.4rem; }
+    .statement-who.lukas { color: var(--red); }
+    .statement-who.sarah { color: #88ccff; }
+    .statement-text { font-size: 0.82rem; color: var(--text); line-height: 1.6; margin-bottom: 0.8rem; font-style: italic; }
+    .statement-opts { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .stmt-btn {
+      padding: 0.4rem 0.8rem; border: 1px solid var(--border);
+      border-radius: 2px; cursor: pointer; font-size: 0.75rem;
+      font-family: 'Share Tech Mono', monospace;
+      background: var(--bg); color: var(--text); transition: all 0.2s;
+    }
+    .stmt-btn:hover { border-color: var(--green-dim); }
+    .stmt-btn.chosen { border-color: var(--green); color: var(--green); background: rgba(0,255,65,0.08); }
+
+    /* MG4.3 Finale Entscheidung */
+    .final-question {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+      color: var(--green);
+      text-align: center;
+      line-height: 1.6;
+      margin-bottom: 2.5rem;
+      text-shadow: 0 0 15px rgba(0,255,65,0.3);
+    }
+
+    .final-buttons {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+      max-width: 500px; margin: 0 auto;
+    }
+    @media (max-width: 450px) { .final-buttons { grid-template-columns: 1fr; } }
+
+    .final-btn {
+      padding: 1.5rem 1rem; border-radius: 4px;
+      cursor: pointer; text-align: center;
+      font-family: 'Orbitron', monospace; font-size: 0.8rem;
+      letter-spacing: 0.1em; transition: all 0.3s;
+      border: 2px solid;
+    }
+    .final-btn.yes {
+      border-color: var(--green); color: var(--green);
+      background: rgba(0,255,65,0.05);
+    }
+    .final-btn.yes:hover {
+      background: rgba(0,255,65,0.12);
+      box-shadow: 0 0 25px rgba(0,255,65,0.2);
+    }
+    .final-btn.no {
+      border-color: var(--red); color: var(--red);
+      background: rgba(255,34,34,0.05);
+    }
+    .final-btn.no:hover {
+      background: rgba(255,34,34,0.12);
+      box-shadow: 0 0 25px rgba(255,34,34,0.2);
+    }
+    .final-btn-sub { font-size: 0.65rem; color: var(--green-dim); margin-top: 0.5rem; font-family: 'Share Tech Mono', monospace; letter-spacing: 0.05em; }
+    .final-btn.no .final-btn-sub { color: #aa5555; }
+
+    /* Ending screen */
+    #ending-screen {
+      display: none; width: 100%; max-width: 720px;
+    }
+
+    .ending-panel {
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 2rem; text-align: center; background: var(--bg-panel);
+    }
+
+    .ending-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .ending-title {
+      font-family: 'Orbitron', monospace; font-size: 1.1rem;
+      margin-bottom: 1.5rem; letter-spacing: 0.1em;
+    }
+
+    .dialogue-block { text-align: left; margin-bottom: 1.5rem; }
+    .dialogue-line { margin-bottom: 0.8rem; font-size: 0.82rem; line-height: 1.6; }
+    .dialogue-name { font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.2rem; }
+    .dialogue-name.marco { color: var(--green-dim); }
+    .dialogue-name.sarah { color: #88ccff; }
+    .dialogue-name.lukas { color: var(--red); }
+
+    .system-msg {
+      border: 1px solid var(--green); border-radius: 4px;
+      padding: 1rem; margin-bottom: 1.5rem;
+      font-size: 0.8rem; color: var(--green); background: rgba(0,255,65,0.05);
+    }
+
+    .score-summary {
+      border: 1px solid var(--border); border-radius: 4px;
+      padding: 1rem; margin-bottom: 1.5rem; text-align: left;
+    }
+    .score-title { font-size: 0.65rem; color: var(--green-dim); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 0.8rem; }
+    .score-item { display: flex; justify-content: space-between; font-size: 0.75rem; padding: 0.3rem 0; border-bottom: 1px solid var(--border); }
+    .score-item:last-child { border-bottom: none; }
+    .score-val { color: var(--green); }
+  </style>
+</head>
+<body>
+
+<div class="screen" id="game-area">
+
+  <div class="game-header">
+    <div class="phase-label">SEKTOR 04 // FINALE ANALYSE</div>
+    <div class="mini-counter" id="mini-counter">AUFGABE 1 / 3</div>
+  </div>
+
+  <div class="progress-wrap" style="max-width:720px; width:100%">
+    <div class="progress-label">
+      <span>SEKTOR-STABILITÄT</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="phase-indicator">
+    <div class="phase-dot done"></div>
+    <div class="phase-dot done"></div>
+    <div class="phase-dot done"></div>
+    <div class="phase-dot active"></div>
+  </div>
+
+  <!-- ════════════════════
+       MG 4.1 — Stärken & Schwächen
+  ════════════════════ -->
+  <div class="minigame-wrap" id="mg1">
+    <div class="panel">
+      <div class="panel-title">AUFGABE 1 — SYSTEM-DIAGNOSE: STÄRKEN & SCHWÄCHEN</div>
+      <div class="minigame-title">Abschließende Systemanalyse durchführen</div>
+      <div class="minigame-desc">
+        Sortiere die 8 Datenfragmente in zwei Kategorien. Es gibt keine falsche Antwort —
+        deine Einordnung ist Teil der finalen Entscheidung.
+      </div>
+
+      <div class="sort-pool" id="sort-pool">
+        <div class="sort-chip" draggable="true" data-id="c1">Universelle Mitgliedschaft (193 Staaten)</div>
+        <div class="sort-chip" draggable="true" data-id="c2">P5-Veto blockiert Krisen</div>
+        <div class="sort-chip" draggable="true" data-id="c3">Erfolge bei Gesundheit & Pocken</div>
+        <div class="sort-chip" draggable="true" data-id="c4">85% der SDG-Ziele nicht auf Kurs</div>
+        <div class="sort-chip" draggable="true" data-id="c5">IStGH als internationale Rechtsinstanz</div>
+        <div class="sort-chip" draggable="true" data-id="c6">Finanzierung abhängig von Mitgliedsstaaten</div>
+        <div class="sort-chip" draggable="true" data-id="c7">Einziges wirklich globales Dialogforum</div>
+        <div class="sort-chip" draggable="true" data-id="c8">Charta seit 1945 kaum reformiert</div>
+      </div>
+
+      <div class="sort-columns">
+        <div class="sort-zone pro" id="zone-pro">
+          <div class="sort-zone-title">+ UN handlungsfähig</div>
+        </div>
+        <div class="sort-zone con" id="zone-con">
+          <div class="sort-zone-title">− UN nicht handlungsfähig</div>
+        </div>
+      </div>
+
+      <div class="feedback" id="mg1-feedback"></div>
+      <button class="btn btn-primary" id="mg1-btn" onclick="checkSort()">[ ANALYSE ABSCHLIESSEN ]</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════
+       MG 4.2 — Verhör der Zeugen
+  ════════════════════ -->
+  <div class="minigame-wrap hidden" id="mg2">
+    <div class="panel">
+      <div class="panel-title">AUFGABE 2 — VERHÖR DER ZEUGEN: LUKAS VS. SARAH</div>
+      <div class="minigame-title">Argumente bewerten</div>
+      <div class="minigame-desc">
+        Bewerte jede Aussage ehrlich. Es gibt keine richtige Antwort —
+        deine Reaktion bereitet dich auf die finale Entscheidung vor.
+      </div>
+
+      <div class="statement-card" id="st1">
+        <div class="statement-who lukas">LUKAS</div>
+        <div class="statement-text">„Das System schützt keine Menschen. Es schützt die Mächtigen. Syrien. Gaza. Ruanda. Das Veto ist kein Fehler im System — es ist das System."</div>
+        <div class="statement-opts">
+          <button class="stmt-btn" onclick="rateStatement(1, this)">Überzeugt mich vollständig</button>
+          <button class="stmt-btn" onclick="rateStatement(1, this)">Teilweise</button>
+          <button class="stmt-btn" onclick="rateStatement(1, this)">Überzeugt mich nicht</button>
+        </div>
+      </div>
+
+      <div class="statement-card" id="st2">
+        <div class="statement-who sarah">SARAH</div>
+        <div class="statement-text">„Ohne die UN gäbe es nicht mal diesen langsamen Fortschritt. Pocken, Ozonloch, Kindersterblichkeit — das war globale Kooperation. Das war die UN."</div>
+        <div class="statement-opts">
+          <button class="stmt-btn" onclick="rateStatement(2, this)">Überzeugt mich vollständig</button>
+          <button class="stmt-btn" onclick="rateStatement(2, this)">Teilweise</button>
+          <button class="stmt-btn" onclick="rateStatement(2, this)">Überzeugt mich nicht</button>
+        </div>
+      </div>
+
+      <div class="statement-card" id="st3">
+        <div class="statement-who lukas">LUKAS</div>
+        <div class="statement-text">„Kooperation bei Gesundheitszielen ist nicht dasselbe wie Handlungsfähigkeit in echten Krisen. Wenn keine Bomben fallen, funktioniert die UN. Wenn doch — nicht."</div>
+        <div class="statement-opts">
+          <button class="stmt-btn" onclick="rateStatement(3, this)">Überzeugt mich vollständig</button>
+          <button class="stmt-btn" onclick="rateStatement(3, this)">Teilweise</button>
+          <button class="stmt-btn" onclick="rateStatement(3, this)">Überzeugt mich nicht</button>
+        </div>
+      </div>
+
+      <div class="statement-card" id="st4">
+        <div class="statement-who sarah">SARAH</div>
+        <div class="statement-text">„Vielleicht ist die Frage nicht: Handlungsfähig oder nicht. Sondern: Wann kann sie handeln — und warum nicht immer? Das ist ehrlicher."</div>
+        <div class="statement-opts">
+          <button class="stmt-btn" onclick="rateStatement(4, this)">Überzeugt mich vollständig</button>
+          <button class="stmt-btn" onclick="rateStatement(4, this)">Teilweise</button>
+          <button class="stmt-btn" onclick="rateStatement(4, this)">Überzeugt mich nicht</button>
+        </div>
+      </div>
+
+      <div class="feedback" id="mg2-feedback"></div>
+      <button class="btn btn-primary hidden" id="mg2-btn" onclick="nextMG(3)">[ ANALYSE FORTSETZEN ]</button>
+    </div>
+  </div>
+
+  <!-- ════════════════════
+       MG 4.3 — Finale Entscheidung
+  ════════════════════ -->
+  <div class="minigame-wrap hidden" id="mg3">
+    <div class="panel">
+      <div class="panel-title">AUFGABE 3 — FINALE SYSTEMEINGABE</div>
+
+      <!-- AUDIO PLACEHOLDER — Segment 4 -->
+      <div class="audio-placeholder" style="margin-bottom:2rem">
+        <span class="audio-icon">📻</span>
+        <div>GLOBAL CRISIS MONITOR — Segment 4</div>
+        <div style="font-size:0.75rem; margin-top:0.5rem; line-height:1.5">
+          Marco stellt die finale Frage direkt. Lukas und Sarah geben ihre letzten Statements.
+        </div>
+        <div style="font-size:0.7rem; margin-top:0.3rem; color:#aa8800">
+          [ Audiodatei: ../audio/segment4.mp3 — wird nach Fertigstellung eingebunden ]
+        </div>
+      </div>
+
+      <div class="final-question">
+        SYSTEM-FRAGE:<br>
+        Ist die UN in ihrer aktuellen<br>
+        Verfassung handlungsfähig?
+      </div>
+
+      <div class="final-buttons">
+        <div class="final-btn yes" onclick="makeDecision('yes')">
+          JA<br>
+          <div class="final-btn-sub">System stabilisieren</div>
+        </div>
+        <div class="final-btn no" onclick="makeDecision('no')">
+          NEIN<br>
+          <div class="final-btn-sub">System neu aufsetzen</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════
+       ENDING A — JA
+  ════════════════════ -->
+  <div id="ending-screen">
+    <div class="ending-panel" id="ending-yes" style="display:none">
+      <div class="ending-icon">✓</div>
+      <div class="ending-title" style="color:var(--green)">SYSTEM STABILISIERT</div>
+
+      <div class="system-msg">
+        Der UN-Mainframe läuft wieder. Alle vier Sektoren online.
+        Deine Entscheidung: Die UN ist — trotz aller Mängel — handlungsfähig.
+      </div>
+
+      <div class="dialogue-block">
+        <div class="dialogue-line">
+          <div class="dialogue-name marco">MARCO</div>
+          Die UN ist nicht perfekt. Sie war es nie. Aber sie ist der Versuch — der einzige globale Versuch — eine gemeinsame Sprache zu sprechen, bevor Waffen das Wort übernehmen.
+        </div>
+        <div class="dialogue-line">
+          <div class="dialogue-name sarah">SARAH</div>
+          Danke. Und das ist kein kleines Ding.
+        </div>
+        <div class="dialogue-line">
+          <div class="dialogue-name lukas">LUKAS</div>
+          <em>Ich hoffe, ihr habt recht. Ich hoffe es wirklich.</em>
+        </div>
+      </div>
+
+      <div class="score-summary">
+        <div class="score-title">Deine Analyse — Zusammenfassung</div>
+        <div class="score-item"><span>Sektoren stabilisiert</span><span class="score-val">4 / 4</span></div>
+        <div class="score-item"><span>Minigames abgeschlossen</span><span class="score-val">16 / 16</span></div>
+        <div class="score-item"><span>Entscheidung</span><span class="score-val" style="color:var(--green)">UN handlungsfähig</span></div>
+      </div>
+
+      <button class="btn" onclick="window.location.href='../index.html'">[ NEU STARTEN ]</button>
+    </div>
+
+    <!-- ENDING B — NEIN (falls später gewünscht) -->
+    <div class="ending-panel" id="ending-no" style="display:none">
+      <div class="ending-icon" style="color:var(--yellow)">↺</div>
+      <div class="ending-title" style="color:var(--yellow)">SYSTEM-NEUSTART INITIIERT</div>
+
+      <div class="system-msg" style="border-color:var(--yellow); color:var(--yellow); background:rgba(255,204,0,0.05)">
+        Der Mainframe wird zurückgesetzt. Deine Entscheidung: Das System braucht grundlegende Reform — nicht nur Stabilisierung.
+      </div>
+
+      <div class="dialogue-block">
+        <div class="dialogue-line">
+          <div class="dialogue-name lukas">LUKAS</div>
+          Endlich. Ein ehrlicher Befund.
+        </div>
+        <div class="dialogue-line">
+          <div class="dialogue-name sarah">SARAH</div>
+          Reformieren — ja. Aufgeben — nein. Das ist der Unterschied.
+        </div>
+        <div class="dialogue-line">
+          <div class="dialogue-name marco">MARCO</div>
+          Ein Neustart. Vielleicht der erste Schritt zu echter Veränderung. Global Crisis Monitor bleibt dran.
+        </div>
+      </div>
+
+      <div class="score-summary">
+        <div class="score-title">Deine Analyse — Zusammenfassung</div>
+        <div class="score-item"><span>Sektoren stabilisiert</span><span class="score-val">4 / 4</span></div>
+        <div class="score-item"><span>Minigames abgeschlossen</span><span class="score-val">16 / 16</span></div>
+        <div class="score-item"><span>Entscheidung</span><span class="score-val" style="color:var(--yellow)">Reform notwendig</span></div>
+      </div>
+
+      <button class="btn" onclick="window.location.href='../index.html'">[ NEU STARTEN ]</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function setProgress(pct) {
+    document.getElementById('progress-fill').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent = pct + '%';
+  }
+
+  function setCounter(n) {
+    document.getElementById('mini-counter').textContent = `AUFGABE ${n} / 3`;
+  }
+
+  function showFeedback(id, success, msg) {
+    const el = document.getElementById(id);
+    el.className = `feedback show ${success ? 'success' : 'error'}`;
+    el.textContent = msg;
+  }
+
+  function nextMG(n) {
+    for (let i = 1; i <= 3; i++) document.getElementById(`mg${i}`).classList.add('hidden');
+    document.getElementById(`mg${n}`).classList.remove('hidden');
+    setCounter(n);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // MG1 — Sort drag & drop
+  let draggedSort = null;
+  document.querySelectorAll('.sort-chip').forEach(chip => {
+    chip.addEventListener('dragstart', () => { draggedSort = chip; chip.classList.add('dragging'); });
+    chip.addEventListener('dragend', () => chip.classList.remove('dragging'));
+  });
+  ['zone-pro','zone-con','sort-pool'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('dragover', e => { e.preventDefault(); if (id !== 'sort-pool') el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+    el.addEventListener('drop', e => {
+      e.preventDefault(); el.classList.remove('drag-over');
+      if (draggedSort) el.appendChild(draggedSort);
+    });
+  });
+
+  function checkSort() {
+    const pool = document.getElementById('sort-pool');
+    const remaining = pool.querySelectorAll('.sort-chip').length;
+    if (remaining > 0) {
+      showFeedback('mg1-feedback', false, `✗ Noch ${remaining} Datenfragment(e) nicht sortiert. Ordne alle 8 zu.`);
+      return;
+    }
+    showFeedback('mg1-feedback', true, '✓ Analyse gespeichert. Es gibt keine falsche Einordnung — das sind deine Gewichtungen.');
+    document.getElementById('mg1-btn').disabled = true;
+    setProgress(33);
+    setTimeout(() => nextMG(2), 1200);
+  }
+
+  // MG2 — Statements
+  let statementsRated = 0;
+  function rateStatement(n, btn) {
+    const card = document.getElementById(`st${n}`);
+    if (card.classList.contains('solved')) return;
+    card.querySelectorAll('.stmt-btn').forEach(b => b.classList.remove('chosen'));
+    btn.classList.add('chosen');
+    card.classList.add('solved');
+    statementsRated++;
+    if (statementsRated === 4) {
+      showFeedback('mg2-feedback', true, '✓ Alle Aussagen bewertet. Du bist bereit für die finale Entscheidung.');
+      document.getElementById('mg2-btn').classList.remove('hidden');
+      setProgress(66);
+    }
+  }
+
+  // MG3 — Final decision
+  function makeDecision(choice) {
+    setProgress(100);
+    document.getElementById('mini-counter').textContent = 'ABGESCHLOSSEN';
+
+    // Dramatic delay
+    document.getElementById('mg3').classList.add('hidden');
+
+    // Flash effect
+    document.body.style.background = choice === 'yes' ? '#001a00' : '#1a0000';
+    setTimeout(() => { document.body.style.background = '#000'; }, 300);
+
+    setTimeout(() => {
+      document.getElementById('game-area').querySelector('.game-header').style.display = 'none';
+      document.querySelector('.progress-wrap').style.display = 'none';
+      document.querySelector('.phase-indicator').style.display = 'none';
+
+      const endScreen = document.getElementById('ending-screen');
+      endScreen.style.display = 'block';
+      endScreen.style.opacity = '0';
+      endScreen.style.transition = 'opacity 1s';
+
+      document.getElementById(`ending-${choice}`).style.display = 'block';
+
+      requestAnimationFrame(() => requestAnimationFrame(() => { endScreen.style.opacity = '1'; }));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 600);
+  }
+</script>
+
+</body>
+</html>
