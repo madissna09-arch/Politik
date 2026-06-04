@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEKTOR 03 // SDG-RELAISSTATION</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="screen" id="game-area">
+
+  <div class="game-header">
+    <div class="phase-label">// SEKTOR_03 :: SDG-RELAISSTATION</div>
+    <div class="mini-counter" id="mini-counter">TASK 01 / 05</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label"><span>SEKTOR-STABILITÄT</span><span id="progress-pct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="phase-indicator">
+    <div class="phase-dot done"></div>
+    <div class="phase-dot-line"></div>
+    <div class="phase-dot done"></div>
+    <div class="phase-dot-line"></div>
+    <div class="phase-dot active"></div>
+    <div class="phase-dot-line"></div>
+    <div class="phase-dot"></div>
+  </div>
+
+  <!-- ══════ TASK 1 — SDG SORTIERUNG ══════ -->
+  <div class="minigame-wrap" id="mg1">
+    <div class="panel">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_01 :: SIGNAL-SORTIERUNG — SDG-FREQUENZEN KALIBRIEREN</div>
+      <div class="minigame-title">Verrauschte SDG-Signale kategorisieren</div>
+      <div class="minigame-desc">6 Nachhaltigkeitsziele wurden als verrauschte Datenpakete empfangen. Ordne sie den richtigen Kategorien zu — sonst bleibt die Relaisstation offline.</div>
+
+      <div class="sort-pool" id="sort-pool">
+        <div class="sort-chip" draggable="true" data-cat="sozial">Kein Hunger</div>
+        <div class="sort-chip" draggable="true" data-cat="sozial">Keine Armut</div>
+        <div class="sort-chip" draggable="true" data-cat="sozial">Hochwertige Bildung</div>
+        <div class="sort-chip" draggable="true" data-cat="oeko">Sauberes Wasser</div>
+        <div class="sort-chip" draggable="true" data-cat="oeko">Klimaschutz</div>
+        <div class="sort-chip" draggable="true" data-cat="pol">Frieden &amp; Gerechtigkeit</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.8rem; margin-bottom:1.5rem;">
+        <div class="sort-zone pro" id="zone-sozial"><div class="sort-zone-title">◈ Sozial</div></div>
+        <div class="sort-zone" style="border-color:rgba(0,200,255,0.2); background:rgba(0,200,255,0.01);" id="zone-oeko"><div class="sort-zone-title" style="color:#00ccff; font-family:'Orbitron',monospace; font-size:0.62rem; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:0.6rem;">◈ Ökologisch</div></div>
+        <div class="sort-zone con" id="zone-pol" style="border-color:rgba(255,204,0,0.2); background:rgba(255,204,0,0.01);"><div class="sort-zone-title" style="color:var(--yellow);">◈ Politisch</div></div>
+      </div>
+
+      <button class="btn btn-primary" onclick="checkSDG()">[ SIGNALE ÜBERTRAGEN ]</button>
+    </div>
+  </div>
+
+  <!-- ══════ TASK 2 — FORTSCHRITT ══════ -->
+  <div class="minigame-wrap hidden" id="mg2">
+    <div class="panel">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_02 :: FORTSCHRITTS-ANALYSE — IST DIE WELT AUF KURS?</div>
+      <div class="minigame-title">SDG-Datenstrom auswerten</div>
+      <div class="minigame-desc">Analysiere echte Fortschrittsdaten. Entscheide für jedes Ziel: Liegt die Welt beim aktuellen Tempo auf Kurs für 2030?</div>
+
+      <div class="data-card" id="pc1">
+        <div class="data-card-title">SDG 1 — Keine Armut</div>
+        <div class="data-card-body">2015: <span class="data-card-highlight">10%</span> in extremer Armut → 2023: <span class="data-card-highlight">8,5%</span> → Ziel 2030: <span class="data-card-highlight">0%</span></div>
+        <div class="opt-group">
+          <button class="opt-btn" data-pc="1" data-correct="false">Auf Kurs</button>
+          <button class="opt-btn" data-pc="1" data-correct="true">Nicht auf Kurs</button>
+          <button class="opt-btn" data-pc="1" data-correct="false">Ziel erreicht</button>
+        </div>
+      </div>
+
+      <div class="data-card" id="pc2">
+        <div class="data-card-title">SDG 2 — Kein Hunger</div>
+        <div class="data-card-body">2015: <span class="data-card-highlight">785 Mio. hungern</span> → 2023: <span class="data-card-highlight" style="color:var(--red);">828 Mio. hungern</span> → Ziel: Null</div>
+        <div class="opt-group">
+          <button class="opt-btn" data-pc="2" data-correct="false">Auf Kurs</button>
+          <button class="opt-btn" data-pc="2" data-correct="true">Nicht auf Kurs</button>
+          <button class="opt-btn" data-pc="2" data-correct="false">Keine Daten</button>
+        </div>
+      </div>
+
+      <div class="data-card" id="pc3">
+        <div class="data-card-title">SDG 4 — Hochwertige Bildung</div>
+        <div class="data-card-body">2015: <span class="data-card-highlight">263 Mio. Kinder ohne Schule</span> → 2023: <span class="data-card-highlight">250 Mio.</span> → Ziel: Alle Kinder</div>
+        <div class="opt-group">
+          <button class="opt-btn" data-pc="3" data-correct="false">Auf Kurs</button>
+          <button class="opt-btn" data-pc="3" data-correct="true">Nicht auf Kurs</button>
+          <button class="opt-btn" data-pc="3" data-correct="false">Auf Kurs mit Ausnahmen</button>
+        </div>
+      </div>
+
+      <div class="data-card" id="pc4">
+        <div class="data-card-title">SDG 3 — Gesundheit &amp; Wohlergehen</div>
+        <div class="data-card-body">Kindersterblichkeit 1990: <span class="data-card-highlight">~12 Mio./Jahr</span> → 2023: <span class="data-card-highlight" style="color:var(--green);">~5 Mio./Jahr</span> → Trend positiv</div>
+        <div class="opt-group">
+          <button class="opt-btn" data-pc="4" data-correct="true">Auf Kurs</button>
+          <button class="opt-btn" data-pc="4" data-correct="false">Nicht auf Kurs</button>
+          <button class="opt-btn" data-pc="4" data-correct="false">Rückschritt</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary hidden" id="mg2-next" onclick="showMG('mg3',3,5)">[ WEITER ]</button>
+    </div>
+  </div>
+
+  <!-- ══════ TASK 3 — FINANZIERUNG ══════ -->
+  <div class="minigame-wrap hidden" id="mg3">
+    <div class="panel">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_03 :: VERBINDUNGS-MATRIX — FINANZIERUNGSQUELLEN ZUORDNEN</div>
+      <div class="minigame-title">Abhängigkeiten im System aufdecken</div>
+      <div class="minigame-desc">Die UN ist auf externe Finanzierung angewiesen. Verbinde jedes UN-Programm mit seinem Hauptgeldgeber — wähle links, dann rechts.</div>
+
+      <div class="match-grid">
+        <div>
+          <div class="match-col-title">// UN-PROGRAMME</div>
+          <div class="match-item" data-id="unhcr" onclick="selectMatch('left',this)">UNHCR — Flüchtlingshilfe</div>
+          <div class="match-item" data-id="who" onclick="selectMatch('left',this)">WHO — Weltgesundheit</div>
+          <div class="match-item" data-id="unicef" onclick="selectMatch('left',this)">UNICEF — Kinderhilfe</div>
+          <div class="match-item" data-id="wfp" onclick="selectMatch('left',this)">WFP — Welternährungsprogramm</div>
+        </div>
+        <div>
+          <div class="match-col-title">// HAUPTGELDGEBER</div>
+          <div class="match-item" data-id="usa" onclick="selectMatch('right',this)">USA (größter Einzelbeitrag)</div>
+          <div class="match-item" data-id="gates" onclick="selectMatch('right',this)">USA + Bill &amp; Melinda Gates Foundation</div>
+          <div class="match-item" data-id="freiwillig" onclick="selectMatch('right',this)">Freiwillige Mitgliedsbeiträge</div>
+          <div class="match-item" data-id="usa2" onclick="selectMatch('right',this)">USA + EU + Privatspenden</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary hidden" id="mg3-next" onclick="showMG('mg4',4,5)">[ WEITER ]</button>
+    </div>
+  </div>
+
+  <!-- ══════ TASK 4 — DATEILECK ERFOLGE ══════ -->
+  <div class="minigame-wrap hidden" id="mg4">
+    <div class="panel">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_04 :: DATEILECK — VERSCHLÜSSELTE ERFOLGSDATEN</div>
+      <div class="minigame-title">Gesperrte Dateien öffnen und bewerten</div>
+      <div class="minigame-desc">Klicke auf eine Datei um sie zu entschlüsseln. Dann entscheide: War die UN entscheidend für diesen Erfolg?</div>
+
+      <div class="file-grid">
+        <div class="file-card" id="fc1" onclick="openFile(1)">
+          <div class="file-lock">🔒</div>
+          <div class="file-name">DATEI_001.enc</div>
+          <div class="file-content">Ausrottung der Pocken (1980). Die WHO koordinierte eine 13-jährige globale Impfkampagne — das erste Mal in der Geschichte, dass eine Krankheit vollständig durch menschliche Kooperation ausgerottet wurde.</div>
+          <div class="file-verdict">
+            <button class="opt-btn" onclick="checkVerdict(event,1,'ja')">Ja — entscheidend</button>
+            <button class="opt-btn" onclick="checkVerdict(event,1,'teil')">Teilweise</button>
+            <button class="opt-btn" onclick="checkVerdict(event,1,'nein')">Nein</button>
+          </div>
+        </div>
+        <div class="file-card" id="fc2" onclick="openFile(2)">
+          <div class="file-lock">🔒</div>
+          <div class="file-name">DATEI_002.enc</div>
+          <div class="file-content">Montrealer Protokoll (1987). 197 Staaten einigten sich unter UN-Koordination auf den Ausstieg aus ozonschädlichen Substanzen. Das Ozonloch erholt sich seitdem messbar.</div>
+          <div class="file-verdict">
+            <button class="opt-btn" onclick="checkVerdict(event,2,'ja')">Ja — entscheidend</button>
+            <button class="opt-btn" onclick="checkVerdict(event,2,'teil')">Teilweise</button>
+            <button class="opt-btn" onclick="checkVerdict(event,2,'nein')">Nein</button>
+          </div>
+        </div>
+        <div class="file-card" id="fc3" onclick="openFile(3)">
+          <div class="file-lock">🔒</div>
+          <div class="file-name">DATEI_003.enc</div>
+          <div class="file-content">Rückgang der Kindersterblichkeit. Seit 1990 ist die Rate weltweit um über 50% gesunken — durch UNICEF-Programme, WHO-Impfkampagnen und globale Gesundheitsinitiativen.</div>
+          <div class="file-verdict">
+            <button class="opt-btn" onclick="checkVerdict(event,3,'ja')">Ja — entscheidend</button>
+            <button class="opt-btn" onclick="checkVerdict(event,3,'teil')">Teilweise</button>
+            <button class="opt-btn" onclick="checkVerdict(event,3,'nein')">Nein</button>
+          </div>
+        </div>
+        <div class="file-card" id="fc4" onclick="openFile(4)">
+          <div class="file-lock">🔒</div>
+          <div class="file-name">DATEI_004.enc</div>
+          <div class="file-content">Atomwaffen-Verbotsvertrag (2021). 86 Staaten unterzeichneten — aber keine einzige Atommacht ratifizierte den Vertrag. Die UN hat ihn initiiert, aber keine Durchsetzungsmacht.</div>
+          <div class="file-verdict">
+            <button class="opt-btn" onclick="checkVerdict(event,4,'ja')">Ja — entscheidend</button>
+            <button class="opt-btn" onclick="checkVerdict(event,4,'teil')">Teilweise</button>
+            <button class="opt-btn" onclick="checkVerdict(event,4,'nein')">Nein</button>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary hidden" id="mg4-next" onclick="showMG('mg5',5,5)">[ WEITER ]</button>
+    </div>
+  </div>
+
+  <!-- ══════ TASK 5 — FREQUENZ-ABGLEICH ══════ -->
+  <div class="minigame-wrap hidden" id="mg5">
+    <div class="panel">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_05 :: FREQUENZ-ABGLEICH — VERSPRECHEN VS. REALITÄT</div>
+      <div class="minigame-title">SDG-Versprechen mit Realität verbinden</div>
+      <div class="minigame-desc">Wähle ein Versprechen (grün), dann die passende Realität (rot). Verbinde alle 4 Paare korrekt.</div>
+
+      <div class="freq-grid">
+        <div>
+          <div class="freq-col-title">// SDG-VERSPRECHEN</div>
+          <div class="freq-item promise" data-id="p1" onclick="selectFreq('left',this)">Kein Hunger bis 2030</div>
+          <div class="freq-item promise" data-id="p2" onclick="selectFreq('left',this)">Hochwertige Bildung für alle</div>
+          <div class="freq-item promise" data-id="p3" onclick="selectFreq('left',this)">Sauberes Wasser für alle</div>
+          <div class="freq-item promise" data-id="p4" onclick="selectFreq('left',this)">Frieden und starke Institutionen</div>
+        </div>
+        <div class="freq-divider">⟷</div>
+        <div>
+          <div class="freq-col-title">// REALITÄT 2024</div>
+          <div class="freq-item reality" data-id="r2" onclick="selectFreq('right',this)">250 Mio. Kinder ohne Schulzugang</div>
+          <div class="freq-item reality" data-id="r1" onclick="selectFreq('right',this)">828 Mio. Menschen hungern</div>
+          <div class="freq-item reality" data-id="r4" onclick="selectFreq('right',this)">Über 50 aktive Konflikte weltweit</div>
+          <div class="freq-item reality" data-id="r3" onclick="selectFreq('right',this)">2 Mrd. ohne sauberes Trinkwasser</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary hidden" id="mg5-next" onclick="completePhase()">[ FREQUENZEN ABGEGLICHEN ]</button>
+    </div>
+  </div>
+
+  <!-- ══════ PHASE DONE ══════ -->
+  <div class="minigame-wrap hidden" id="phase-done">
+    <div class="panel" style="text-align:center;">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title" style="justify-content:center;">SEKTOR_03 :: STABILISIERUNG ABGESCHLOSSEN</div>
+      <div style="font-size:3rem; margin:1rem 0; color:var(--green); text-shadow:0 0 30px var(--green);">✓</div>
+      <div class="minigame-title" style="text-align:center; margin-bottom:0.5rem;">SDG-RELAISSTATION WIEDERHERGESTELLT</div>
+      <div class="terminal-line dim" style="margin-bottom:2rem;">Fortschritts- und Versagensdaten vollständig gesichert.</div>
+      <div class="audio-placeholder">
+        <span class="audio-icon">📻</span>
+        <strong>GLOBAL CRISIS MONITOR — Segment 3</strong>
+        <div style="font-size:0.75rem; margin-top:0.5rem; line-height:1.6; color:#aa8800;">Sarah nennt UN-Erfolge. Lukas gibt erstmals etwas zu. Marco kündigt die finale Phase an.<br>[ ../audio/segment3.mp3 ]</div>
+      </div>
+      <button class="btn btn-primary" onclick="window.location.href='phase4.html'" style="margin-top:1rem;">[ FINALE ANALYSE STARTEN ]</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="../effects.js"></script>
+<script>
+  // TASK 1 — SDG Sort
+  let sdgDragged = null;
+  document.querySelectorAll('.sort-chip').forEach(chip => {
+    chip.addEventListener('dragstart', () => { sdgDragged = chip; chip.classList.add('dragging'); });
+    chip.addEventListener('dragend', () => chip.classList.remove('dragging'));
+  });
+  ['sort-pool','zone-sozial','zone-oeko','zone-pol'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('dragover', e => { e.preventDefault(); if (id !== 'sort-pool') el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+    el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('drag-over'); if (sdgDragged) el.appendChild(sdgDragged); });
+  });
+
+  function checkSDG() {
+    const cats = { sozial:['Kein Hunger','Keine Armut','Hochwertige Bildung'], oeko:['Sauberes Wasser','Klimaschutz'], pol:['Frieden & Gerechtigkeit'] };
+    let ok = true;
+    for (const [cat, items] of Object.entries(cats)) {
+      const inZone = [...document.getElementById(`zone-${cat}`).querySelectorAll('.sort-chip')].map(c => c.textContent.trim());
+      for (const item of items) { if (!inZone.some(z => z.includes(item.replace('&','&')))) { ok = false; } }
+    }
+    const remaining = document.getElementById('sort-pool').querySelectorAll('.sort-chip').length;
+    if (ok && remaining === 0) {
+      showOverlay('granted', 'SIGNALE KALIBRIERT');
+      flashGreen();
+      setProgress(20);
+      setTimeout(() => showMG('mg2',2,5), 1400);
+    } else {
+      showOverlay('denied', 'KATEGORISIERUNG UNVOLLSTÄNDIG');
+      flashRed();
+    }
+  }
+
+  // TASK 2 — Progress
+  let pcDone = 0;
+  document.querySelectorAll('.opt-btn[data-pc]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const n = btn.dataset.pc;
+      const card = document.getElementById(`pc${n}`);
+      if (card.classList.contains('solved')) return;
+      if (btn.dataset.correct === 'true') {
+        btn.classList.add('correct');
+        card.classList.add('solved');
+        pcDone++;
+        flashGreen();
+        if (pcDone === 4) {
+          showOverlay('granted', 'ALLE DATENSTRÖME AUSGEWERTET');
+          setProgress(40);
+          setTimeout(() => document.getElementById('mg2-next').classList.remove('hidden'), 1200);
+        }
+      } else {
+        btn.classList.add('wrong');
+        flashRed();
+        shake(btn);
+        setTimeout(() => btn.classList.remove('wrong'), 600);
+      }
+    });
+  });
+
+  // TASK 3 — Match
+  const matchPairs = { unhcr:'usa', who:'gates', unicef:'freiwillig', wfp:'usa2' };
+  let mLeft = null, mRight = null, mCount = 0;
+  function selectMatch(side, el) {
+    if (el.classList.contains('matched')) return;
+    if (side === 'left') {
+      document.querySelectorAll('.match-grid > div:first-child .match-item').forEach(i => { if (!i.classList.contains('matched')) i.classList.remove('selected'); });
+      el.classList.toggle('selected');
+      mLeft = el.classList.contains('selected') ? el : null;
+    } else {
+      document.querySelectorAll('.match-grid > div:last-child .match-item').forEach(i => { if (!i.classList.contains('matched')) i.classList.remove('selected'); });
+      el.classList.toggle('selected');
+      mRight = el.classList.contains('selected') ? el : null;
+    }
+    if (mLeft && mRight) {
+      if (matchPairs[mLeft.dataset.id] === mRight.dataset.id) {
+        [mLeft,mRight].forEach(e => { e.classList.add('matched'); e.classList.remove('selected'); });
+        mCount++;
+        flashGreen();
+        if (mCount === 4) {
+          showOverlay('granted', 'MATRIX VOLLSTÄNDIG VERBUNDEN');
+          setProgress(60);
+          setTimeout(() => document.getElementById('mg3-next').classList.remove('hidden'), 1200);
+        }
+      } else {
+        [mLeft,mRight].forEach(e => { e.classList.add('flash-wrong'); setTimeout(() => e.classList.remove('flash-wrong','selected'), 600); });
+        flashRed();
+      }
+      mLeft = null; mRight = null;
+    }
+  }
+
+  // TASK 4 — Files
+  let verdictDone = 0;
+  const verdictAnswers = { 1:'ja', 2:'ja', 3:'ja', 4:'teil' };
+  function openFile(n) {
+    const card = document.getElementById(`fc${n}`);
+    if (card.classList.contains('opened')) return;
+    card.classList.add('opened');
+    card.querySelector('.file-lock').textContent = '📂';
+  }
+  function checkVerdict(e, n, val) {
+    e.stopPropagation();
+    const card = document.getElementById(`fc${n}`);
+    if (card.classList.contains('solved')) return;
+    const correct = val === verdictAnswers[n];
+    const btn = e.target;
+    if (correct) {
+      btn.classList.add('correct');
+      card.classList.add('solved');
+      verdictDone++;
+      flashGreen();
+      if (verdictDone === 4) {
+        showOverlay('granted', 'ALLE DATEIEN BEWERTET');
+        setProgress(80);
+        setTimeout(() => document.getElementById('mg4-next').classList.remove('hidden'), 1200);
+      }
+    } else {
+      btn.classList.add('wrong');
+      flashRed();
+      shake(btn);
+      setTimeout(() => btn.classList.remove('wrong'), 600);
+    }
+  }
+
+  // TASK 5 — Frequency
+  const freqPairs = { p1:'r1', p2:'r2', p3:'r3', p4:'r4' };
+  let fLeft = null, fRight = null, fCount = 0;
+  function selectFreq(side, el) {
+    if (el.classList.contains('matched')) return;
+    if (side === 'left') {
+      document.querySelectorAll('.freq-item.promise').forEach(i => { if (!i.classList.contains('matched')) i.classList.remove('selected'); });
+      el.classList.toggle('selected');
+      fLeft = el.classList.contains('selected') ? el : null;
+    } else {
+      document.querySelectorAll('.freq-item.reality').forEach(i => { if (!i.classList.contains('matched')) i.classList.remove('selected'); });
+      el.classList.toggle('selected');
+      fRight = el.classList.contains('selected') ? el : null;
+    }
+    if (fLeft && fRight) {
+      if (freqPairs[fLeft.dataset.id] === fRight.dataset.id) {
+        [fLeft,fRight].forEach(e => { e.classList.add('matched'); e.classList.remove('selected'); });
+        fCount++;
+        flashGreen();
+        if (fCount === 4) {
+          showOverlay('granted', 'ALLE FREQUENZEN ABGEGLICHEN');
+          setProgress(100);
+          setTimeout(() => document.getElementById('mg5-next').classList.remove('hidden'), 1200);
+        }
+      } else {
+        [fLeft,fRight].forEach(e => { e.classList.add('flash-wrong'); setTimeout(() => e.classList.remove('flash-wrong','selected'), 500); });
+        flashRed();
+        shake(fLeft);
+      }
+      fLeft = null; fRight = null;
+    }
+  }
+
+  function completePhase() {
+    glitchTransition(() => {
+      document.getElementById('mg5').classList.add('hidden');
+      document.getElementById('phase-done').classList.remove('hidden');
+      document.getElementById('mini-counter').textContent = '// SEKTOR GESICHERT';
+    });
+  }
+
+  function showMG(id, n, total) {
+    glitchTransition(() => {
+      document.querySelectorAll('.minigame-wrap').forEach(el => el.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      setCounter(n, total);
+    });
+  }
+</script>
+</body>
+</html>

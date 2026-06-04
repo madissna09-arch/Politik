@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEKTOR 01 // INITIALISIERUNG</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+
+<div class="screen" id="game-area">
+
+  <div class="game-header">
+    <div class="phase-label">// SEKTOR_01 :: INITIALISIERUNG</div>
+    <div class="mini-counter" id="mini-counter">TASK 01 / 03</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>SEKTOR-STABILITÄT</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="phase-indicator">
+    <div class="phase-dot active"></div>
+    <div class="phase-dot-line"></div>
+    <div class="phase-dot"></div>
+    <div class="phase-dot-line"></div>
+    <div class="phase-dot"></div>
+    <div class="phase-dot-line"></div>
+    <div class="phase-dot"></div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       TASK 1 — Organe sortieren
+  ══════════════════════════════════ -->
+  <div class="minigame-wrap" id="mg1">
+    <div class="panel">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_01 :: SYSTEM-SCAN — STRUKTURDATEN REKONSTRUIEREN</div>
+      <div class="minigame-title">Korrupte Datenpakete identifizieren</div>
+      <div class="minigame-desc" id="desc1">
+        Der Scan hat 6 UN-Datenpakete im beschädigten Speicher gefunden. Sortiere sie in die richtige Systemstruktur — sonst bleibt der Zugang gesperrt.
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; gap:0.6rem; margin-bottom:1.2rem; padding:0.8rem; border:1px dashed rgba(0,255,65,0.12); border-radius:4px;" id="pool">
+        <div class="drag-item" draggable="true" data-cat="haupt">Generalversammlung</div>
+        <div class="drag-item" draggable="true" data-cat="haupt">Sicherheitsrat</div>
+        <div class="drag-item" draggable="true" data-cat="haupt">Sekretariat</div>
+        <div class="drag-item" draggable="true" data-cat="haupt">Internationaler Gerichtshof</div>
+        <div class="drag-item" draggable="true" data-cat="haupt">Wirtschafts- und Sozialrat</div>
+        <div class="drag-item" draggable="true" data-cat="haupt">Treuhandrat</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem;">
+        <div class="drop-zone" id="zone-haupt">
+          <div class="drop-zone-title">⬡ Hauptorgane der UN</div>
+        </div>
+        <div class="drop-zone" id="zone-neben">
+          <div class="drop-zone-title">⬡ Sonderorganisationen</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="checkMG1()">[ DATEN ÜBERTRAGEN ]</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       TASK 2 — Passwort / P5-Veto
+  ══════════════════════════════════ -->
+  <div class="minigame-wrap hidden" id="mg2">
+    <div class="panel">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_02 :: PASSWORT-REKONSTRUKTION — ZUGANGSPROTOKOLL</div>
+      <div class="minigame-title">Verschlüsselten Zugangscode knacken</div>
+      <div class="minigame-desc" id="desc2">
+        Das Sicherheitsrat-Archiv ist passwortgeschützt. Der Code ist das Abstimmungsprinzip — identifiziere es korrekt, um Zugang zu erhalten.
+      </div>
+
+      <div style="font-family:'Orbitron',monospace; font-size:1.6rem; color:var(--green); text-align:center; letter-spacing:0.5em; padding:1.2rem; border:1px solid var(--border); background:var(--bg-panel); margin-bottom:1.5rem; text-shadow:0 0 15px var(--green); animation:flicker 3s infinite;">
+        _ &nbsp; _ &nbsp; _ &nbsp; _ &nbsp; _ &nbsp; _
+      </div>
+
+      <div style="font-size:0.82rem; color:var(--green-dim); margin-bottom:1.2rem; border-left:2px solid var(--green-dark); padding-left:0.8rem; line-height:1.6;">
+        Der Sicherheitsrat braucht mindestens 9 von 15 Stimmen für eine Resolution.<br>
+        Was macht die 5 permanenten Mitglieder (P5) dabei absolut einzigartig?
+      </div>
+
+      <div class="mc-options" id="mc2">
+        <div class="mc-option" data-correct="false">Sie müssen einstimmig abstimmen, damit eine Resolution gilt.</div>
+        <div class="mc-option" data-correct="true">Jedes P5-Mitglied kann eine Resolution alleine blockieren — durch sein Veto.</div>
+        <div class="mc-option" data-correct="false">Sie haben drei Stimmen statt einer, aber kein Einzelveto.</div>
+        <div class="mc-option" data-correct="false">Sie können Resolutionen verzögern, aber nicht dauerhaft blockieren.</div>
+      </div>
+
+      <button class="btn btn-primary hidden" id="mg2-next" onclick="showMG('mg3',3,3) || nextMG(3)">[ ZUGANG FREISCHALTEN ]</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       TASK 3 — Lückentext Gründung
+  ══════════════════════════════════ -->
+  <div class="minigame-wrap hidden" id="mg3">
+    <div class="panel">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_03 :: DATEI-WIEDERHERSTELLUNG — GRÜNDUNGSPROTOKOLL</div>
+      <div class="minigame-title">Fragmentierte Ursprungsdatei reparieren</div>
+      <div class="minigame-desc" id="desc3">
+        Das Gründungsprotokoll der UN ist beschädigt. Wähle die richtigen Begriffe aus dem Archiv und setze sie ein.
+      </div>
+
+      <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-bottom:1.5rem; padding:0.8rem; border:1px dashed rgba(0,255,65,0.12); border-radius:4px;" id="word-bank">
+        <div class="word-chip" data-word="1945" onclick="selectWord(this)">1945</div>
+        <div class="word-chip" data-word="San Francisco" onclick="selectWord(this)">San Francisco</div>
+        <div class="word-chip" data-word="Zweiten Weltkrieg" onclick="selectWord(this)">Zweiten Weltkrieg</div>
+        <div class="word-chip" data-word="New York" onclick="selectWord(this)">New York</div>
+        <div class="word-chip" data-word="1919" onclick="selectWord(this)">1919</div>
+        <div class="word-chip" data-word="Ersten Weltkrieg" onclick="selectWord(this)">Ersten Weltkrieg</div>
+        <div class="word-chip" data-word="Genf" onclick="selectWord(this)">Genf</div>
+      </div>
+
+      <div class="gap-text">
+        Die Vereinten Nationen wurden im Jahr
+        <span class="gap" data-answer="1945" id="gap1" onclick="fillGap(this)">____</span>
+        in der Stadt
+        <span class="gap" data-answer="San Francisco" id="gap2" onclick="fillGap(this)">____</span>
+        gegründet. Der auslösende Faktor war der
+        <span class="gap" data-answer="Zweiten Weltkrieg" id="gap3" onclick="fillGap(this)">____</span>,
+        der gezeigt hatte, dass eine internationale Friedensordnung überlebenswichtig ist.
+      </div>
+
+      <button class="btn btn-primary" onclick="checkMG3()">[ DATEI WIEDERHERSTELLEN ]</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       SEKTOR ABGESCHLOSSEN
+  ══════════════════════════════════ -->
+  <div class="minigame-wrap hidden" id="phase-done">
+    <div class="panel" style="text-align:center;">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title" style="justify-content:center;">SEKTOR_01 :: STABILISIERUNG ABGESCHLOSSEN</div>
+      <div style="font-size:3rem; margin:1rem 0; color:var(--green); text-shadow:0 0 30px var(--green); animation:pulse-dot 1.5s infinite;">✓</div>
+      <div class="minigame-title" style="text-align:center; margin-bottom:0.5rem;">INITIALISIERUNG ERFOLGREICH</div>
+      <div class="terminal-line dim" style="margin-bottom:2rem;">Grundstruktur der UN vollständig rekonstruiert.</div>
+
+      <div class="audio-placeholder">
+        <span class="audio-icon">📻</span>
+        <strong>GLOBAL CRISIS MONITOR — Segment 1</strong>
+        <div style="font-size:0.75rem; margin-top:0.5rem; line-height:1.6; color:#aa8800;">
+          Marco, Lukas und Sarah diskutieren die UN-Grundstruktur und das P5-Veto.<br>
+          [ ../audio/segment1.mp3 ]
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="window.location.href='phase2.html'" style="margin-top:1rem;">
+        [ SEKTOR 02 BETRETEN ]
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script src="../effects.js"></script>
+<script>
+  let selectedWord = null;
+  const gaps = {};
+
+  // ── MG1: DRAG & DROP ──
+  let dragged = null;
+  document.querySelectorAll('.drag-item').forEach(item => {
+    item.addEventListener('dragstart', () => { dragged = item; item.classList.add('dragging'); });
+    item.addEventListener('dragend', () => item.classList.remove('dragging'));
+  });
+
+  ['zone-haupt','zone-neben','pool'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('dragover', e => { e.preventDefault(); if (id !== 'pool') el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+    el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('drag-over'); if (dragged) el.appendChild(dragged); });
+  });
+
+  function checkMG1() {
+    const hauptItems = document.getElementById('zone-haupt').querySelectorAll('.drag-item').length;
+    if (hauptItems === 6) {
+      showOverlay('granted', 'STRUKTURDATEN VERIFIZIERT');
+      flashGreen();
+      setProgress(33);
+      setTimeout(() => showMG('mg2', 2, 3), 1500);
+    } else {
+      showOverlay('denied', 'DATENPAKETE UNVOLLSTÄNDIG');
+      flashRed();
+    }
+  }
+
+  // ── MG2: MULTIPLE CHOICE ──
+  document.querySelectorAll('#mc2 .mc-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      if (opt.classList.contains('correct')) return;
+      const correct = opt.dataset.correct === 'true';
+      if (correct) {
+        opt.classList.add('correct');
+        document.querySelectorAll('#mc2 .mc-option').forEach(o => o.style.pointerEvents = 'none');
+        showOverlay('granted', 'PASSWORT ENTSCHLÜSSELT');
+        flashGreen();
+        setProgress(66);
+        setTimeout(() => {
+          document.getElementById('mg2-next').classList.remove('hidden');
+        }, 1200);
+      } else {
+        opt.classList.add('wrong');
+        showOverlay('denied', 'FALSCHER ZUGANGSCODE');
+        flashRed();
+        shake(opt);
+        setTimeout(() => opt.classList.remove('wrong'), 600);
+      }
+    });
+  });
+
+  // Override next for mg2 btn
+  document.getElementById('mg2-next') && (document.getElementById('mg2-next').onclick = () => showMG('mg3', 3, 3));
+
+  // ── MG3: LÜCKENTEXT ──
+  function selectWord(el) {
+    if (el.classList.contains('used')) return;
+    document.querySelectorAll('.word-chip').forEach(c => c.classList.remove('active-select'));
+    if (selectedWord === el.dataset.word) { selectedWord = null; return; }
+    el.classList.add('active-select');
+    selectedWord = el.dataset.word;
+  }
+
+  function fillGap(gapEl) {
+    if (!selectedWord) return;
+    // Remove previous fill from word bank if replacing
+    const prev = gaps[gapEl.id];
+    if (prev) {
+      document.querySelectorAll('.word-chip').forEach(c => {
+        if (c.dataset.word === prev) { c.classList.remove('used'); }
+      });
+    }
+    gapEl.textContent = selectedWord;
+    gapEl.classList.add('filled');
+    gaps[gapEl.id] = selectedWord;
+    document.querySelectorAll('.word-chip').forEach(c => {
+      if (c.dataset.word === selectedWord) { c.classList.add('used'); c.classList.remove('active-select'); }
+    });
+    selectedWord = null;
+  }
+
+  function checkMG3() {
+    const ok = gaps['gap1'] === '1945' && gaps['gap2'] === 'San Francisco' && gaps['gap3'] === 'Zweiten Weltkrieg';
+    if (ok) {
+      showOverlay('granted', 'DATEI WIEDERHERGESTELLT');
+      flashGreen();
+      setProgress(100);
+      setTimeout(() => {
+        glitchTransition(() => {
+          document.getElementById('mg3').classList.add('hidden');
+          document.getElementById('phase-done').classList.remove('hidden');
+          document.getElementById('mini-counter').textContent = '// SEKTOR GESICHERT';
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        });
+      }, 1200);
+    } else {
+      showOverlay('denied', 'REKONSTRUKTION FEHLGESCHLAGEN');
+      flashRed();
+    }
+  }
+
+  function showMG(id, n, total) {
+    glitchTransition(() => {
+      document.querySelectorAll('.minigame-wrap').forEach(el => el.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      setCounter(n, total);
+    });
+  }
+</script>
+</body>
+</html>

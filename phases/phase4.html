@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEKTOR 04 // FINALE ANALYSE</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    /* Extra dramatic styles for finale */
+    #mg3 .panel {
+      border-color: rgba(0,255,65,0.4);
+      box-shadow: 0 0 40px rgba(0,255,65,0.1), inset 0 0 40px rgba(0,0,0,0.6);
+    }
+  </style>
+</head>
+<body>
+
+<div class="screen" id="game-area">
+
+  <div class="game-header">
+    <div class="phase-label">// SEKTOR_04 :: FINALE ANALYSE</div>
+    <div class="mini-counter" id="mini-counter">TASK 01 / 03</div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-label"><span>SEKTOR-STABILITÄT</span><span id="progress-pct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="phase-indicator">
+    <div class="phase-dot done"></div>
+    <div class="phase-dot-line"></div>
+    <div class="phase-dot done"></div>
+    <div class="phase-dot-line"></div>
+    <div class="phase-dot done"></div>
+    <div class="phase-dot-line"></div>
+    <div class="phase-dot active"></div>
+  </div>
+
+  <!-- ══════ TASK 1 — STÄRKEN & SCHWÄCHEN ══════ -->
+  <div class="minigame-wrap" id="mg1">
+    <div class="panel">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_01 :: SYSTEM-DIAGNOSE — ABSCHLIESSENDE ANALYSE</div>
+      <div class="minigame-title">Datenfragmente gewichten</div>
+      <div class="minigame-desc">Sortiere alle 8 Fragmente in zwei Kategorien. Es gibt keine falsche Antwort — deine persönliche Gewichtung wird gespeichert.</div>
+
+      <div class="sort-pool" id="sort-pool">
+        <div class="sort-chip" draggable="true">Universelle Mitgliedschaft (193 Staaten)</div>
+        <div class="sort-chip" draggable="true">P5-Veto blockiert echte Krisen</div>
+        <div class="sort-chip" draggable="true">Erfolge bei Gesundheit und Pocken</div>
+        <div class="sort-chip" draggable="true">85% der SDG-Ziele nicht auf Kurs</div>
+        <div class="sort-chip" draggable="true">IStGH als internationale Rechtsinstanz</div>
+        <div class="sort-chip" draggable="true">Finanzierung abhängig von Mitgliedsstaaten</div>
+        <div class="sort-chip" draggable="true">Einziges wirklich globales Dialogforum</div>
+        <div class="sort-chip" draggable="true">Charta seit 1945 kaum reformiert</div>
+      </div>
+
+      <div class="sort-columns">
+        <div class="sort-zone pro" id="zone-pro"><div class="sort-zone-title">+ Handlungsfähig</div></div>
+        <div class="sort-zone con" id="zone-con"><div class="sort-zone-title">− Nicht handlungsfähig</div></div>
+      </div>
+
+      <button class="btn btn-primary" onclick="checkSort()">[ DIAGNOSE SPEICHERN ]</button>
+    </div>
+  </div>
+
+  <!-- ══════ TASK 2 — VERHÖR ══════ -->
+  <div class="minigame-wrap hidden" id="mg2">
+    <div class="panel">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_02 :: ZEUGEN-VERHÖR — LUKAS VS. SARAH</div>
+      <div class="minigame-title">Argumente bewerten</div>
+      <div class="minigame-desc">Bewerte jede Aussage ehrlich. Es gibt keine richtige Antwort — deine Reaktion bereitet die finale Entscheidung vor.</div>
+
+      <div class="stmt-card" id="st1">
+        <div class="stmt-who lukas">LUKAS — SKEPTIKER</div>
+        <div class="stmt-text">„Das System schützt keine Menschen. Es schützt die Mächtigen. Syrien. Gaza. Ruanda. Das Veto ist kein Fehler im System — es ist das System."</div>
+        <div class="stmt-opts">
+          <button class="stmt-btn" onclick="rateStmt(1,this)">Überzeugt mich vollständig</button>
+          <button class="stmt-btn" onclick="rateStmt(1,this)">Teilweise</button>
+          <button class="stmt-btn" onclick="rateStmt(1,this)">Überzeugt mich nicht</button>
+        </div>
+      </div>
+
+      <div class="stmt-card" id="st2">
+        <div class="stmt-who sarah">SARAH — VERTEIDIGERIN</div>
+        <div class="stmt-text">„Ohne die UN gäbe es nicht mal diesen langsamen Fortschritt. Pocken, Ozonloch, Kindersterblichkeit — das war globale Kooperation. Das war die UN."</div>
+        <div class="stmt-opts">
+          <button class="stmt-btn" onclick="rateStmt(2,this)">Überzeugt mich vollständig</button>
+          <button class="stmt-btn" onclick="rateStmt(2,this)">Teilweise</button>
+          <button class="stmt-btn" onclick="rateStmt(2,this)">Überzeugt mich nicht</button>
+        </div>
+      </div>
+
+      <div class="stmt-card" id="st3">
+        <div class="stmt-who lukas">LUKAS — SKEPTIKER</div>
+        <div class="stmt-text">„Kooperation bei Gesundheitszielen ist nicht dasselbe wie Handlungsfähigkeit in Krisen. Wenn keine Bomben fallen, funktioniert die UN. Wenn doch — nicht."</div>
+        <div class="stmt-opts">
+          <button class="stmt-btn" onclick="rateStmt(3,this)">Überzeugt mich vollständig</button>
+          <button class="stmt-btn" onclick="rateStmt(3,this)">Teilweise</button>
+          <button class="stmt-btn" onclick="rateStmt(3,this)">Überzeugt mich nicht</button>
+        </div>
+      </div>
+
+      <div class="stmt-card" id="st4">
+        <div class="stmt-who sarah">SARAH — VERTEIDIGERIN</div>
+        <div class="stmt-text">„Vielleicht ist die Frage nicht: Handlungsfähig oder nicht. Sondern: Wann kann sie handeln — und warum nicht immer? Das ist ehrlicher."</div>
+        <div class="stmt-opts">
+          <button class="stmt-btn" onclick="rateStmt(4,this)">Überzeugt mich vollständig</button>
+          <button class="stmt-btn" onclick="rateStmt(4,this)">Teilweise</button>
+          <button class="stmt-btn" onclick="rateStmt(4,this)">Überzeugt mich nicht</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary hidden" id="mg2-next" onclick="showMG('mg3',3,3)">[ VERHÖR ABSCHLIESSEN ]</button>
+    </div>
+  </div>
+
+  <!-- ══════ TASK 3 — FINALE ENTSCHEIDUNG ══════ -->
+  <div class="minigame-wrap hidden" id="mg3">
+    <div class="panel">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_03 :: FINALE SYSTEMEINGABE — LETZTE AUTORISIERUNG</div>
+
+      <div class="audio-placeholder" style="margin-bottom:2rem;">
+        <span class="audio-icon">📻</span>
+        <strong>GLOBAL CRISIS MONITOR — Segment 4</strong>
+        <div style="font-size:0.75rem; margin-top:0.5rem; line-height:1.6; color:#aa8800;">Marco stellt die finale Frage. Lukas und Sarah geben ihre letzten Statements.<br>[ ../audio/segment4.mp3 ]</div>
+      </div>
+
+      <div class="final-q">
+        SYSTEM-FRAGE:<br>
+        Ist die UN in ihrer aktuellen<br>
+        Verfassung handlungsfähig?
+      </div>
+
+      <div class="final-btns">
+        <div class="final-btn yes" onclick="decide('yes')">
+          <div class="final-btn-label">JA</div>
+          <div class="final-btn-sub">System stabilisieren</div>
+        </div>
+        <div class="final-btn no" onclick="decide('no')">
+          <div class="final-btn-label">NEIN</div>
+          <div class="final-btn-sub">System neu aufsetzen</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════ ENDING A — JA ══════ -->
+  <div class="minigame-wrap hidden" id="ending-yes">
+    <div class="panel ending-panel">
+      <div class="panel-corner-br"></div>
+      <div style="font-size:3rem; margin:1rem 0; color:var(--green); text-shadow:0 0 40px var(--green); animation:pulse-dot 1.5s infinite;">✓</div>
+      <div class="panel-title" style="justify-content:center; font-size:0.8rem;">SYSTEM VOLLSTÄNDIG STABILISIERT</div>
+      <div class="minigame-title" style="text-align:center; margin-bottom:1.5rem;">MAINFRAME ONLINE</div>
+
+      <div class="ending-msg yes">
+        Der UN-Mainframe läuft wieder. Alle vier Sektoren stabilisiert.<br>
+        Deine Entscheidung: Die UN ist — trotz aller Mängel — handlungsfähig.
+      </div>
+
+      <div class="dialogue-block">
+        <div class="dialogue-line">
+          <div class="d-name marco">// MARCO</div>
+          Die UN ist nicht perfekt. Sie war es nie. Aber sie ist der einzige globale Versuch — eine gemeinsame Sprache zu sprechen, bevor Waffen das Wort übernehmen.
+        </div>
+        <div class="dialogue-line">
+          <div class="d-name sarah">// SARAH</div>
+          Danke. Und das ist kein kleines Ding.
+        </div>
+        <div class="dialogue-line">
+          <div class="d-name lukas">// LUKAS</div>
+          <em>Ich hoffe, ihr habt recht. Ich hoffe es wirklich.</em>
+        </div>
+      </div>
+
+      <div class="score-box">
+        <div class="score-box-title">// SYSTEM-PROTOKOLL — ZUSAMMENFASSUNG</div>
+        <div class="score-row"><span>Sektoren stabilisiert</span><span class="score-val">4 / 4</span></div>
+        <div class="score-row"><span>Tasks abgeschlossen</span><span class="score-val">16 / 16</span></div>
+        <div class="score-row"><span>Finale Entscheidung</span><span class="score-val">UN HANDLUNGSFÄHIG</span></div>
+      </div>
+
+      <button class="btn" onclick="window.location.href='../index.html'">[ NEU STARTEN ]</button>
+    </div>
+  </div>
+
+  <!-- ══════ ENDING B — NEIN ══════ -->
+  <div class="minigame-wrap hidden" id="ending-no">
+    <div class="panel ending-panel">
+      <div class="panel-corner-br"></div>
+      <div style="font-size:3rem; margin:1rem 0; color:var(--yellow); text-shadow:0 0 40px var(--yellow);">↺</div>
+      <div class="panel-title" style="justify-content:center; font-size:0.8rem; color:var(--yellow);">SYSTEM-NEUSTART INITIIERT</div>
+      <div class="minigame-title" style="text-align:center; color:var(--yellow); margin-bottom:1.5rem;">REFORM ERFORDERLICH</div>
+
+      <div class="ending-msg no">
+        Der Mainframe wird zurückgesetzt. Deine Entscheidung: Das System braucht grundlegende Reform — nicht nur Stabilisierung.
+      </div>
+
+      <div class="dialogue-block">
+        <div class="dialogue-line">
+          <div class="d-name lukas">// LUKAS</div>
+          Endlich. Ein ehrlicher Befund.
+        </div>
+        <div class="dialogue-line">
+          <div class="d-name sarah">// SARAH</div>
+          Reformieren — ja. Aufgeben — nein. Das ist der Unterschied.
+        </div>
+        <div class="dialogue-line">
+          <div class="d-name marco">// MARCO</div>
+          Ein Neustart. Vielleicht der erste Schritt zu echter Veränderung. Global Crisis Monitor bleibt dran.
+        </div>
+      </div>
+
+      <div class="score-box">
+        <div class="score-box-title">// SYSTEM-PROTOKOLL — ZUSAMMENFASSUNG</div>
+        <div class="score-row"><span>Sektoren stabilisiert</span><span class="score-val">4 / 4</span></div>
+        <div class="score-row"><span>Tasks abgeschlossen</span><span class="score-val">16 / 16</span></div>
+        <div class="score-row"><span>Finale Entscheidung</span><span class="score-val" style="color:var(--yellow);">REFORM NOTWENDIG</span></div>
+      </div>
+
+      <button class="btn" onclick="window.location.href='../index.html'">[ NEU STARTEN ]</button>
+    </div>
+  </div>
+
+</div>
+
+<script src="../effects.js"></script>
+<script>
+  // TASK 1 — Sort
+  let sDragged = null;
+  document.querySelectorAll('.sort-chip').forEach(c => {
+    c.addEventListener('dragstart', () => { sDragged = c; c.classList.add('dragging'); });
+    c.addEventListener('dragend', () => c.classList.remove('dragging'));
+  });
+  ['sort-pool','zone-pro','zone-con'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('dragover', e => { e.preventDefault(); if (id !== 'sort-pool') el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+    el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('drag-over'); if (sDragged) el.appendChild(sDragged); });
+  });
+
+  function checkSort() {
+    const rem = document.getElementById('sort-pool').querySelectorAll('.sort-chip').length;
+    if (rem > 0) {
+      showOverlay('denied', `NOCH ${rem} FRAGMENTE UNSORTIERT`);
+      flashRed();
+      return;
+    }
+    showOverlay('granted', 'DIAGNOSE GESPEICHERT');
+    flashGreen();
+    setProgress(33);
+    setTimeout(() => showMG('mg2',2,3), 1400);
+  }
+
+  // TASK 2 — Statements
+  let stmtDone = 0;
+  function rateStmt(n, btn) {
+    const card = document.getElementById(`st${n}`);
+    if (card.classList.contains('rated')) return;
+    card.querySelectorAll('.stmt-btn').forEach(b => b.classList.remove('chosen'));
+    btn.classList.add('chosen');
+    card.classList.add('rated');
+    stmtDone++;
+    if (stmtDone === 4) {
+      showOverlay('granted', 'VERHÖR ABGESCHLOSSEN');
+      setProgress(66);
+      setTimeout(() => document.getElementById('mg2-next').classList.remove('hidden'), 1200);
+    }
+  }
+
+  // TASK 3 — Final decision
+  function decide(choice) {
+    setProgress(100);
+    document.getElementById('mini-counter').textContent = '// MISSION COMPLETE';
+
+    const color = choice === 'yes' ? '#001a00' : '#1a0a00';
+    document.body.style.background = color;
+
+    setTimeout(() => {
+      document.body.style.background = '#000';
+      glitchTransition(() => {
+        document.querySelectorAll('.minigame-wrap').forEach(el => el.classList.add('hidden'));
+        document.getElementById(`ending-${choice}`).classList.remove('hidden');
+        document.querySelector('.game-header').style.display = 'none';
+        document.querySelector('.progress-wrap').style.display = 'none';
+        document.querySelector('.phase-indicator').style.display = 'none';
+      });
+    }, 400);
+  }
+
+  function showMG(id, n, total) {
+    glitchTransition(() => {
+      document.querySelectorAll('.minigame-wrap').forEach(el => el.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+      setCounter(n, total);
+    });
+  }
+</script>
+</body>
+</html>
