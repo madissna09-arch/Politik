@@ -2,49 +2,22 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SEKTOR 03 — SDG-Relaisstation</title>
+  <title>SEKTOR 03 — Juristische Datenbank</title>
   <link rel="stylesheet" href="../style.css">
   <style>
     :root { --phase-color: #22d3ee; }
 
-    /* Progress sliders for task 2 */
-    .gauge-item { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; margin-bottom: 0.8rem; }
-    .gauge-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--cyan); letter-spacing: 0.1em; margin-bottom: 0.3rem; }
-    .gauge-desc { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.8rem; line-height: 1.5; }
-    .gauge-track { position: relative; padding: 0 0.5rem; }
-    .gauge-labels { display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; color: var(--muted); margin-bottom: 0.4rem; }
-    input[type=range].gauge-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 99px; background: rgba(255,255,255,0.1); outline: none; cursor: pointer; }
-    input[type=range].gauge-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 10px rgba(34,211,238,0.5); cursor: grab; }
-    input[type=range].gauge-slider:active::-webkit-slider-thumb { cursor: grabbing; transform: scale(1.2); }
-    .gauge-value { text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--cyan); margin-top: 0.4rem; }
-    .gauge-item.correct-gauge { border-color: rgba(74,222,128,0.4); }
-    .gauge-item.wrong-gauge { border-color: rgba(248,113,113,0.4); }
-
-    /* Wire board */
-    .wire-board { display: grid; grid-template-columns: 1fr 20px 1fr; gap: 0; position: relative; margin-bottom: 1.5rem; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid var(--border); overflow: visible; min-height: 260px; }
-    .wire-col { padding: 1rem 0.8rem; }
-    .wire-col-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.8rem; text-align: center; }
-    .wire-node { padding: 0.55rem 0.8rem; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 0.6rem; font-size: 0.75rem; background: rgba(255,255,255,0.03); cursor: crosshair; transition: all 0.15s; position: relative; user-select: none; }
-    .wire-node:hover { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.06); }
-    .wire-node.selected { border-color: var(--cyan); background: rgba(34,211,238,0.08); color: var(--cyan); }
-    .wire-node.connected { border-color: var(--green); background: rgba(74,222,128,0.06); color: var(--green); opacity: 0.7; cursor: default; }
-    .wire-node.wrong-wire { border-color: var(--red); animation: shake 0.3s; }
-    .wire-canvas-overlay { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
-
-    /* Memory card colors for phase 3 */
-    .card-back { background: rgba(34,211,238,0.08); border: 1px solid rgba(34,211,238,0.25); }
-
-    /* Safe clues side-by-side */
-    .clue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 1.5rem; }
-    @media (max-width: 500px) { .clue-grid { grid-template-columns: 1fr; } }
+    /* Veto stamp card layout */
+    .veto-card-wrap { position: relative; }
+    .case-progress { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.12em; margin-bottom: 1rem; text-align: center; }
   </style>
 </head>
 <body>
 <div class="screen">
 
   <div class="game-header">
-    <span class="phase-badge">SEKTOR 03 — SDG-RELAISSTATION</span>
-    <span class="task-badge" id="task-counter">TASK 01 / 05</span>
+    <span class="phase-badge">SEKTOR 03 — JURISTISCHE DATENBANK</span>
+    <span class="task-badge" id="task-counter">TASK 01 / 03</span>
   </div>
 
   <div class="progress-wrap">
@@ -60,131 +33,92 @@
     <div class="step-line done"></div>
     <div class="step done"><div class="step-dot">02</div><div class="step-label">Jura</div></div>
     <div class="step-line done"></div>
-    <div class="step active"><div class="step-dot">03</div><div class="step-label">SDGs</div></div>
+    <div class="step active"><div class="step-dot">03</div><div class="step-label">Veto</div></div>
     <div class="step-line"></div>
     <div class="step"><div class="step-dot">04</div><div class="step-label">Finale</div></div>
   </div>
 
-  <!-- ═══════════ TASK 1 — RADIO DIAL ═══════════ -->
+  <!-- ═══════════ TASK 1 — VETO SIMULATOR ═══════════ -->
   <div class="task-wrap" id="t1">
     <div class="panel">
       <div class="panel-accent"></div>
-      <div class="panel-title"><span class="dot"></span>TASK_01 :: RADIO-DIAL — SDG-FREQUENZEN</div>
-      <div class="task-title">SDG-Frequenzen einstellen</div>
-      <div class="task-desc">Drehe den Regler, um alle 6 SDG-Frequenzen zu empfangen. Wenn der Zeiger nahe genug an einer Zielfrequenz ist, rastet sie ein.</div>
+      <div class="panel-title"><span class="dot"></span>TASK_01 :: STEMPEL-MECHANIK — VETO-SIMULATOR</div>
+      <div class="task-title">Veto-Entscheidungen stempeln</div>
+      <div class="task-desc">Drei historische UN-Resolutionen liegen zur Abstimmung. Wähle jeweils die korrekte Entscheidung des Sicherheitsrats.</div>
 
-      <div class="radio-board">
-        <div class="radio-display">
-          <div class="radio-freq" id="radio-freq-display">000°</div>
-          <div class="radio-label-display" id="radio-label-display">— ABSTIMMEN —</div>
-        </div>
+      <div class="case-progress" id="case-progress">Fall 1 / 3</div>
 
-        <div class="dial-knob-wrap">
-          <div class="dial-ticks" id="dial-ticks"></div>
-          <div class="dial-knob" id="dial-knob">
-            <div class="dial-indicator" id="dial-indicator"></div>
+      <div class="veto-card-wrap">
+        <div class="stamp-card" id="case-0">
+          <div class="stamp-overlay" id="stamp-overlay-0">VETOT</div>
+          <div class="stamp-file-ref">AKTE-SR/2012/538 — SYRIEN</div>
+          <div class="stamp-text">Eine Resolution zur Beendigung des syrischen Bürgerkriegs wurde im Sicherheitsrat eingebracht. Welches Mitglied (oder welche Mitglieder) legten ihr <span class="stamp-highlight">Veto</span> ein?</div>
+          <div class="stamp-btns">
+            <button class="stamp-btn vetoed" onclick="checkVeto(0,0)">VETOT — Russland &amp; China</button>
+            <button class="stamp-btn vetoed" onclick="checkVeto(0,1)">VETOT — USA</button>
+            <button class="stamp-btn passed" onclick="checkVeto(0,2)">VERABSCHIEDET</button>
           </div>
         </div>
 
-        <div class="radio-sdg-list" id="radio-sdg-list"></div>
+        <div class="stamp-card hidden" id="case-1">
+          <div class="stamp-overlay" id="stamp-overlay-1">VETOT</div>
+          <div class="stamp-file-ref">AKTE-SR/2014/KRIM — UKRAINE</div>
+          <div class="stamp-text">Nach der russischen Annexion der Krim 2014 sollte eine Resolution die Volksabstimmung für rechtsungültig erklären. Wer legte das <span class="stamp-highlight">Veto</span> ein?</div>
+          <div class="stamp-btns">
+            <button class="stamp-btn vetoed" onclick="checkVeto(1,0)">VETOT — Russland</button>
+            <button class="stamp-btn vetoed" onclick="checkVeto(1,1)">VETOT — USA &amp; China</button>
+            <button class="stamp-btn passed" onclick="checkVeto(1,2)">VERABSCHIEDET</button>
+          </div>
+        </div>
+
+        <div class="stamp-card hidden" id="case-2">
+          <div class="stamp-overlay" id="stamp-overlay-2">VETOT</div>
+          <div class="stamp-file-ref">AKTE-SR/2023/GAZA — NAHER OSTEN</div>
+          <div class="stamp-text">Resolutionen zur humanitären Waffenruhe im Gazastreifen wurden mehrfach blockiert. Welches P5-Mitglied setzte sein <span class="stamp-highlight">Veto</span> ein?</div>
+          <div class="stamp-btns">
+            <button class="stamp-btn vetoed" onclick="checkVeto(2,0)">VETOT — USA (zweimal)</button>
+            <button class="stamp-btn vetoed" onclick="checkVeto(2,1)">VETOT — Russland</button>
+            <button class="stamp-btn passed" onclick="checkVeto(2,2)">VERABSCHIEDET</button>
+          </div>
+        </div>
       </div>
 
-      <div style="text-align:center;">
-        <button class="btn btn-primary hidden" id="radio-next-btn" onclick="showTask('t2',2,5); setProgress(20);">WEITER →</button>
+      <div style="text-align:center; margin-top:1.2rem;">
+        <button class="btn btn-primary hidden" id="veto-next-btn" onclick="showTask('t2',2,3); setProgress(33);">WEITER →</button>
       </div>
     </div>
   </div>
 
-  <!-- ═══════════ TASK 2 — MESSZEIGER ═══════════ -->
+  <!-- ═══════════ TASK 2 — SLIDER SPEKTRUM ═══════════ -->
   <div class="task-wrap hidden" id="t2">
     <div class="panel">
       <div class="panel-accent"></div>
-      <div class="panel-title"><span class="dot"></span>TASK_02 :: MESSZEIGER — FORTSCHRITTS-ANALYSE</div>
-      <div class="task-title">SDG-Fortschritt einschätzen</div>
-      <div class="task-desc">Wie weit ist die Welt auf dem Weg zum Ziel 2030? Stelle den Regler auf den korrekten Fortschrittswert (±15% wird akzeptiert).</div>
+      <div class="panel-title"><span class="dot"></span>TASK_02 :: SLIDER-SPEKTRUM — MENSCHENRECHTE KLASSIFIZIEREN</div>
+      <div class="task-title">Rechtsbindung einordnen</div>
+      <div class="task-desc">Ordne jede Aussage auf dem Bindungs-Spektrum ein. Schiebe den Regler auf die korrekte Position.</div>
 
-      <div id="gauge-items"></div>
+      <div id="spectrum-items"></div>
 
       <div style="text-align:center; margin-top:0.5rem;">
-        <button class="btn btn-primary" onclick="checkGauges()">ALLE PRÜFEN</button>
+        <button class="btn btn-primary" onclick="checkSpectrum()">ALLE PRÜFEN</button>
       </div>
     </div>
   </div>
 
-  <!-- ═══════════ TASK 3 — KABEL ZIEHEN ═══════════ -->
+  <!-- ═══════════ TASK 3 — SIMON SEQUENZ ═══════════ -->
   <div class="task-wrap hidden" id="t3">
     <div class="panel">
       <div class="panel-accent"></div>
-      <div class="panel-title"><span class="dot"></span>TASK_03 :: KABEL ZIEHEN — FINANZIERUNGSQUELLEN</div>
-      <div class="task-title">UN-Programme mit Geldgebern verbinden</div>
-      <div class="task-desc">Klicke ein UN-Programm (links), dann den passenden Hauptgeldgeber (rechts), um die Verbindung herzustellen.</div>
+      <div class="panel-title"><span class="dot"></span>TASK_03 :: SIMON-SEQUENZ — CHRONOLOGIE</div>
+      <div class="task-title">UN-Zeitleiste rekonstruieren</div>
+      <div class="task-desc">Merke dir die Reihenfolge der aufleuchtenden Ereignisse. Dann klicke sie in chronologischer Reihenfolge.</div>
 
-      <div class="wire-board" id="wire-board">
-        <div class="wire-col" id="wire-left">
-          <div class="wire-col-title">UN-Programme</div>
-        </div>
-        <div style="position:relative; z-index:2;"></div>
-        <div class="wire-col" id="wire-right">
-          <div class="wire-col-title">Hauptgeldgeber</div>
-        </div>
-        <svg class="wire-canvas-overlay" id="wire-canvas" xmlns="http://www.w3.org/2000/svg"></svg>
-      </div>
+      <div class="simon-status" id="simon-status">Bereit — Sequenz wird gezeigt...</div>
+
+      <div class="simon-grid" id="simon-grid"></div>
 
       <div style="text-align:center;">
-        <button class="btn btn-primary hidden" id="wire-next-btn" onclick="showTask('t4',4,5); setProgress(60);">WEITER →</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════ TASK 4 — SAFE KNACKER ═══════════ -->
-  <div class="task-wrap hidden" id="t4">
-    <div class="panel">
-      <div class="panel-accent"></div>
-      <div class="panel-title"><span class="dot"></span>TASK_04 :: SAFE-KNACKER — UN-ERFOLGE</div>
-      <div class="task-title">Datentresor öffnen</div>
-      <div class="task-desc">Löse die vier Hinweise und gib den 4-stelligen Code ein.</div>
-
-      <div class="clue-grid">
-        <div class="safe-clue">
-          <div class="safe-clue-label">HINWEIS 1</div>
-          In welchem Jahrzehnt wurden die Pocken offiziell ausgerottet? Die WHO erklärte die Ausrottung 1980 — letzte Ziffer des Jahrzehnts: <strong style="color:var(--cyan);">__</strong>
-        </div>
-        <div class="safe-clue">
-          <div class="safe-clue-label">HINWEIS 2</div>
-          Das Montrealer Protokoll zum Schutz der Ozonschicht — wie viele Staaten haben es ratifiziert? Fast alle: 197. Erste Ziffer: <strong style="color:var(--cyan);">__</strong>
-        </div>
-        <div class="safe-clue">
-          <div class="safe-clue-label">HINWEIS 3</div>
-          Um wie viel Prozent sank die Kindersterblichkeit weltweit seit 1990? Etwa 50%. Erste Ziffer: <strong style="color:var(--cyan);">__</strong>
-        </div>
-        <div class="safe-clue">
-          <div class="safe-clue-label">HINWEIS 4</div>
-          Der Internationale Strafgerichtshof (IStGH) wurde im Jahr 200__ gegründet. Letzte Ziffer: <strong style="color:var(--cyan);">__</strong>
-        </div>
-      </div>
-
-      <div class="safe-body">
-        <div class="safe-screen">
-          <div class="safe-digits" id="safe-digits">____</div>
-        </div>
-        <div class="safe-numpad" id="safe-numpad"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════════ TASK 5 — KARTEN MEMORY ═══════════ -->
-  <div class="task-wrap hidden" id="t5">
-    <div class="panel">
-      <div class="panel-accent"></div>
-      <div class="panel-title"><span class="dot"></span>TASK_05 :: KARTEN-MEMORY — SDG-VERSPRECHEN VS. REALITÄT</div>
-      <div class="task-title">Versprechen &amp; Realität zuordnen</div>
-      <div class="task-desc">Decke je zwei Karten auf. Finde die 4 passenden Paare aus SDG-Versprechen und Wirklichkeit.</div>
-
-      <div class="memory-pairs" id="memory-pairs">Paare gefunden: 0 / 4</div>
-      <div class="memory-grid" id="memory-grid"></div>
-
-      <div style="text-align:center;">
-        <button class="btn btn-primary hidden" id="memory-next-btn" onclick="showTask('done',5,5); setProgress(100);">WEITER →</button>
+        <button class="btn btn-primary hidden" id="simon-start-btn" onclick="startSimon()">SEQUENZ ZEIGEN</button>
       </div>
     </div>
   </div>
@@ -194,8 +128,8 @@
     <div class="panel" style="text-align:center;">
       <div class="panel-accent"></div>
       <div style="font-size:3rem; margin:1rem 0;">📡</div>
-      <div class="task-title" style="margin-bottom:0.5rem;">Sektor 03 kalibriert</div>
-      <div class="task-desc" style="margin:0 auto 1.5rem; max-width:440px;">SDG-Relaisstation vollständig durchleuchtet. Fortschritt und Finanzierungslücken dokumentiert.</div>
+      <div class="task-title" style="margin-bottom:0.5rem;">Sektor 03 freigeschaltet</div>
+      <div class="task-desc" style="margin:0 auto 1.5rem; max-width:440px;">Juristische Datenbank vollständig analysiert. Veto-Fälle, Völkerrecht und Chronologie dokumentiert.</div>
 
       <div class="audio-block">
         <span class="a-icon">📻</span>
@@ -214,500 +148,225 @@
 <script src="../effects.js"></script>
 <script>
 // ══════════════════════════════════════
-// TASK 1 — RADIO DIAL
+// TASK 1 — VETO SIMULATOR
 // ══════════════════════════════════════
-const sdgFrequencies = [
-  { deg: 60,  name: 'Kein Hunger',           sdg: 'SDG 2' },
-  { deg: 120, name: 'Keine Armut',            sdg: 'SDG 1' },
-  { deg: 180, name: 'Hochwertige Bildung',    sdg: 'SDG 4' },
-  { deg: 240, name: 'Sauberes Wasser',        sdg: 'SDG 6' },
-  { deg: 300, name: 'Klimaschutz',            sdg: 'SDG 13' },
-  { deg: 340, name: 'Frieden & Gerechtigkeit', sdg: 'SDG 16' },
+const vetoCases = [
+  { correct: 0 },
+  { correct: 0 },
+  { correct: 0 },
 ];
+let currentCase = 0;
+let casesDone = 0;
 
-let dialAngle = 0;
-let tunedFreqs = new Set();
-let isDragging = false;
-let dragStartAngle = 0;
-let dragStartDial = 0;
-
-function buildDialTicks() {
-  const container = document.getElementById('dial-ticks');
-  for (let i = 0; i < 36; i++) {
-    const tick = document.createElement('div');
-    tick.className = 'dial-tick';
-    tick.style.transform = `translateX(-50%) rotate(${i * 10}deg) translateY(${i % 3 === 0 ? -62 : -66}px)`;
-    container.appendChild(tick);
-  }
+function showCase(idx) {
+  document.querySelectorAll('.stamp-card').forEach((c, i) => {
+    c.classList.toggle('hidden', i !== idx);
+  });
+  document.getElementById('case-progress').textContent = `Fall ${idx + 1} / 3`;
 }
 
-function buildSDGChips() {
-  const list = document.getElementById('radio-sdg-list');
-  list.innerHTML = '';
-  sdgFrequencies.forEach(f => {
-    const chip = document.createElement('div');
-    chip.className = 'sdg-freq-chip';
-    chip.id = `sdg-chip-${f.deg}`;
-    chip.textContent = `${f.sdg} — ${f.name}`;
-    list.appendChild(chip);
-  });
-}
+showCase(0);
 
-function updateDial() {
-  const norm = ((dialAngle % 360) + 360) % 360;
-  document.getElementById('dial-indicator').style.transform = `translateX(-50%) rotate(${norm}deg)`;
-  document.getElementById('radio-freq-display').textContent = `${Math.round(norm).toString().padStart(3, '0')}°`;
+function checkVeto(caseIdx, btnIdx) {
+  if (caseIdx !== currentCase) return;
+  const card = document.getElementById(`case-${caseIdx}`);
+  const correct = vetoCases[caseIdx].correct;
 
-  // Check lock-in
-  let locked = null;
-  sdgFrequencies.forEach(f => {
-    if (!tunedFreqs.has(f.deg)) {
-      const diff = Math.abs(((norm - f.deg + 540) % 360) - 180);
-      if (diff < 15) locked = f;
-    }
-  });
-
-  if (locked) {
-    tunedFreqs.add(locked.deg);
-    dialAngle = locked.deg;
-    document.getElementById('radio-freq-display').textContent = `${locked.deg.toString().padStart(3, '0')}°`;
-    document.getElementById('radio-label-display').textContent = `✓ ${locked.name}`;
-    document.getElementById(`sdg-chip-${locked.deg}`).classList.add('tuned');
-    flashScreen('#22d3ee');
-    showOverlay('granted', `${locked.sdg} — ${locked.name} EINGERASTET`);
-    if (tunedFreqs.size >= 6) {
-      setProgress(20);
-      setTimeout(() => document.getElementById('radio-next-btn').classList.remove('hidden'), 1200);
-    }
-  } else {
-    // Show nearest approaching
-    let nearest = null;
-    let nearestDiff = 999;
-    sdgFrequencies.forEach(f => {
-      if (!tunedFreqs.has(f.deg)) {
-        const diff = Math.abs(((norm - f.deg + 540) % 360) - 180);
-        if (diff < nearestDiff) { nearestDiff = diff; nearest = f; }
+  if (btnIdx === correct) {
+    card.classList.add('stamped-vetoed');
+    flashScreen('#1a0000');
+    showOverlay('granted', 'KORREKTE ENTSCHEIDUNG — VETOT');
+    casesDone++;
+    currentCase++;
+    setTimeout(() => {
+      if (casesDone >= 3) {
+        document.getElementById('veto-next-btn').classList.remove('hidden');
+        document.getElementById('case-progress').textContent = 'Alle 3 Fälle bearbeitet ✓';
+      } else {
+        showCase(currentCase);
       }
-    });
-    if (nearest && nearestDiff < 40) {
-      document.getElementById('radio-label-display').textContent = `≈ ${nearest.name}...`;
-    } else if (tunedFreqs.size < 6) {
-      document.getElementById('radio-label-display').textContent = '— SUCHE —';
-    }
+    }, 1200);
+  } else {
+    flashScreen('#1a0000');
+    showOverlay('denied', 'FALSCHE ENTSCHEIDUNG — NOCHMAL');
+    const btn = event.target;
+    btn.classList.add('wrong-stamp');
+    setTimeout(() => btn.classList.remove('wrong-stamp'), 600);
   }
 }
 
-function getAngleFromEvent(e, cx, cy) {
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-  return Math.atan2(clientY - cy, clientX - cx) * (180 / Math.PI);
-}
-
-const knob = document.getElementById('dial-knob');
-
-knob.addEventListener('mousedown', e => {
-  e.preventDefault();
-  isDragging = true;
-  const rect = knob.getBoundingClientRect();
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
-  dragStartAngle = getAngleFromEvent(e, cx, cy);
-  dragStartDial = dialAngle;
-});
-
-document.addEventListener('mousemove', e => {
-  if (!isDragging) return;
-  const rect = knob.getBoundingClientRect();
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
-  const angle = getAngleFromEvent(e, cx, cy);
-  const delta = angle - dragStartAngle;
-  dialAngle = dragStartDial + delta;
-  updateDial();
-});
-
-document.addEventListener('mouseup', () => { isDragging = false; });
-
-knob.addEventListener('touchstart', e => {
-  e.preventDefault();
-  isDragging = true;
-  const rect = knob.getBoundingClientRect();
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
-  dragStartAngle = getAngleFromEvent(e, cx, cy);
-  dragStartDial = dialAngle;
-}, { passive: false });
-
-document.addEventListener('touchmove', e => {
-  if (!isDragging) return;
-  const rect = knob.getBoundingClientRect();
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
-  const angle = getAngleFromEvent(e, cx, cy);
-  const delta = angle - dragStartAngle;
-  dialAngle = dragStartDial + delta;
-  updateDial();
-}, { passive: false });
-
-document.addEventListener('touchend', () => { isDragging = false; });
-
-buildDialTicks();
-buildSDGChips();
-updateDial();
-
 // ══════════════════════════════════════
-// TASK 2 — MESSZEIGER (GAUGES)
+// TASK 2 — SLIDER SPEKTRUM
 // ══════════════════════════════════════
-const gaugeData = [
-  { id: 'g0', title: 'SDG 1 — Keine Armut', desc: 'Extreme Armut sank von ~36% (1990) auf ~8.5% (2019) — dann COVID-Rückschlag auf ~9.2% (2020). Wo stehen wir relativ zum Ziel 0%?', correct: 15, unit: '%', hint: 'Fortschritt: ca. 15% Richtung Ziel' },
-  { id: 'g1', title: 'SDG 2 — Kein Hunger', desc: 'Hunger nahm seit 2015 wieder zu — von 8.0% auf 9.2% (2022). Der Trend geht rückwärts.', correct: -5, unit: '%', hint: 'Negativer Fortschritt: −5%' },
-  { id: 'g2', title: 'SDG 3 — Gesundheit', desc: 'Kindersterblichkeit sank um über 50%, Müttersterblichkeit um ~38%. Starke Fortschritte.', correct: 60, unit: '%', hint: 'Guter Fortschritt: ca. 60%' },
-  { id: 'g3', title: 'SDG 4 — Bildung', desc: '250 Millionen Kinder ohne Schulzugang. Lernarmut weit verbreitet. Langsamer Fortschritt.', correct: 20, unit: '%', hint: 'Mäßiger Fortschritt: ca. 20%' },
+const spectrumItems = [
+  { text: '"Jeder Mensch hat das Recht auf Leben, Freiheit und Sicherheit der Person." (Art. 3 AEMR)', correct: 0 },
+  { text: '"Staaten müssen Klimaflüchtlinge aufnehmen und ihnen dauerhaften Schutz gewähren."', correct: 2 },
+  { text: '"Niemand darf der Folter oder grausamer, unmenschlicher Behandlung unterworfen werden." (Art. 5 AEMR)', correct: 0 },
+  { text: '"Der IStGH kann Kriegsverbrecher verurteilen — wenn der Staat Mitglied des Römischen Statuts ist."', correct: 1 },
+  { text: '"Alle Staaten müssen Resolutionen der UN-Generalversammlung verbindlich umsetzen."', correct: 2 },
 ];
 
-function buildGauges() {
-  const container = document.getElementById('gauge-items');
+const labelMap = ['BINDEND', 'BEDINGT', 'NICHT BINDEND'];
+
+function buildSpectrum() {
+  const container = document.getElementById('spectrum-items');
   container.innerHTML = '';
-  gaugeData.forEach(g => {
+  spectrumItems.forEach((item, i) => {
     const div = document.createElement('div');
-    div.className = 'gauge-item';
-    div.id = `gauge-${g.id}`;
-    const minVal = g.id === 'g1' ? -20 : 0;
-    const maxVal = 100;
+    div.className = 'spectrum-item';
     div.innerHTML = `
-      <div class="gauge-title">${g.title}</div>
-      <div class="gauge-desc">${g.desc}</div>
-      <div class="gauge-track">
-        <div class="gauge-labels"><span>${minVal}%</span><span>50%</span><span>100%</span></div>
-        <input type="range" class="gauge-slider" id="gslider-${g.id}" min="${minVal}" max="${maxVal}" step="1" value="${Math.round((minVal + maxVal) / 2)}" oninput="updateGaugeLabel('${g.id}', ${minVal}, ${maxVal})">
-        <div class="gauge-value" id="glbl-${g.id}">${Math.round((minVal + maxVal) / 2)}%</div>
+      <div class="spectrum-text">${item.text}</div>
+      <div class="spectrum-track">
+        <div class="spectrum-labels"><span>BINDEND (0)</span><span>BEDINGT (1)</span><span>NICHT BINDEND (2)</span></div>
+        <input type="range" class="spectrum-slider" id="slider-${i}" min="0" max="2" step="1" value="1" oninput="updateSliderLabel(${i})">
+        <div class="spectrum-value" id="slider-lbl-${i}">BEDINGT</div>
       </div>`;
     container.appendChild(div);
   });
 }
 
-function updateGaugeLabel(id, min, max) {
-  const val = parseInt(document.getElementById(`gslider-${id}`).value);
-  document.getElementById(`glbl-${id}`).textContent = `${val}%`;
+function updateSliderLabel(i) {
+  const val = parseInt(document.getElementById(`slider-${i}`).value);
+  document.getElementById(`slider-lbl-${i}`).textContent = labelMap[val];
 }
 
-function checkGauges() {
+function checkSpectrum() {
   let allCorrect = true;
   let wrongCount = 0;
-  gaugeData.forEach(g => {
-    const val = parseInt(document.getElementById(`gslider-${g.id}`).value);
-    const gaugeEl = document.getElementById(`gauge-${g.id}`);
-    const diff = Math.abs(val - g.correct);
-    if (diff <= 15) {
-      gaugeEl.classList.add('correct-gauge');
-      gaugeEl.classList.remove('wrong-gauge');
-    } else {
-      gaugeEl.classList.add('wrong-gauge');
-      gaugeEl.classList.remove('correct-gauge');
-      allCorrect = false;
-      wrongCount++;
-    }
+  spectrumItems.forEach((item, i) => {
+    const val = parseInt(document.getElementById(`slider-${i}`).value);
+    if (val !== item.correct) { allCorrect = false; wrongCount++; }
   });
 
   if (allCorrect) {
     flashScreen('#22d3ee');
-    showOverlay('granted', 'ALLE FORTSCHRITTSWERTE KORREKT EINGESCHÄTZT');
-    setProgress(40);
-    setTimeout(() => showTask('t3', 3, 5), 1500);
+    showOverlay('granted', 'ALLE KLASSIFIKATIONEN KORREKT');
+    setProgress(66);
+    setTimeout(() => showTask('t3', 3, 3), 1500);
   } else {
     flashScreen('#1a0000');
-    showOverlay('denied', `${wrongCount} WERT(E) LIEGEN ZU WEIT VOM ZIEL — TIPP: ${gaugeData.find((g, i) => { const v = parseInt(document.getElementById(`gslider-${g.id}`).value); return Math.abs(v - g.correct) > 15; })?.hint || ''}`);
+    showOverlay('denied', `${wrongCount} FALSCH — ÜBERPRÜFE DEINE ANTWORTEN`);
+    spectrumItems.forEach((item, i) => {
+      const val = parseInt(document.getElementById(`slider-${i}`).value);
+      const sliderItem = document.getElementById(`slider-${i}`).closest('.spectrum-item');
+      if (val !== item.correct) {
+        sliderItem.style.borderColor = 'rgba(248,113,113,0.5)';
+        setTimeout(() => sliderItem.style.borderColor = '', 1200);
+      }
+    });
   }
 }
 
-buildGauges();
+buildSpectrum();
 
 // ══════════════════════════════════════
-// TASK 3 — KABEL ZIEHEN
+// TASK 3 — SIMON SEQUENZ
 // ══════════════════════════════════════
-const wireLeft = [
-  { id: 'wl0', name: 'UNHCR' },
-  { id: 'wl1', name: 'WHO' },
-  { id: 'wl2', name: 'UNICEF' },
-  { id: 'wl3', name: 'WFP' },
+const simonTiles = [
+  { year: '1945', label: 'UN-Gründung', order: 0 },
+  { year: '1948', label: 'Menschenrechtserklärung', order: 1 },
+  { year: '1994', label: 'Ruanda-Genozid', order: 2 },
+  { year: '2002', label: 'IStGH gegründet', order: 3 },
+  { year: '2011', label: 'Syrien-Vetoblockade', order: 4 },
 ];
 
-const wireRight = [
-  { id: 'wr0', name: 'USA (größter Einzelbeitrag)' },
-  { id: 'wr1', name: 'USA + Gates Foundation' },
-  { id: 'wr2', name: 'Freiwillige Mitgliedsbeiträge' },
-  { id: 'wr3', name: 'USA + EU + Privatspenden' },
-];
+const simonOrder = [0, 1, 2, 3, 4];
+let simonPhase = 'idle';
+let simonPlayerIdx = 0;
+let simonBlocked = false;
 
-// Correct pairs: wl0→wr0, wl1→wr1, wl2→wr2, wl3→wr3
-const wireCorrectMap = { wl0: 'wr0', wl1: 'wr1', wl2: 'wr2', wl3: 'wr3' };
-let selectedLeft = null;
-let wireConnections = {};
-let wireConnectionCount = 0;
-
-function buildWireBoard() {
-  const leftCol = document.getElementById('wire-left');
-  const rightCol = document.getElementById('wire-right');
-
-  wireLeft.forEach(item => {
-    const node = document.createElement('div');
-    node.className = 'wire-node';
-    node.id = item.id;
-    node.textContent = item.name;
-    node.onclick = () => selectLeft(item.id);
-    leftCol.appendChild(node);
-  });
-
-  // Shuffle right side for display
-  const shuffled = [...wireRight].sort(() => Math.random() - 0.5);
-  shuffled.forEach(item => {
-    const node = document.createElement('div');
-    node.className = 'wire-node';
-    node.id = item.id;
-    node.textContent = item.name;
-    node.style.textAlign = 'right';
-    node.onclick = () => selectRight(item.id);
-    rightCol.appendChild(node);
-  });
-}
-
-function selectLeft(id) {
-  if (document.getElementById(id).classList.contains('connected')) return;
-  document.querySelectorAll('#wire-left .wire-node').forEach(n => n.classList.remove('selected'));
-  selectedLeft = id;
-  document.getElementById(id).classList.add('selected');
-}
-
-function selectRight(id) {
-  if (!selectedLeft) return;
-  if (document.getElementById(id).classList.contains('connected')) return;
-
-  const correct = wireCorrectMap[selectedLeft];
-  if (id === correct) {
-    // Draw green wire
-    document.getElementById(selectedLeft).classList.remove('selected');
-    document.getElementById(selectedLeft).classList.add('connected');
-    document.getElementById(id).classList.add('connected');
-    wireConnections[selectedLeft] = id;
-    drawWire(selectedLeft, id, '#4ade80');
-    wireConnectionCount++;
-    flashScreen('#22d3ee');
-    selectedLeft = null;
-    if (wireConnectionCount >= 4) {
-      showOverlay('granted', 'ALLE VERBINDUNGEN HERGESTELLT');
-      setProgress(60);
-      setTimeout(() => document.getElementById('wire-next-btn').classList.remove('hidden'), 1200);
-    } else {
-      showOverlay('granted', `VERBINDUNG KORREKT — ${4 - wireConnectionCount} VERBLEIBEN`);
-    }
-  } else {
-    flashScreen('#1a0000');
-    showOverlay('denied', 'FALSCHE VERBINDUNG');
-    const rightNode = document.getElementById(id);
-    rightNode.classList.add('wrong-wire');
-    const leftNode = document.getElementById(selectedLeft);
-    leftNode.classList.add('wrong-wire');
-    // Draw temporary red wire
-    drawWire(selectedLeft, id, '#f87171', true);
-    setTimeout(() => {
-      rightNode.classList.remove('wrong-wire');
-      leftNode.classList.remove('wrong-wire');
-    }, 600);
-    selectedLeft = null;
-    document.querySelectorAll('#wire-left .wire-node').forEach(n => n.classList.remove('selected'));
-  }
-}
-
-function getNodeCenter(id) {
-  const node = document.getElementById(id);
-  const board = document.getElementById('wire-board');
-  const nRect = node.getBoundingClientRect();
-  const bRect = board.getBoundingClientRect();
-  return {
-    x: nRect.left - bRect.left + (id.startsWith('wl') ? nRect.width : 0),
-    y: nRect.top - bRect.top + nRect.height / 2,
-  };
-}
-
-function drawWire(leftId, rightId, color, temporary = false) {
-  const svg = document.getElementById('wire-canvas');
-  const from = getNodeCenter(leftId);
-  const to = getNodeCenter(rightId);
-  const mid = (from.x + to.x) / 2;
-
-  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  const d = `M ${from.x} ${from.y} C ${mid} ${from.y}, ${mid} ${to.y}, ${to.x} ${to.y}`;
-  path.setAttribute('d', d);
-  path.setAttribute('stroke', color);
-  path.setAttribute('stroke-width', '2');
-  path.setAttribute('fill', 'none');
-  path.setAttribute('opacity', temporary ? '0.8' : '0.7');
-  if (!temporary) path.dataset.wire = `${leftId}-${rightId}`;
-  svg.appendChild(path);
-
-  if (temporary) {
-    setTimeout(() => svg.removeChild(path), 700);
-  }
-}
-
-// Redraw wires on resize
-window.addEventListener('resize', () => {
-  const svg = document.getElementById('wire-canvas');
-  const persistent = [...svg.querySelectorAll('[data-wire]')];
-  persistent.forEach(p => svg.removeChild(p));
-  Object.entries(wireConnections).forEach(([l, r]) => drawWire(l, r, '#4ade80'));
-});
-
-buildWireBoard();
-
-// ══════════════════════════════════════
-// TASK 4 — SAFE KNACKER
-// ══════════════════════════════════════
-const safeCode = '0152';
-let safeInput = '';
-
-function buildSafeNumpad() {
-  const pad = document.getElementById('safe-numpad');
-  const keys = ['1','2','3','4','5','6','7','8','9','DEL','0','OK'];
-  keys.forEach(k => {
-    const btn = document.createElement('div');
-    btn.className = 'safe-key' + (k === 'DEL' ? ' del' : '');
-    btn.textContent = k === 'OK' ? '↵' : k;
-    btn.onclick = () => safeKey(k);
-    pad.appendChild(btn);
-  });
-}
-
-function safeKey(k) {
-  if (k === 'DEL') {
-    safeInput = safeInput.slice(0, -1);
-  } else if (k === 'OK') {
-    checkSafe();
-    return;
-  } else {
-    if (safeInput.length >= 4) return;
-    safeInput += k;
-    if (safeInput.length === 4) checkSafe();
-  }
-  updateSafeDisplay();
-}
-
-function updateSafeDisplay() {
-  const display = document.getElementById('safe-digits');
-  const shown = safeInput.padEnd(4, '_');
-  display.textContent = shown;
-}
-
-function checkSafe() {
-  if (safeInput === safeCode) {
-    document.getElementById('safe-digits').style.color = 'var(--green)';
-    document.getElementById('safe-digits').style.textShadow = '0 0 20px rgba(74,222,128,0.6)';
-    flashScreen('#22d3ee');
-    showOverlay('granted', 'TRESOR GEÖFFNET — CODE 0152 KORREKT');
-    setProgress(80);
-    setTimeout(() => showTask('t5', 5, 5), 1500);
-  } else {
-    flashScreen('#1a0000');
-    showOverlay('denied', `FALSCHER CODE: ${safeInput}`);
-    document.getElementById('safe-digits').style.color = 'var(--red)';
-    setTimeout(() => {
-      document.getElementById('safe-digits').style.color = '';
-      safeInput = '';
-      updateSafeDisplay();
-    }, 800);
-  }
-}
-
-buildSafeNumpad();
-
-// ══════════════════════════════════════
-// TASK 5 — KARTEN MEMORY
-// ══════════════════════════════════════
-const memoryPairs = [
-  { id: 0, type: 'promise', emoji: '🌾', text: 'Kein Hunger bis 2030' },
-  { id: 0, type: 'reality', emoji: '😢', text: '828 Mio. Menschen hungern (2023)' },
-  { id: 1, type: 'promise', emoji: '📚', text: 'Bildung für alle' },
-  { id: 1, type: 'reality', emoji: '🚸', text: '250 Mio. Kinder ohne Schulzugang' },
-  { id: 2, type: 'promise', emoji: '💧', text: 'Sauberes Wasser' },
-  { id: 2, type: 'reality', emoji: '🏜️', text: '2 Mrd. ohne Trinkwasser' },
-  { id: 3, type: 'promise', emoji: '☮️', text: 'Frieden & Gerechtigkeit' },
-  { id: 3, type: 'reality', emoji: '⚔️', text: '50+ aktive Konflikte weltweit' },
-];
-
-let memFlipped = [];
-let memMatched = new Set();
-let memLocked = false;
-let memMatchCount = 0;
-
-function buildMemory() {
-  const grid = document.getElementById('memory-grid');
+function buildSimon() {
+  const grid = document.getElementById('simon-grid');
   grid.innerHTML = '';
-  const shuffled = [...memoryPairs].sort(() => Math.random() - 0.5);
-  shuffled.forEach((card, i) => {
-    const cardEl = document.createElement('div');
-    cardEl.className = 'memory-card';
-    cardEl.dataset.cardIdx = i;
-    cardEl.dataset.pairId = card.id;
-    cardEl.dataset.cardType = card.type;
-    cardEl.innerHTML = `
-      <div class="card-inner">
-        <div class="card-front">${card.type === 'promise' ? '🎯' : '📊'}</div>
-        <div class="card-back">${card.text}</div>
-      </div>`;
-    cardEl.onclick = () => memoryClick(cardEl, card);
-    grid.appendChild(cardEl);
-    // Store shuffled order
-    cardEl._cardData = card;
+  const shuffled = [...simonTiles].sort(() => Math.random() - 0.5);
+  shuffled.forEach(tile => {
+    const div = document.createElement('div');
+    div.className = 'simon-tile';
+    div.dataset.order = tile.order;
+    div.innerHTML = `<div class="tile-year">${tile.year}</div><div class="tile-label">${tile.label}</div>`;
+    div.onclick = () => simonClick(div);
+    grid.appendChild(div);
   });
 }
 
-function memoryClick(el, card) {
-  if (memLocked) return;
-  if (memMatched.has(el)) return;
-  if (memFlipped.length === 2) return;
-  if (memFlipped.includes(el)) return;
+function getTileByOrder(order) {
+  return document.querySelector(`.simon-tile[data-order="${order}"]`);
+}
 
-  el.classList.add('flipped');
-  memFlipped.push(el);
+function startSimon() {
+  document.getElementById('simon-start-btn').classList.add('hidden');
+  simonPhase = 'showing';
+  simonBlocked = true;
+  document.getElementById('simon-status').textContent = 'Merke dir die Reihenfolge...';
+  document.getElementById('simon-status').className = 'simon-status';
+  showSimonSequence();
+}
 
-  if (memFlipped.length === 2) {
-    memLocked = true;
-    const [a, b] = memFlipped;
-    const aData = a._cardData;
-    const bData = b._cardData;
-
-    if (aData.id === bData.id && aData.type !== bData.type) {
-      // Match!
-      setTimeout(() => {
-        a.classList.add('matched');
-        b.classList.add('matched');
-        memMatched.add(a);
-        memMatched.add(b);
-        memMatchCount++;
-        document.getElementById('memory-pairs').textContent = `Paare gefunden: ${memMatchCount} / 4`;
-        memFlipped = [];
-        memLocked = false;
-        flashScreen('#22d3ee');
-        if (memMatchCount >= 4) {
-          showOverlay('granted', 'ALLE PAARE GEFUNDEN');
-          setProgress(100);
-          setTimeout(() => document.getElementById('memory-next-btn').classList.remove('hidden'), 1200);
-        } else {
-          showOverlay('granted', `PAAR GEFUNDEN — ${4 - memMatchCount} VERBLEIBEN`);
-        }
-      }, 400);
-    } else {
-      setTimeout(() => {
-        a.classList.remove('flipped');
-        b.classList.remove('flipped');
-        memFlipped = [];
-        memLocked = false;
-      }, 1000);
+function showSimonSequence() {
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i > 0) {
+      getTileByOrder(simonOrder[i - 1])?.classList.remove('lit');
     }
+    if (i >= simonOrder.length) {
+      clearInterval(interval);
+      setTimeout(() => {
+        simonPhase = 'player';
+        simonPlayerIdx = 0;
+        simonBlocked = false;
+        document.getElementById('simon-status').textContent = 'Jetzt du! Klicke in der richtigen Reihenfolge.';
+        document.getElementById('simon-status').className = 'simon-status active';
+      }, 400);
+      return;
+    }
+    getTileByOrder(simonOrder[i])?.classList.add('lit');
+    i++;
+  }, 900);
+}
+
+function simonClick(tile) {
+  if (simonPhase !== 'player' || simonBlocked) return;
+  const clickedOrder = parseInt(tile.dataset.order);
+  const expectedOrder = simonOrder[simonPlayerIdx];
+
+  if (clickedOrder === expectedOrder) {
+    tile.classList.add('player-correct');
+    simonPlayerIdx++;
+    if (simonPlayerIdx >= simonOrder.length) {
+      simonBlocked = true;
+      document.getElementById('simon-status').textContent = '✓ Chronologie korrekt!';
+      flashScreen('#22d3ee');
+      showOverlay('granted', 'ZEITLEISTE REKONSTRUIERT');
+      setProgress(100);
+      setTimeout(() => {
+        document.getElementById('t3').classList.add('hidden');
+        document.getElementById('done').classList.remove('hidden');
+        setCounter(3,3);
+        window.scrollTo({top:0});
+      }, 1500);
+    }
+  } else {
+    simonBlocked = true;
+    tile.classList.add('player-wrong');
+    flashScreen('#1a0000');
+    showOverlay('denied', 'FALSCHE REIHENFOLGE — NOCHMAL');
+    document.getElementById('simon-status').textContent = 'Falsch — Sequenz wird wiederholt...';
+    document.getElementById('simon-status').className = 'simon-status';
+    setTimeout(() => {
+      document.querySelectorAll('.simon-tile').forEach(t => {
+        t.classList.remove('player-correct', 'player-wrong', 'lit');
+      });
+      simonPhase = 'showing';
+      simonPlayerIdx = 0;
+      showSimonSequence();
+    }, 1200);
   }
 }
 
-buildMemory();
+buildSimon();
+setTimeout(() => {
+  document.getElementById('simon-start-btn').classList.remove('hidden');
+}, 100);
 </script>
 </body>
 </html>

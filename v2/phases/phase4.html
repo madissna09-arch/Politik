@@ -1,280 +1,326 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SEKTOR 04 — Finale Analyse</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEKTOR 04 // FINALE ANALYSE</title>
   <link rel="stylesheet" href="../style.css">
   <style>
-    :root { --phase-color: #a78bfa; }
+    :root { --phase-color: #a855f7; }
 
-    /* Scale */
-    .scale-wrap { margin-bottom: 1.5rem; }
-    .scale-visual { position: relative; height: 160px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
-    .scale-pole { width: 8px; height: 80px; background: linear-gradient(to bottom, rgba(255,255,255,0.25), rgba(255,255,255,0.05)); border-radius: 4px; position: absolute; top: 40px; left: 50%; transform: translateX(-50%); }
-    .scale-beam { width: 300px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.2); position: absolute; top: 50%; transform-origin: center; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1); }
-    .scale-pan { position: absolute; top: 50%; width: 110px; height: 32px; border-radius: 0 0 14px 14px; border: 1px solid rgba(255,255,255,0.12); border-top: none; background: rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: center; gap: 3px; flex-wrap: wrap; padding: 0 4px; overflow: hidden; transition: top 0.5s cubic-bezier(0.4,0,0.2,1); }
-    .scale-pan.left { left: 10px; }
-    .scale-pan.right { right: 10px; }
-    .pan-chip { padding: 1px 4px; border-radius: 3px; font-size: 0.48rem; background: rgba(255,255,255,0.1); color: var(--text); max-width: 100px; }
+    .gauge-item { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; margin-bottom: 0.8rem; }
+    .gauge-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--phase-color); letter-spacing: 0.1em; margin-bottom: 0.3rem; }
+    .gauge-desc { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.8rem; line-height: 1.5; }
+    .gauge-track { position: relative; padding: 0 0.5rem; }
+    .gauge-labels { display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; color: var(--muted); margin-bottom: 0.4rem; }
+    input[type=range].gauge-slider { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; border-radius: 99px; background: rgba(255,255,255,0.1); outline: none; cursor: pointer; }
+    input[type=range].gauge-slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; border-radius: 50%; background: var(--phase-color); box-shadow: 0 0 10px rgba(168,85,247,0.5); cursor: grab; }
+    input[type=range].gauge-slider:active::-webkit-slider-thumb { cursor: grabbing; transform: scale(1.2); }
+    .gauge-value { text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--phase-color); margin-top: 0.4rem; }
+    .gauge-item.correct-gauge { border-color: rgba(74,222,128,0.4); }
+    .gauge-item.wrong-gauge { border-color: rgba(248,113,113,0.4); }
 
-    .scale-columns { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0.5rem; margin-bottom: 0.8rem; }
-    .scale-drop { border: 2px dashed rgba(255,255,255,0.1); border-radius: 10px; padding: 0.8rem; min-height: 100px; transition: all 0.2s; }
-    .scale-drop.drag-over { border-color: var(--phase-color); background: rgba(167,139,250,0.04); }
-    .scale-drop-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.5rem; text-align: center; }
-    .scale-drop.pro .scale-drop-title { color: var(--green); }
-    .scale-drop.con .scale-drop-title { color: var(--red); }
+    .clue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 1.5rem; }
+    @media (max-width: 500px) { .clue-grid { grid-template-columns: 1fr; } }
 
-    .scale-chip { padding: 0.35rem 0.7rem; border-radius: 6px; font-size: 0.72rem; cursor: grab; background: rgba(255,255,255,0.06); border: 1px solid var(--border); user-select: none; transition: all 0.15s; margin-bottom: 0.3rem; display: block; }
-    .scale-chip:hover { background: rgba(255,255,255,0.1); }
-    .scale-chip.dragging { opacity: 0.3; }
+    .card-back { background: rgba(168,85,247,0.08); border: 1px solid rgba(168,85,247,0.25); }
 
-    .scale-chips-pool { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border); margin-bottom: 1rem; min-height: 64px; }
-    .scale-chip-pool { padding: 0.35rem 0.7rem; border-radius: 6px; font-size: 0.72rem; cursor: grab; background: rgba(255,255,255,0.06); border: 1px solid var(--border); user-select: none; transition: all 0.15s; }
-    .scale-chip-pool:hover { background: rgba(255,255,255,0.1); }
-    .scale-chip-pool.dragging { opacity: 0.3; }
-
-    /* Statement dials */
-    .dial-stmt-wrap { margin-bottom: 0.8rem; }
-    .dial-stmt-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; display: flex; gap: 1.2rem; align-items: center; }
-    .dial-stmt-text { flex: 1; font-size: 0.8rem; line-height: 1.6; }
-    .dial-stmt-who { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.3rem; }
-    .dial-stmt-who.lukas { color: var(--red); }
-    .dial-stmt-who.sarah { color: var(--cyan); }
-    .mini-dial-wrap { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
-    .mini-dial { width: 56px; height: 56px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #1e2035, #0d0f1a); border: 2px solid rgba(255,255,255,0.1); cursor: pointer; position: relative; box-shadow: 0 2px 10px rgba(0,0,0,0.4); transition: border-color 0.2s; }
-    .mini-dial.rated { border-color: var(--phase-color); box-shadow: 0 0 10px rgba(167,139,250,0.3); }
-    .mini-needle { position: absolute; width: 2px; height: 18px; background: linear-gradient(to top, transparent, var(--phase-color)); border-radius: 1px; left: 50%; top: 6px; transform: translateX(-50%); transform-origin: bottom center; transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
-    .mini-dial-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.52rem; color: var(--phase-color); letter-spacing: 0.05em; text-align: center; min-height: 1em; max-width: 60px; line-height: 1.3; }
-
-    /* Endings */
-    .ending-panel { border-radius: 16px; padding: 2.5rem; text-align: center; position: relative; overflow: hidden; background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); }
-    .ending-icon { font-size: 3.5rem; margin-bottom: 0.5rem; display: block; }
-    .ending-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 0.1em; margin-bottom: 1.5rem; }
-    .dialogue-block { text-align: left; margin-bottom: 1.5rem; }
-    .d-line { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 0.9rem 1.1rem; margin-bottom: 0.5rem; font-size: 0.82rem; line-height: 1.6; border-left: 3px solid; }
-    .d-line.marco { border-color: rgba(255,255,255,0.2); }
-    .d-line.sarah { border-color: var(--cyan); }
-    .d-line.lukas { border-color: var(--red); }
-    .d-who { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.3rem; }
-    .d-who.sarah { color: var(--cyan); }
-    .d-who.lukas { color: var(--red); }
-    .score-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; margin-bottom: 1.5rem; }
-    @media (max-width: 500px) { .score-grid { grid-template-columns: 1fr; } }
-    .score-cell { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 0.8rem; border: 1px solid var(--border); }
-    .score-num { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; }
-    .score-lbl { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--muted); margin-top: 0.2rem; }
-
-    /* Lever */
-    .lever-scene { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; padding: 2rem; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid var(--border); margin-bottom: 1.5rem; }
-    .lever-question { font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.1rem,3.5vw,1.6rem); letter-spacing: 0.06em; text-align: center; line-height: 1.2; color: var(--text); }
-    .levers-row { display: flex; gap: 4rem; justify-content: center; flex-wrap: wrap; }
-    .lever-unit { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-    .lever-slot { width: 60px; height: 120px; border-radius: 30px; background: rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.1); position: relative; cursor: pointer; box-shadow: inset 0 4px 12px rgba(0,0,0,0.5); transition: border-color 0.3s; }
-    .lever-slot:hover { border-color: rgba(255,255,255,0.25); }
-    .lever-handle { position: absolute; left: 50%; transform: translateX(-50%); width: 20px; border-radius: 10px; transition: top 0.4s cubic-bezier(0.4,0,0.2,1); }
-    .lever-handle.up { top: 8px; height: 48px; }
-    .lever-slot.yes .lever-handle { background: linear-gradient(to bottom, var(--green), rgba(74,222,128,0.6)); box-shadow: 0 4px 16px rgba(74,222,128,0.3); }
-    .lever-slot.no .lever-handle { background: linear-gradient(to bottom, #ff6666, rgba(248,113,113,0.6)); box-shadow: 0 4px 16px rgba(248,113,113,0.3); }
-    .lever-slot.pulled .lever-handle { top: 64px; }
-    .lever-label { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.1em; }
-    .lever-unit.yes .lever-label { color: var(--green); }
-    .lever-unit.no .lever-label { color: var(--red); }
-    .lever-sub { font-size: 0.62rem; font-family: 'IBM Plex Mono', monospace; color: var(--muted); text-align: center; max-width: 80px; }
+    #mg6 .panel {
+      border-color: rgba(0,255,65,0.4);
+      box-shadow: 0 0 40px rgba(0,255,65,0.1), inset 0 0 40px rgba(0,0,0,0.6);
+    }
   </style>
 </head>
 <body>
-<div class="screen">
+
+<div class="screen" id="game-area">
 
   <div class="game-header">
-    <span class="phase-badge">SEKTOR 04 — FINALE ANALYSE</span>
-    <span class="task-badge" id="task-counter">TASK 01 / 03</span>
+    <div class="phase-label">// SEKTOR_04 :: SDG-ANALYSE &amp; FINALE</div>
+    <div class="mini-counter" id="mini-counter">TASK 01 / 06</div>
   </div>
 
   <div class="progress-wrap">
-    <div class="progress-top">
-      <span class="progress-label">ANALYSE-STATUS</span>
-      <span class="progress-pct" id="progress-pct">0%</span>
-    </div>
-    <div class="progress-track"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="progress-label"><span>SEKTOR-STABILITÄT</span><span id="progress-pct">0%</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
   </div>
 
-  <div class="phase-stepper">
-    <div class="step done"><div class="step-dot">01</div><div class="step-label">Init</div></div>
-    <div class="step-line done"></div>
-    <div class="step done"><div class="step-dot">02</div><div class="step-label">Jura</div></div>
-    <div class="step-line done"></div>
-    <div class="step done"><div class="step-dot">03</div><div class="step-label">SDGs</div></div>
-    <div class="step-line done"></div>
-    <div class="step active"><div class="step-dot">04</div><div class="step-label">Finale</div></div>
+  <div class="phase-indicator">
+    <div class="phase-dot done"></div>
+    <div class="phase-dot-line"></div>
+    <div class="phase-dot done"></div>
+    <div class="phase-dot-line"></div>
+    <div class="phase-dot done"></div>
+    <div class="phase-dot-line"></div>
+    <div class="phase-dot active"></div>
   </div>
 
-  <!-- ═══════════ TASK 1 — WAAGE ═══════════ -->
-  <div class="task-wrap" id="t1">
+  <!-- ══════ TASK 1 — RADIO DIAL ══════ -->
+  <div class="minigame-wrap" id="mg1">
     <div class="panel">
-      <div class="panel-accent"></div>
-      <div class="panel-title"><span class="dot"></span>TASK_01 :: WAAGE — ARGUMENTE ABWÄGEN</div>
-      <div class="task-title">Pro &amp; Contra: UN-Handlungsfähigkeit</div>
-      <div class="task-desc">Ziehe alle 8 Argument-Chips auf die passende Seite der Waage. PRO: UN ist handlungsfähig. CONTRA: UN scheitert.</div>
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_01 :: RADIO-DIAL — SDG-FREQUENZEN</div>
+      <div class="minigame-title">SDG-Frequenzen einstellen</div>
+      <div class="minigame-desc">Drehe den Regler, um alle 6 SDG-Frequenzen zu empfangen. Wenn der Zeiger nahe genug an einer Zielfrequenz ist, rastet sie ein.</div>
 
-      <div class="scale-wrap">
-        <div class="scale-visual" id="scale-visual">
-          <div class="scale-pole"></div>
-          <div class="scale-beam" id="scale-beam">
-            <div class="scale-pan left" id="pan-left"></div>
-            <div class="scale-pan right" id="pan-right"></div>
+      <div class="radio-board">
+        <div class="radio-display">
+          <div class="radio-freq" id="radio-freq-display">000°</div>
+          <div class="radio-label-display" id="radio-label-display">— ABSTIMMEN —</div>
+        </div>
+        <div class="dial-knob-wrap">
+          <div class="dial-ticks" id="dial-ticks"></div>
+          <div class="dial-knob" id="dial-knob">
+            <div class="dial-indicator" id="dial-indicator"></div>
           </div>
         </div>
-
-        <div class="scale-columns">
-          <div class="scale-drop pro" id="drop-pro" ondragover="event.preventDefault(); this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChip(event,'pro')">
-            <div class="scale-drop-title">PRO — Handlungsfähig</div>
-          </div>
-          <div style="display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:1.2rem;">⚖</div>
-          <div class="scale-drop con" id="drop-con" ondragover="event.preventDefault(); this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChip(event,'con')">
-            <div class="scale-drop-title">CONTRA — Scheitert</div>
-          </div>
-        </div>
-
-        <div class="scale-chips-pool" id="chip-pool" ondragover="event.preventDefault(); this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChip(event,'pool')">
-          <!-- chips inserted by JS -->
-        </div>
+        <div class="radio-sdg-list" id="radio-sdg-list"></div>
       </div>
 
       <div style="text-align:center;">
-        <button class="btn btn-primary hidden" id="scale-next-btn" onclick="showTask('t2',2,3); setProgress(33);">WEITER →</button>
+        <button class="btn btn-primary hidden" id="radio-next-btn" onclick="showMG('mg2',2,6);">WEITER →</button>
       </div>
     </div>
   </div>
 
-  <!-- ═══════════ TASK 2 — STATEMENT REGLER ═══════════ -->
-  <div class="task-wrap hidden" id="t2">
+  <!-- ══════ TASK 2 — SAFE ══════ -->
+  <div class="minigame-wrap hidden" id="mg2">
     <div class="panel">
-      <div class="panel-accent"></div>
-      <div class="panel-title"><span class="dot"></span>TASK_02 :: STATEMENT-REGLER — LUKAS VS. SARAH</div>
-      <div class="task-title">Standpunkte einordnen</div>
-      <div class="task-desc">Klicke jeden Regler, um einzustellen, wie überzeugend du das Argument findest. Alle vier müssen bewertet werden.</div>
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_02 :: SAFE-KNACKER — UN-ERFOLGE</div>
+      <div class="minigame-title">Datentresor öffnen</div>
+      <div class="minigame-desc">Löse die vier Hinweise und gib den 4-stelligen Code ein.</div>
 
-      <div id="stmt-list"></div>
+      <div class="clue-grid">
+        <div class="safe-clue">
+          <div class="safe-clue-label">HINWEIS 1</div>
+          In welchem Jahrzehnt wurden die Pocken offiziell ausgerottet? Die WHO erklärte die Ausrottung 1980 — letzte Ziffer des Jahrzehnts: <strong style="color:var(--phase-color);">__</strong>
+        </div>
+        <div class="safe-clue">
+          <div class="safe-clue-label">HINWEIS 2</div>
+          Das Montrealer Protokoll zum Schutz der Ozonschicht — wie viele Staaten haben es ratifiziert? Fast alle: 197. Erste Ziffer: <strong style="color:var(--phase-color);">__</strong>
+        </div>
+        <div class="safe-clue">
+          <div class="safe-clue-label">HINWEIS 3</div>
+          Um wie viel Prozent sank die Kindersterblichkeit weltweit seit 1990? Etwa 50%. Erste Ziffer: <strong style="color:var(--phase-color);">__</strong>
+        </div>
+        <div class="safe-clue">
+          <div class="safe-clue-label">HINWEIS 4</div>
+          Die UN hat insgesamt 17 Nachhaltigkeitsziele (SDGs). Letzte Ziffer der Zahl 17: <strong style="color:var(--phase-color);">__</strong>
+        </div>
+      </div>
 
-      <div style="text-align:center; margin-top:0.8rem;">
-        <button class="btn btn-primary" id="stmt-check-btn" onclick="checkStatements()" disabled>WEITER →</button>
+      <div class="safe-body">
+        <div class="safe-screen">
+          <div class="safe-digits" id="safe-digits">____</div>
+        </div>
+        <div class="safe-numpad" id="safe-numpad"></div>
       </div>
     </div>
   </div>
 
-  <!-- ═══════════ TASK 3 — LEVER ═══════════ -->
-  <div class="task-wrap hidden" id="t3">
+  <!-- ══════ TASK 3 — KARTEN MEMORY ══════ -->
+  <div class="minigame-wrap hidden" id="mg3">
     <div class="panel">
-      <div class="panel-accent"></div>
-      <div class="panel-title"><span class="dot"></span>TASK_03 :: FINALE ENTSCHEIDUNG</div>
-      <div class="task-title">Das Urteil</div>
-      <div class="task-desc">Ziehe den Hebel deiner Wahl herunter. Die Entscheidung ist endgültig.</div>
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_03 :: KARTEN-MEMORY — SDG-VERSPRECHEN VS. REALITÄT</div>
+      <div class="minigame-title">Versprechen &amp; Realität zuordnen</div>
+      <div class="minigame-desc">Decke je zwei Karten auf. Finde die 4 passenden Paare aus SDG-Versprechen und Wirklichkeit.</div>
 
-      <div class="lever-scene">
-        <div class="lever-question">IST DIE UN IN IHRER AKTUELLEN VERFASSUNG HANDLUNGSFÄHIG?</div>
+      <div class="memory-pairs" id="memory-pairs">Paare gefunden: 0 / 4</div>
+      <div class="memory-grid" id="memory-grid"></div>
 
-        <div class="levers-row">
-          <div class="lever-unit yes">
-            <div class="lever-slot yes" id="lever-yes" onclick="pullLever('yes')">
-              <div class="lever-handle up"></div>
-            </div>
-            <div class="lever-label">JA</div>
-            <div class="lever-sub">System stabilisieren</div>
-          </div>
+      <div style="text-align:center;">
+        <button class="btn btn-primary hidden" id="memory-next-btn" onclick="showMG('mg4',4,6);">WEITER →</button>
+      </div>
+    </div>
+  </div>
 
-          <div class="lever-unit no">
-            <div class="lever-slot no" id="lever-no" onclick="pullLever('no')">
-              <div class="lever-handle up"></div>
-            </div>
-            <div class="lever-label">NEIN</div>
-            <div class="lever-sub">System neu aufsetzen</div>
-          </div>
+  <!-- ══════ TASK 4 — STÄRKEN & SCHWÄCHEN ══════ -->
+  <div class="minigame-wrap hidden" id="mg4">
+    <div class="panel">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_04 :: SYSTEM-DIAGNOSE — ABSCHLIESSENDE ANALYSE</div>
+      <div class="minigame-title">Datenfragmente gewichten</div>
+      <div class="minigame-desc">Sortiere alle 8 Fragmente in zwei Kategorien. Es gibt keine falsche Antwort — deine persönliche Gewichtung wird gespeichert.</div>
+
+      <div class="sort-pool" id="sort-pool">
+        <div class="sort-chip" draggable="true">Universelle Mitgliedschaft (193 Staaten)</div>
+        <div class="sort-chip" draggable="true">P5-Veto blockiert echte Krisen</div>
+        <div class="sort-chip" draggable="true">Erfolge bei Gesundheit und Pocken</div>
+        <div class="sort-chip" draggable="true">85% der SDG-Ziele nicht auf Kurs</div>
+        <div class="sort-chip" draggable="true">IStGH als internationale Rechtsinstanz</div>
+        <div class="sort-chip" draggable="true">Finanzierung abhängig von Mitgliedsstaaten</div>
+        <div class="sort-chip" draggable="true">Einziges wirklich globales Dialogforum</div>
+        <div class="sort-chip" draggable="true">Charta seit 1945 kaum reformiert</div>
+      </div>
+
+      <div class="sort-columns">
+        <div class="sort-zone pro" id="zone-pro"><div class="sort-zone-title">+ Handlungsfähig</div></div>
+        <div class="sort-zone con" id="zone-con"><div class="sort-zone-title">− Nicht handlungsfähig</div></div>
+      </div>
+
+      <button class="btn btn-primary" onclick="checkSort()">[ DIAGNOSE SPEICHERN ]</button>
+    </div>
+  </div>
+
+  <!-- ══════ TASK 5 — VERHÖR ══════ -->
+  <div class="minigame-wrap hidden" id="mg5">
+    <div class="panel">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_05 :: ZEUGEN-VERHÖR — LUKAS VS. SARAH</div>
+      <div class="minigame-title">Argumente bewerten</div>
+      <div class="minigame-desc">Bewerte jede Aussage ehrlich. Es gibt keine richtige Antwort — deine Reaktion bereitet die finale Entscheidung vor.</div>
+
+      <div class="stmt-card" id="st1">
+        <div class="stmt-who lukas">LUKAS — SKEPTIKER</div>
+        <div class="stmt-text">„Das System schützt keine Menschen. Es schützt die Mächtigen. Syrien. Gaza. Ruanda. Das Veto ist kein Fehler im System — es ist das System."</div>
+        <div class="stmt-opts">
+          <button class="stmt-btn" onclick="rateStmt(1,this)">Überzeugt mich vollständig</button>
+          <button class="stmt-btn" onclick="rateStmt(1,this)">Teilweise</button>
+          <button class="stmt-btn" onclick="rateStmt(1,this)">Überzeugt mich nicht</button>
+        </div>
+      </div>
+
+      <div class="stmt-card" id="st2">
+        <div class="stmt-who sarah">SARAH — VERTEIDIGERIN</div>
+        <div class="stmt-text">„Ohne die UN gäbe es nicht mal diesen langsamen Fortschritt. Pocken, Ozonloch, Kindersterblichkeit — das war globale Kooperation. Das war die UN."</div>
+        <div class="stmt-opts">
+          <button class="stmt-btn" onclick="rateStmt(2,this)">Überzeugt mich vollständig</button>
+          <button class="stmt-btn" onclick="rateStmt(2,this)">Teilweise</button>
+          <button class="stmt-btn" onclick="rateStmt(2,this)">Überzeugt mich nicht</button>
+        </div>
+      </div>
+
+      <div class="stmt-card" id="st3">
+        <div class="stmt-who lukas">LUKAS — SKEPTIKER</div>
+        <div class="stmt-text">„Kooperation bei Gesundheitszielen ist nicht dasselbe wie Handlungsfähigkeit in Krisen. Wenn keine Bomben fallen, funktioniert die UN. Wenn doch — nicht."</div>
+        <div class="stmt-opts">
+          <button class="stmt-btn" onclick="rateStmt(3,this)">Überzeugt mich vollständig</button>
+          <button class="stmt-btn" onclick="rateStmt(3,this)">Teilweise</button>
+          <button class="stmt-btn" onclick="rateStmt(3,this)">Überzeugt mich nicht</button>
+        </div>
+      </div>
+
+      <div class="stmt-card" id="st4">
+        <div class="stmt-who sarah">SARAH — VERTEIDIGERIN</div>
+        <div class="stmt-text">„Vielleicht ist die Frage nicht: Handlungsfähig oder nicht. Sondern: Wann kann sie handeln — und warum nicht immer? Das ist ehrlicher."</div>
+        <div class="stmt-opts">
+          <button class="stmt-btn" onclick="rateStmt(4,this)">Überzeugt mich vollständig</button>
+          <button class="stmt-btn" onclick="rateStmt(4,this)">Teilweise</button>
+          <button class="stmt-btn" onclick="rateStmt(4,this)">Überzeugt mich nicht</button>
+        </div>
+      </div>
+
+      <button class="btn btn-primary hidden" id="mg5-next" onclick="showMG('mg6',6,6)">[ VERHÖR ABSCHLIESSEN ]</button>
+    </div>
+  </div>
+
+  <!-- ══════ TASK 6 — FINALE ENTSCHEIDUNG ══════ -->
+  <div class="minigame-wrap hidden" id="mg6">
+    <div class="panel">
+      <div class="panel-corner-br"></div>
+      <div class="panel-title">TASK_06 :: FINALE SYSTEMEINGABE — LETZTE AUTORISIERUNG</div>
+
+      <div class="audio-placeholder" style="margin-bottom:2rem;">
+        <span class="audio-icon">📻</span>
+        <strong>GLOBAL CRISIS MONITOR — Segment 4</strong>
+        <div style="font-size:0.75rem; margin-top:0.5rem; line-height:1.6; color:#aa8800;">Marco stellt die finale Frage. Lukas und Sarah geben ihre letzten Statements.<br>[ ../audio/segment4.mp3 ]</div>
+      </div>
+
+      <div class="final-q">
+        SYSTEM-FRAGE:<br>
+        Ist die UN in ihrer aktuellen<br>
+        Verfassung handlungsfähig?
+      </div>
+
+      <div class="final-btns">
+        <div class="final-btn yes" onclick="decide('yes')">
+          <div class="final-btn-label">JA</div>
+          <div class="final-btn-sub">System stabilisieren</div>
+        </div>
+        <div class="final-btn no" onclick="decide('no')">
+          <div class="final-btn-label">NEIN</div>
+          <div class="final-btn-sub">System neu aufsetzen</div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ═══════════ ENDING YES ═══════════ -->
-  <div class="task-wrap hidden" id="ending-yes">
-    <div class="ending-panel" style="border-color: rgba(74,222,128,0.3); box-shadow: 0 0 60px rgba(74,222,128,0.08);">
-      <span class="ending-icon">✅</span>
-      <div class="ending-title" style="color: var(--green);">SYSTEM STABILISIERT</div>
+  <!-- ══════ ENDING A — JA ══════ -->
+  <div class="minigame-wrap hidden" id="ending-yes">
+    <div class="panel ending-panel">
+      <div class="panel-corner-br"></div>
+      <div style="font-size:3rem; margin:1rem 0; color:var(--green); text-shadow:0 0 40px var(--green); animation:pulse-dot 1.5s infinite;">✓</div>
+      <div class="panel-title" style="justify-content:center; font-size:0.8rem;">SYSTEM VOLLSTÄNDIG STABILISIERT</div>
+      <div class="minigame-title" style="text-align:center; margin-bottom:1.5rem;">MAINFRAME ONLINE</div>
+
+      <div class="ending-msg yes">
+        Der UN-Mainframe läuft wieder. Alle vier Sektoren stabilisiert.<br>
+        Deine Entscheidung: Die UN ist — trotz aller Mängel — handlungsfähig.
+      </div>
 
       <div class="dialogue-block">
-        <div class="d-line marco">
-          <div class="d-who">MARCO — MODERATOR</div>
-          Also ihr habt entschieden: Die UN ist handlungsfähig — zumindest teilweise. Trotz aller Schwächen.
+        <div class="dialogue-line">
+          <div class="d-name marco">// MARCO</div>
+          Die UN ist nicht perfekt. Sie war es nie. Aber sie ist der einzige globale Versuch — eine gemeinsame Sprache zu sprechen, bevor Waffen das Wort übernehmen.
         </div>
-        <div class="d-line sarah">
-          <div class="d-who sarah">SARAH</div>
-          Genau. Die UN ist das einzige globale Forum, das wir haben. Ohne sie gäbe es nicht mal diesen langsamen Fortschritt.
+        <div class="dialogue-line">
+          <div class="d-name sarah">// SARAH</div>
+          Danke. Und das ist kein kleines Ding.
         </div>
-        <div class="d-line lukas">
-          <div class="d-who lukas">LUKAS</div>
-          Ich bleibe skeptisch. Aber ihr habt Recht — es ist kein Entweder-Oder. Reform ist die Antwort, nicht Abschaffung.
-        </div>
-      </div>
-
-      <div class="score-grid">
-        <div class="score-cell">
-          <div class="score-num" style="color:var(--green);">4/4</div>
-          <div class="score-lbl">SEKTOREN</div>
-        </div>
-        <div class="score-cell">
-          <div class="score-num" style="color:var(--green);">16/16</div>
-          <div class="score-lbl">AUFGABEN</div>
-        </div>
-        <div class="score-cell">
-          <div class="score-num" style="color:var(--green);">JA</div>
-          <div class="score-lbl">UN HANDLUNGSFÄHIG</div>
+        <div class="dialogue-line">
+          <div class="d-name lukas">// LUKAS</div>
+          <em>Ich hoffe, ihr habt recht. Ich hoffe es wirklich.</em>
         </div>
       </div>
 
-      <button class="btn btn-primary" onclick="window.location.href='../index.html'" style="background: var(--green); color: #052e16;">
-        ↺ NEU STARTEN
-      </button>
+      <div class="score-box">
+        <div class="score-box-title">// SYSTEM-PROTOKOLL — ZUSAMMENFASSUNG</div>
+        <div class="score-row"><span>Sektoren stabilisiert</span><span class="score-val">4 / 4</span></div>
+        <div class="score-row"><span>Tasks abgeschlossen</span><span class="score-val">15 / 15</span></div>
+        <div class="score-row"><span>Finale Entscheidung</span><span class="score-val">UN HANDLUNGSFÄHIG</span></div>
+      </div>
+
+      <button class="btn" onclick="window.location.href='../index.html'">[ NEU STARTEN ]</button>
     </div>
   </div>
 
-  <!-- ═══════════ ENDING NO ═══════════ -->
-  <div class="task-wrap hidden" id="ending-no">
-    <div class="ending-panel" style="border-color: rgba(245,158,11,0.3); box-shadow: 0 0 60px rgba(245,158,11,0.08);">
-      <span class="ending-icon">🔄</span>
-      <div class="ending-title" style="color: var(--amber);">SYSTEM-NEUSTART</div>
+  <!-- ══════ ENDING B — NEIN ══════ -->
+  <div class="minigame-wrap hidden" id="ending-no">
+    <div class="panel ending-panel">
+      <div class="panel-corner-br"></div>
+      <div style="font-size:3rem; margin:1rem 0; color:var(--yellow); text-shadow:0 0 40px var(--yellow);">↺</div>
+      <div class="panel-title" style="justify-content:center; font-size:0.8rem; color:var(--yellow);">SYSTEM-NEUSTART INITIIERT</div>
+      <div class="minigame-title" style="text-align:center; color:var(--yellow); margin-bottom:1.5rem;">REFORM ERFORDERLICH</div>
+
+      <div class="ending-msg no">
+        Der Mainframe wird zurückgesetzt. Deine Entscheidung: Das System braucht grundlegende Reform — nicht nur Stabilisierung.
+      </div>
 
       <div class="dialogue-block">
-        <div class="d-line marco">
-          <div class="d-who">MARCO — MODERATOR</div>
-          Ihr habt entschieden: Das System muss grundlegend neu gedacht werden. Ein mutiges Urteil.
+        <div class="dialogue-line">
+          <div class="d-name lukas">// LUKAS</div>
+          Endlich. Ein ehrlicher Befund.
         </div>
-        <div class="d-line lukas">
-          <div class="d-who lukas">LUKAS</div>
-          Das P5-Veto macht echte Reformen unmöglich. Solange die Mächtigen das System kontrollieren, kann es die Machtlosen nicht schützen.
+        <div class="dialogue-line">
+          <div class="d-name sarah">// SARAH</div>
+          Reformieren — ja. Aufgeben — nein. Das ist der Unterschied.
         </div>
-        <div class="d-line sarah">
-          <div class="d-who sarah">SARAH</div>
-          Vielleicht habt ihr Recht. Die Frage ist dann: Was kommt danach? Ohne die UN — was würde das bedeuten?
-        </div>
-      </div>
-
-      <div class="score-grid">
-        <div class="score-cell">
-          <div class="score-num" style="color:var(--amber);">4/4</div>
-          <div class="score-lbl">SEKTOREN</div>
-        </div>
-        <div class="score-cell">
-          <div class="score-num" style="color:var(--amber);">16/16</div>
-          <div class="score-lbl">AUFGABEN</div>
-        </div>
-        <div class="score-cell">
-          <div class="score-num" style="color:var(--amber);">REFORM</div>
-          <div class="score-lbl">NOTWENDIG</div>
+        <div class="dialogue-line">
+          <div class="d-name marco">// MARCO</div>
+          Ein Neustart. Vielleicht der erste Schritt zu echter Veränderung. Global Crisis Monitor bleibt dran.
         </div>
       </div>
 
-      <button class="btn btn-primary" onclick="window.location.href='../index.html'">
-        ↺ NEU STARTEN
-      </button>
+      <div class="score-box">
+        <div class="score-box-title">// SYSTEM-PROTOKOLL — ZUSAMMENFASSUNG</div>
+        <div class="score-row"><span>Sektoren stabilisiert</span><span class="score-val">4 / 4</span></div>
+        <div class="score-row"><span>Tasks abgeschlossen</span><span class="score-val">15 / 15</span></div>
+        <div class="score-row"><span>Finale Entscheidung</span><span class="score-val" style="color:var(--yellow);">REFORM NOTWENDIG</span></div>
+      </div>
+
+      <button class="btn" onclick="window.location.href='../index.html'">[ NEU STARTEN ]</button>
     </div>
   </div>
 
@@ -283,203 +329,366 @@
 <script src="../effects.js"></script>
 <script>
 // ══════════════════════════════════════
-// TASK 1 — WAAGE
+// HELPERS
 // ══════════════════════════════════════
-const scaleChips = [
-  { id: 'c0', text: 'Universelle Mitgliedschaft',  side: 'pro' },
-  { id: 'c1', text: 'UN-Gesundheitserfolge',        side: 'pro' },
-  { id: 'c2', text: 'IStGH als Rechtsinstanz',       side: 'pro' },
-  { id: 'c3', text: 'Einziges globales Forum',       side: 'pro' },
-  { id: 'c4', text: 'P5-Veto blockiert Krisen',      side: 'con' },
-  { id: 'c5', text: '85% SDGs verfehlt',             side: 'con' },
-  { id: 'c6', text: 'Finanzabhängigkeit',            side: 'con' },
-  { id: 'c7', text: 'Charta unreformiert',           side: 'con' },
+function setProgress(pct) {
+  const fill = document.getElementById('progress-fill');
+  const lbl = document.getElementById('progress-pct');
+  if (fill) fill.style.width = pct + '%';
+  if (lbl) lbl.textContent = Math.round(pct) + '%';
+}
+
+function setCounter(n, total) {
+  const el = document.getElementById('mini-counter');
+  if (el) el.textContent = `TASK ${String(n).padStart(2,'0')} / ${String(total).padStart(2,'0')}`;
+}
+
+function showMG(id, n, total) {
+  glitchTransition(() => {
+    document.querySelectorAll('.minigame-wrap').forEach(el => el.classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    if (n && total) setCounter(n, total);
+  });
+}
+
+// ══════════════════════════════════════
+// TASK 1 — RADIO DIAL
+// ══════════════════════════════════════
+const sdgFrequencies = [
+  { deg: 60,  name: 'Kein Hunger',            sdg: 'SDG 2' },
+  { deg: 120, name: 'Keine Armut',             sdg: 'SDG 1' },
+  { deg: 180, name: 'Hochwertige Bildung',     sdg: 'SDG 4' },
+  { deg: 240, name: 'Sauberes Wasser',         sdg: 'SDG 6' },
+  { deg: 300, name: 'Klimaschutz',             sdg: 'SDG 13' },
+  { deg: 340, name: 'Frieden & Gerechtigkeit', sdg: 'SDG 16' },
 ];
 
-let chipLocations = {}; // id → 'pool'|'pro'|'con'
-scaleChips.forEach(c => chipLocations[c.id] = 'pool');
+let dialAngle = 0;
+let tunedFreqs = new Set();
+let isDragging = false;
+let dragStartAngle = 0;
+let dragStartDial = 0;
 
-function buildScaleChips() {
-  const pool = document.getElementById('chip-pool');
-  pool.innerHTML = '';
-  const shuffled = [...scaleChips].sort(() => Math.random() - 0.5);
-  shuffled.forEach(chip => {
-    const el = document.createElement('div');
-    el.className = 'scale-chip-pool';
-    el.id = `chip-${chip.id}`;
-    el.textContent = chip.text;
-    el.draggable = true;
-    el.dataset.chipId = chip.id;
-    el.addEventListener('dragstart', e => {
-      e.dataTransfer.setData('chipId', chip.id);
-      el.classList.add('dragging');
+function buildDialTicks() {
+  const container = document.getElementById('dial-ticks');
+  for (let i = 0; i < 36; i++) {
+    const tick = document.createElement('div');
+    tick.className = 'dial-tick';
+    tick.style.transform = `translateX(-50%) rotate(${i * 10}deg) translateY(${i % 3 === 0 ? -62 : -66}px)`;
+    container.appendChild(tick);
+  }
+}
+
+function buildSDGChips() {
+  const list = document.getElementById('radio-sdg-list');
+  list.innerHTML = '';
+  sdgFrequencies.forEach(f => {
+    const chip = document.createElement('div');
+    chip.className = 'sdg-freq-chip';
+    chip.id = `sdg-chip-${f.deg}`;
+    chip.textContent = `${f.sdg} — ${f.name}`;
+    list.appendChild(chip);
+  });
+}
+
+function updateDial() {
+  const norm = ((dialAngle % 360) + 360) % 360;
+  document.getElementById('dial-indicator').style.transform = `translateX(-50%) rotate(${norm}deg)`;
+  document.getElementById('radio-freq-display').textContent = `${Math.round(norm).toString().padStart(3, '0')}°`;
+
+  let locked = null;
+  sdgFrequencies.forEach(f => {
+    if (!tunedFreqs.has(f.deg)) {
+      const diff = Math.abs(((norm - f.deg + 540) % 360) - 180);
+      if (diff < 15) locked = f;
+    }
+  });
+
+  if (locked) {
+    tunedFreqs.add(locked.deg);
+    dialAngle = locked.deg;
+    document.getElementById('radio-freq-display').textContent = `${locked.deg.toString().padStart(3, '0')}°`;
+    document.getElementById('radio-label-display').textContent = `✓ ${locked.name}`;
+    document.getElementById(`sdg-chip-${locked.deg}`).classList.add('tuned');
+    flashScreen('#a855f7');
+    showOverlay('granted', `${locked.sdg} — ${locked.name} EINGERASTET`);
+    if (tunedFreqs.size >= 6) {
+      setProgress(17);
+      setTimeout(() => document.getElementById('radio-next-btn').classList.remove('hidden'), 1200);
+    }
+  } else {
+    let nearest = null;
+    let nearestDiff = 999;
+    sdgFrequencies.forEach(f => {
+      if (!tunedFreqs.has(f.deg)) {
+        const diff = Math.abs(((norm - f.deg + 540) % 360) - 180);
+        if (diff < nearestDiff) { nearestDiff = diff; nearest = f; }
+      }
     });
-    el.addEventListener('dragend', () => el.classList.remove('dragging'));
-    pool.appendChild(el);
-  });
+    if (nearest && nearestDiff < 40) {
+      document.getElementById('radio-label-display').textContent = `≈ ${nearest.name}...`;
+    } else if (tunedFreqs.size < 6) {
+      document.getElementById('radio-label-display').textContent = '— SUCHE —';
+    }
+  }
 }
 
-function dropChip(e, target) {
+function getAngleFromEvent(e, cx, cy) {
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return Math.atan2(clientY - cy, clientX - cx) * (180 / Math.PI);
+}
+
+const knob = document.getElementById('dial-knob');
+
+knob.addEventListener('mousedown', e => {
   e.preventDefault();
-  document.querySelectorAll('.scale-drop, .scale-chips-pool').forEach(d => d.classList.remove('drag-over'));
-  const chipId = e.dataTransfer.getData('chipId');
-  if (!chipId) return;
+  isDragging = true;
+  const rect = knob.getBoundingClientRect();
+  dragStartAngle = getAngleFromEvent(e, rect.left + rect.width/2, rect.top + rect.height/2);
+  dragStartDial = dialAngle;
+});
 
-  chipLocations[chipId] = target;
+document.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  const rect = knob.getBoundingClientRect();
+  dialAngle = dragStartDial + (getAngleFromEvent(e, rect.left + rect.width/2, rect.top + rect.height/2) - dragStartAngle);
+  updateDial();
+});
 
-  // Move DOM element
-  const chipEl = document.getElementById(`chip-${chipId}`);
-  if (!chipEl) return;
+document.addEventListener('mouseup', () => { isDragging = false; });
 
-  if (target === 'pool') {
-    document.getElementById('chip-pool').appendChild(chipEl);
-  } else if (target === 'pro') {
-    document.getElementById('drop-pro').appendChild(chipEl);
-  } else if (target === 'con') {
-    document.getElementById('drop-con').appendChild(chipEl);
-  }
+knob.addEventListener('touchstart', e => {
+  e.preventDefault();
+  isDragging = true;
+  const rect = knob.getBoundingClientRect();
+  dragStartAngle = getAngleFromEvent(e, rect.left + rect.width/2, rect.top + rect.height/2);
+  dragStartDial = dialAngle;
+}, { passive: false });
 
-  updateScale();
+document.addEventListener('touchmove', e => {
+  if (!isDragging) return;
+  const rect = knob.getBoundingClientRect();
+  dialAngle = dragStartDial + (getAngleFromEvent(e, rect.left + rect.width/2, rect.top + rect.height/2) - dragStartAngle);
+  updateDial();
+}, { passive: false });
+
+document.addEventListener('touchend', () => { isDragging = false; });
+
+buildDialTicks();
+buildSDGChips();
+updateDial();
+
+// ══════════════════════════════════════
+// TASK 2 — SAFE (code: 0157)
+// ══════════════════════════════════════
+const safeCode = '0157';
+let safeInput = '';
+
+function buildSafeNumpad() {
+  const pad = document.getElementById('safe-numpad');
+  const keys = ['1','2','3','4','5','6','7','8','9','DEL','0','OK'];
+  keys.forEach(k => {
+    const btn = document.createElement('div');
+    btn.className = 'safe-key' + (k === 'DEL' ? ' del' : '');
+    btn.textContent = k === 'OK' ? '↵' : k;
+    btn.onclick = () => safeKey(k);
+    pad.appendChild(btn);
+  });
 }
 
-function updateScale() {
-  const proCount = scaleChips.filter(c => chipLocations[c.id] === 'pro').length;
-  const conCount = scaleChips.filter(c => chipLocations[c.id] === 'con').length;
-  const diff = proCount - conCount;
-
-  document.getElementById('scale-beam').style.transform = `rotate(${diff * -7}deg)`;
-
-  // Update pan chips display
-  const panLeft = document.getElementById('pan-left');
-  const panRight = document.getElementById('pan-right');
-  panLeft.innerHTML = '';
-  panRight.innerHTML = '';
-
-  scaleChips.filter(c => chipLocations[c.id] === 'pro').forEach(c => {
-    const chip = document.createElement('div');
-    chip.className = 'pan-chip';
-    chip.textContent = c.text.substring(0, 12) + (c.text.length > 12 ? '…' : '');
-    panLeft.appendChild(chip);
-  });
-  scaleChips.filter(c => chipLocations[c.id] === 'con').forEach(c => {
-    const chip = document.createElement('div');
-    chip.className = 'pan-chip';
-    chip.textContent = c.text.substring(0, 12) + (c.text.length > 12 ? '…' : '');
-    panRight.appendChild(chip);
-  });
-
-  // Check if pool is empty
-  const poolCount = scaleChips.filter(c => chipLocations[c.id] === 'pool').length;
-  if (poolCount === 0) {
-    document.getElementById('scale-next-btn').classList.remove('hidden');
-    flashScreen('#a78bfa');
-    showOverlay('granted', 'ALLE ARGUMENTE SORTIERT');
-    setProgress(33);
+function safeKey(k) {
+  if (k === 'DEL') {
+    safeInput = safeInput.slice(0, -1);
+  } else if (k === 'OK') {
+    checkSafe();
+    return;
   } else {
-    document.getElementById('scale-next-btn').classList.add('hidden');
+    if (safeInput.length >= 4) return;
+    safeInput += k;
+    if (safeInput.length === 4) checkSafe();
+  }
+  updateSafeDisplay();
+}
+
+function updateSafeDisplay() {
+  document.getElementById('safe-digits').textContent = safeInput.padEnd(4, '_');
+}
+
+function checkSafe() {
+  if (safeInput === safeCode) {
+    document.getElementById('safe-digits').style.color = 'var(--green)';
+    document.getElementById('safe-digits').style.textShadow = '0 0 20px rgba(74,222,128,0.6)';
+    flashScreen('#a855f7');
+    showOverlay('granted', 'TRESOR GEÖFFNET — CODE 0157 KORREKT');
+    setProgress(33);
+    setTimeout(() => showMG('mg3', 3, 6), 1500);
+  } else {
+    flashScreen('#1a0000');
+    showOverlay('denied', `FALSCHER CODE: ${safeInput}`);
+    document.getElementById('safe-digits').style.color = 'var(--red)';
+    setTimeout(() => {
+      document.getElementById('safe-digits').style.color = '';
+      safeInput = '';
+      updateSafeDisplay();
+    }, 800);
   }
 }
 
-buildScaleChips();
+buildSafeNumpad();
 
 // ══════════════════════════════════════
-// TASK 2 — STATEMENT DIALS
+// TASK 3 — KARTEN MEMORY
 // ══════════════════════════════════════
-const statements = [
-  { who: 'lukas', text: '"Das System schützt keine Menschen. Es schützt die Mächtigen."' },
-  { who: 'sarah', text: '"Ohne UN gäbe es nicht mal diesen langsamen Fortschritt."' },
-  { who: 'lukas', text: '"Wenn Bomben fallen, funktioniert die UN nicht."' },
-  { who: 'sarah', text: '"Vielleicht ist die Frage: Wann kann sie handeln — und warum nicht immer?"' },
+const memoryPairs = [
+  { id: 0, type: 'promise', emoji: '🌾', text: 'Kein Hunger bis 2030' },
+  { id: 0, type: 'reality', emoji: '😢', text: '828 Mio. Menschen hungern (2023)' },
+  { id: 1, type: 'promise', emoji: '📚', text: 'Bildung für alle' },
+  { id: 1, type: 'reality', emoji: '🚸', text: '250 Mio. Kinder ohne Schulzugang' },
+  { id: 2, type: 'promise', emoji: '💧', text: 'Sauberes Wasser' },
+  { id: 2, type: 'reality', emoji: '🏜️', text: '2 Mrd. ohne Trinkwasser' },
+  { id: 3, type: 'promise', emoji: '☮️', text: 'Frieden & Gerechtigkeit' },
+  { id: 3, type: 'reality', emoji: '⚔️', text: '50+ aktive Konflikte weltweit' },
 ];
 
-const dialPositions = [0, 0, 0, 0]; // -1=Nicht überzeugt, 0=Teilweise, 1=Überzeugt
-const dialRated = [false, false, false, false];
-const dialLabels = ['Nicht überzeugt', 'Teilweise', 'Überzeugt'];
-// Needle angles: position 0=Nicht überzeugt → -60°, 1=Teilweise → 0°, 2=Überzeugt → +60°
-// Store as index 0,1,2
-const dialStates = [1, 1, 1, 1]; // start center
+let memFlipped = [];
+let memMatched = new Set();
+let memLocked = false;
+let memMatchCount = 0;
 
-function buildStatements() {
-  const container = document.getElementById('stmt-list');
-  container.innerHTML = '';
-  statements.forEach((stmt, i) => {
-    const wrap = document.createElement('div');
-    wrap.className = 'dial-stmt-wrap';
-    wrap.innerHTML = `
-      <div class="dial-stmt-card">
-        <div class="dial-stmt-text">
-          <div class="dial-stmt-who ${stmt.who}">${stmt.who.toUpperCase()}</div>
-          ${stmt.text}
-        </div>
-        <div class="mini-dial-wrap">
-          <div class="mini-dial" id="mdial-${i}" onclick="cycleDial(${i})">
-            <div class="mini-needle" id="mneedle-${i}" style="transform: translateX(-50%) rotate(0deg);"></div>
-          </div>
-          <div class="mini-dial-label" id="mdlbl-${i}">Teilweise</div>
-        </div>
+function buildMemory() {
+  const grid = document.getElementById('memory-grid');
+  grid.innerHTML = '';
+  const shuffled = [...memoryPairs].sort(() => Math.random() - 0.5);
+  shuffled.forEach((card) => {
+    const cardEl = document.createElement('div');
+    cardEl.className = 'memory-card';
+    cardEl.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front">${card.type === 'promise' ? '🎯' : '📊'}</div>
+        <div class="card-back">${card.text}</div>
       </div>`;
-    container.appendChild(wrap);
+    cardEl._cardData = card;
+    cardEl.onclick = () => memoryClick(cardEl, card);
+    grid.appendChild(cardEl);
   });
 }
 
-function cycleDial(i) {
-  dialStates[i] = (dialStates[i] + 1) % 3;
-  dialRated[i] = true;
-  const angles = [-60, 0, 60];
-  const angle = angles[dialStates[i]];
-  document.getElementById(`mneedle-${i}`).style.transform = `translateX(-50%) rotate(${angle}deg)`;
-  document.getElementById(`mdlbl-${i}`).textContent = dialLabels[dialStates[i]];
-  document.getElementById(`mdial-${i}`).classList.add('rated');
+function memoryClick(el, card) {
+  if (memLocked) return;
+  if (memMatched.has(el)) return;
+  if (memFlipped.length === 2) return;
+  if (memFlipped.includes(el)) return;
 
-  // Enable button if all rated
-  if (dialRated.every(Boolean)) {
-    document.getElementById('stmt-check-btn').disabled = false;
+  el.classList.add('flipped');
+  memFlipped.push(el);
+
+  if (memFlipped.length === 2) {
+    memLocked = true;
+    const [a, b] = memFlipped;
+    if (a._cardData.id === b._cardData.id && a._cardData.type !== b._cardData.type) {
+      setTimeout(() => {
+        a.classList.add('matched');
+        b.classList.add('matched');
+        memMatched.add(a);
+        memMatched.add(b);
+        memMatchCount++;
+        document.getElementById('memory-pairs').textContent = `Paare gefunden: ${memMatchCount} / 4`;
+        memFlipped = [];
+        memLocked = false;
+        flashScreen('#a855f7');
+        if (memMatchCount >= 4) {
+          showOverlay('granted', 'ALLE PAARE GEFUNDEN');
+          setProgress(50);
+          setTimeout(() => document.getElementById('memory-next-btn').classList.remove('hidden'), 1200);
+        } else {
+          showOverlay('granted', `PAAR GEFUNDEN — ${4 - memMatchCount} VERBLEIBEN`);
+        }
+      }, 400);
+    } else {
+      setTimeout(() => {
+        a.classList.remove('flipped');
+        b.classList.remove('flipped');
+        memFlipped = [];
+        memLocked = false;
+      }, 1000);
+    }
   }
 }
 
-function checkStatements() {
-  flashScreen('#a78bfa');
-  showOverlay('granted', 'ALLE STANDPUNKTE BEWERTET');
-  setProgress(66);
-  setTimeout(() => showTask('t3', 3, 3), 1500);
+buildMemory();
+
+// ══════════════════════════════════════
+// TASK 4 — SORT
+// ══════════════════════════════════════
+let sDragged = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.sort-chip').forEach(c => {
+    c.addEventListener('dragstart', () => { sDragged = c; c.classList.add('dragging'); });
+    c.addEventListener('dragend', () => c.classList.remove('dragging'));
+  });
+  ['sort-pool','zone-pro','zone-con'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('dragover', e => { e.preventDefault(); if (id !== 'sort-pool') el.classList.add('drag-over'); });
+    el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+    el.addEventListener('drop', e => { e.preventDefault(); el.classList.remove('drag-over'); if (sDragged) el.appendChild(sDragged); });
+  });
+});
+
+function checkSort() {
+  const rem = document.getElementById('sort-pool').querySelectorAll('.sort-chip').length;
+  if (rem > 0) {
+    showOverlay('denied', `NOCH ${rem} FRAGMENTE UNSORTIERT`);
+    flashScreen('#1a0000');
+    return;
+  }
+  showOverlay('granted', 'DIAGNOSE GESPEICHERT');
+  flashScreen('#a855f7');
+  setProgress(67);
+  setTimeout(() => showMG('mg5', 5, 6), 1400);
 }
 
-buildStatements();
+// ══════════════════════════════════════
+// TASK 5 — STATEMENTS
+// ══════════════════════════════════════
+let stmtDone = 0;
+
+function rateStmt(n, btn) {
+  const card = document.getElementById(`st${n}`);
+  if (card.classList.contains('rated')) return;
+  card.querySelectorAll('.stmt-btn').forEach(b => b.classList.remove('chosen'));
+  btn.classList.add('chosen');
+  card.classList.add('rated');
+  stmtDone++;
+  if (stmtDone === 4) {
+    showOverlay('granted', 'VERHÖR ABGESCHLOSSEN');
+    setProgress(83);
+    setTimeout(() => document.getElementById('mg5-next').classList.remove('hidden'), 1200);
+  }
+}
 
 // ══════════════════════════════════════
-// TASK 3 — LEVER
+// TASK 6 — FINAL DECISION
 // ══════════════════════════════════════
-let leverPulled = false;
-
-function pullLever(choice) {
-  if (leverPulled) return;
-  leverPulled = true;
-
-  const slot = document.getElementById(`lever-${choice}`);
-  slot.classList.add('pulled');
-  slot.style.cursor = 'default';
-  document.getElementById(choice === 'yes' ? 'lever-no' : 'lever-yes').style.opacity = '0.3';
-  document.getElementById(choice === 'yes' ? 'lever-no' : 'lever-yes').style.cursor = 'default';
-
+function decide(choice) {
   setProgress(100);
+  document.getElementById('mini-counter').textContent = '// MISSION COMPLETE';
 
-  if (choice === 'yes') {
-    flashScreen('#4ade80');
-    showOverlay('granted', 'SYSTEM STABILISIERT');
-    setTimeout(() => {
-      document.querySelectorAll('.task-wrap').forEach(el => el.classList.add('hidden'));
-      document.getElementById('ending-yes').classList.remove('hidden');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 1500);
-  } else {
-    flashScreen('#f59e0b');
-    showOverlay('denied', 'SYSTEM-NEUSTART EINGELEITET');
-    setTimeout(() => {
-      document.querySelectorAll('.task-wrap').forEach(el => el.classList.add('hidden'));
-      document.getElementById('ending-no').classList.remove('hidden');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 1500);
-  }
+  const color = choice === 'yes' ? '#001a00' : '#1a0a00';
+  document.body.style.background = color;
+
+  setTimeout(() => {
+    document.body.style.background = '#000';
+    glitchTransition(() => {
+      document.querySelectorAll('.minigame-wrap').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`ending-${choice}`).classList.remove('hidden');
+      document.querySelector('.game-header').style.display = 'none';
+      document.querySelector('.progress-wrap').style.display = 'none';
+      document.querySelector('.phase-indicator').style.display = 'none';
+    });
+  }, 400);
 }
 </script>
 </body>
