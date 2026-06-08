@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEKTOR 04 — Finale Analyse</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    :root { --phase-color: #a78bfa; }
+
+    /* Scale */
+    .scale-wrap { margin-bottom: 1.5rem; }
+    .scale-visual { position: relative; height: 160px; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; }
+    .scale-pole { width: 8px; height: 80px; background: linear-gradient(to bottom, rgba(255,255,255,0.25), rgba(255,255,255,0.05)); border-radius: 4px; position: absolute; top: 40px; left: 50%; transform: translateX(-50%); }
+    .scale-beam { width: 300px; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.2); position: absolute; top: 50%; transform-origin: center; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1); }
+    .scale-pan { position: absolute; top: 50%; width: 110px; height: 32px; border-radius: 0 0 14px 14px; border: 1px solid rgba(255,255,255,0.12); border-top: none; background: rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: center; gap: 3px; flex-wrap: wrap; padding: 0 4px; overflow: hidden; transition: top 0.5s cubic-bezier(0.4,0,0.2,1); }
+    .scale-pan.left { left: 10px; }
+    .scale-pan.right { right: 10px; }
+    .pan-chip { padding: 1px 4px; border-radius: 3px; font-size: 0.48rem; background: rgba(255,255,255,0.1); color: var(--text); max-width: 100px; }
+
+    .scale-columns { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0.5rem; margin-bottom: 0.8rem; }
+    .scale-drop { border: 2px dashed rgba(255,255,255,0.1); border-radius: 10px; padding: 0.8rem; min-height: 100px; transition: all 0.2s; }
+    .scale-drop.drag-over { border-color: var(--phase-color); background: rgba(167,139,250,0.04); }
+    .scale-drop-title { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.5rem; text-align: center; }
+    .scale-drop.pro .scale-drop-title { color: var(--green); }
+    .scale-drop.con .scale-drop-title { color: var(--red); }
+
+    .scale-chip { padding: 0.35rem 0.7rem; border-radius: 6px; font-size: 0.72rem; cursor: grab; background: rgba(255,255,255,0.06); border: 1px solid var(--border); user-select: none; transition: all 0.15s; margin-bottom: 0.3rem; display: block; }
+    .scale-chip:hover { background: rgba(255,255,255,0.1); }
+    .scale-chip.dragging { opacity: 0.3; }
+
+    .scale-chips-pool { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 10px; border: 1px solid var(--border); margin-bottom: 1rem; min-height: 64px; }
+    .scale-chip-pool { padding: 0.35rem 0.7rem; border-radius: 6px; font-size: 0.72rem; cursor: grab; background: rgba(255,255,255,0.06); border: 1px solid var(--border); user-select: none; transition: all 0.15s; }
+    .scale-chip-pool:hover { background: rgba(255,255,255,0.1); }
+    .scale-chip-pool.dragging { opacity: 0.3; }
+
+    /* Statement dials */
+    .dial-stmt-wrap { margin-bottom: 0.8rem; }
+    .dial-stmt-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 1.2rem; display: flex; gap: 1.2rem; align-items: center; }
+    .dial-stmt-text { flex: 1; font-size: 0.8rem; line-height: 1.6; }
+    .dial-stmt-who { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 0.3rem; }
+    .dial-stmt-who.lukas { color: var(--red); }
+    .dial-stmt-who.sarah { color: var(--cyan); }
+    .mini-dial-wrap { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
+    .mini-dial { width: 56px; height: 56px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #1e2035, #0d0f1a); border: 2px solid rgba(255,255,255,0.1); cursor: pointer; position: relative; box-shadow: 0 2px 10px rgba(0,0,0,0.4); transition: border-color 0.2s; }
+    .mini-dial.rated { border-color: var(--phase-color); box-shadow: 0 0 10px rgba(167,139,250,0.3); }
+    .mini-needle { position: absolute; width: 2px; height: 18px; background: linear-gradient(to top, transparent, var(--phase-color)); border-radius: 1px; left: 50%; top: 6px; transform: translateX(-50%); transform-origin: bottom center; transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
+    .mini-dial-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.52rem; color: var(--phase-color); letter-spacing: 0.05em; text-align: center; min-height: 1em; max-width: 60px; line-height: 1.3; }
+
+    /* Endings */
+    .ending-panel { border-radius: 16px; padding: 2.5rem; text-align: center; position: relative; overflow: hidden; background: var(--glass); backdrop-filter: blur(12px); border: 1px solid var(--border); }
+    .ending-icon { font-size: 3.5rem; margin-bottom: 0.5rem; display: block; }
+    .ending-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 0.1em; margin-bottom: 1.5rem; }
+    .dialogue-block { text-align: left; margin-bottom: 1.5rem; }
+    .d-line { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 0.9rem 1.1rem; margin-bottom: 0.5rem; font-size: 0.82rem; line-height: 1.6; border-left: 3px solid; }
+    .d-line.marco { border-color: rgba(255,255,255,0.2); }
+    .d-line.sarah { border-color: var(--cyan); }
+    .d-line.lukas { border-color: var(--red); }
+    .d-who { font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.3rem; }
+    .d-who.sarah { color: var(--cyan); }
+    .d-who.lukas { color: var(--red); }
+    .score-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; margin-bottom: 1.5rem; }
+    @media (max-width: 500px) { .score-grid { grid-template-columns: 1fr; } }
+    .score-cell { background: rgba(255,255,255,0.03); border-radius: 10px; padding: 0.8rem; border: 1px solid var(--border); }
+    .score-num { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; }
+    .score-lbl { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--muted); margin-top: 0.2rem; }
+
+    /* Lever */
+    .lever-scene { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; padding: 2rem; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid var(--border); margin-bottom: 1.5rem; }
+    .lever-question { font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.1rem,3.5vw,1.6rem); letter-spacing: 0.06em; text-align: center; line-height: 1.2; color: var(--text); }
+    .levers-row { display: flex; gap: 4rem; justify-content: center; flex-wrap: wrap; }
+    .lever-unit { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+    .lever-slot { width: 60px; height: 120px; border-radius: 30px; background: rgba(0,0,0,0.4); border: 2px solid rgba(255,255,255,0.1); position: relative; cursor: pointer; box-shadow: inset 0 4px 12px rgba(0,0,0,0.5); transition: border-color 0.3s; }
+    .lever-slot:hover { border-color: rgba(255,255,255,0.25); }
+    .lever-handle { position: absolute; left: 50%; transform: translateX(-50%); width: 20px; border-radius: 10px; transition: top 0.4s cubic-bezier(0.4,0,0.2,1); }
+    .lever-handle.up { top: 8px; height: 48px; }
+    .lever-slot.yes .lever-handle { background: linear-gradient(to bottom, var(--green), rgba(74,222,128,0.6)); box-shadow: 0 4px 16px rgba(74,222,128,0.3); }
+    .lever-slot.no .lever-handle { background: linear-gradient(to bottom, #ff6666, rgba(248,113,113,0.6)); box-shadow: 0 4px 16px rgba(248,113,113,0.3); }
+    .lever-slot.pulled .lever-handle { top: 64px; }
+    .lever-label { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.1em; }
+    .lever-unit.yes .lever-label { color: var(--green); }
+    .lever-unit.no .lever-label { color: var(--red); }
+    .lever-sub { font-size: 0.62rem; font-family: 'IBM Plex Mono', monospace; color: var(--muted); text-align: center; max-width: 80px; }
+  </style>
+</head>
+<body>
+<div class="screen">
+
+  <div class="game-header">
+    <span class="phase-badge">SEKTOR 04 — FINALE ANALYSE</span>
+    <span class="task-badge" id="task-counter">TASK 01 / 03</span>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span class="progress-label">ANALYSE-STATUS</span>
+      <span class="progress-pct" id="progress-pct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-bar" id="progress-bar"></div></div>
+  </div>
+
+  <div class="phase-stepper">
+    <div class="step done"><div class="step-dot">01</div><div class="step-label">Init</div></div>
+    <div class="step-line done"></div>
+    <div class="step done"><div class="step-dot">02</div><div class="step-label">Jura</div></div>
+    <div class="step-line done"></div>
+    <div class="step done"><div class="step-dot">03</div><div class="step-label">SDGs</div></div>
+    <div class="step-line done"></div>
+    <div class="step active"><div class="step-dot">04</div><div class="step-label">Finale</div></div>
+  </div>
+
+  <!-- ═══════════ TASK 1 — WAAGE ═══════════ -->
+  <div class="task-wrap" id="t1">
+    <div class="panel">
+      <div class="panel-accent"></div>
+      <div class="panel-title"><span class="dot"></span>TASK_01 :: WAAGE — ARGUMENTE ABWÄGEN</div>
+      <div class="task-title">Pro &amp; Contra: UN-Handlungsfähigkeit</div>
+      <div class="task-desc">Ziehe alle 8 Argument-Chips auf die passende Seite der Waage. PRO: UN ist handlungsfähig. CONTRA: UN scheitert.</div>
+
+      <div class="scale-wrap">
+        <div class="scale-visual" id="scale-visual">
+          <div class="scale-pole"></div>
+          <div class="scale-beam" id="scale-beam">
+            <div class="scale-pan left" id="pan-left"></div>
+            <div class="scale-pan right" id="pan-right"></div>
+          </div>
+        </div>
+
+        <div class="scale-columns">
+          <div class="scale-drop pro" id="drop-pro" ondragover="event.preventDefault(); this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChip(event,'pro')">
+            <div class="scale-drop-title">PRO — Handlungsfähig</div>
+          </div>
+          <div style="display:flex; align-items:center; justify-content:center; color:var(--muted); font-size:1.2rem;">⚖</div>
+          <div class="scale-drop con" id="drop-con" ondragover="event.preventDefault(); this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChip(event,'con')">
+            <div class="scale-drop-title">CONTRA — Scheitert</div>
+          </div>
+        </div>
+
+        <div class="scale-chips-pool" id="chip-pool" ondragover="event.preventDefault(); this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dropChip(event,'pool')">
+          <!-- chips inserted by JS -->
+        </div>
+      </div>
+
+      <div style="text-align:center;">
+        <button class="btn btn-primary hidden" id="scale-next-btn" onclick="showTask('t2',2,3); setProgress(33);">WEITER →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ TASK 2 — STATEMENT REGLER ═══════════ -->
+  <div class="task-wrap hidden" id="t2">
+    <div class="panel">
+      <div class="panel-accent"></div>
+      <div class="panel-title"><span class="dot"></span>TASK_02 :: STATEMENT-REGLER — LUKAS VS. SARAH</div>
+      <div class="task-title">Standpunkte einordnen</div>
+      <div class="task-desc">Klicke jeden Regler, um einzustellen, wie überzeugend du das Argument findest. Alle vier müssen bewertet werden.</div>
+
+      <div id="stmt-list"></div>
+
+      <div style="text-align:center; margin-top:0.8rem;">
+        <button class="btn btn-primary" id="stmt-check-btn" onclick="checkStatements()" disabled>WEITER →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ TASK 3 — LEVER ═══════════ -->
+  <div class="task-wrap hidden" id="t3">
+    <div class="panel">
+      <div class="panel-accent"></div>
+      <div class="panel-title"><span class="dot"></span>TASK_03 :: FINALE ENTSCHEIDUNG</div>
+      <div class="task-title">Das Urteil</div>
+      <div class="task-desc">Ziehe den Hebel deiner Wahl herunter. Die Entscheidung ist endgültig.</div>
+
+      <div class="lever-scene">
+        <div class="lever-question">IST DIE UN IN IHRER AKTUELLEN VERFASSUNG HANDLUNGSFÄHIG?</div>
+
+        <div class="levers-row">
+          <div class="lever-unit yes">
+            <div class="lever-slot yes" id="lever-yes" onclick="pullLever('yes')">
+              <div class="lever-handle up"></div>
+            </div>
+            <div class="lever-label">JA</div>
+            <div class="lever-sub">System stabilisieren</div>
+          </div>
+
+          <div class="lever-unit no">
+            <div class="lever-slot no" id="lever-no" onclick="pullLever('no')">
+              <div class="lever-handle up"></div>
+            </div>
+            <div class="lever-label">NEIN</div>
+            <div class="lever-sub">System neu aufsetzen</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ ENDING YES ═══════════ -->
+  <div class="task-wrap hidden" id="ending-yes">
+    <div class="ending-panel" style="border-color: rgba(74,222,128,0.3); box-shadow: 0 0 60px rgba(74,222,128,0.08);">
+      <span class="ending-icon">✅</span>
+      <div class="ending-title" style="color: var(--green);">SYSTEM STABILISIERT</div>
+
+      <div class="dialogue-block">
+        <div class="d-line marco">
+          <div class="d-who">MARCO — MODERATOR</div>
+          Also ihr habt entschieden: Die UN ist handlungsfähig — zumindest teilweise. Trotz aller Schwächen.
+        </div>
+        <div class="d-line sarah">
+          <div class="d-who sarah">SARAH</div>
+          Genau. Die UN ist das einzige globale Forum, das wir haben. Ohne sie gäbe es nicht mal diesen langsamen Fortschritt.
+        </div>
+        <div class="d-line lukas">
+          <div class="d-who lukas">LUKAS</div>
+          Ich bleibe skeptisch. Aber ihr habt Recht — es ist kein Entweder-Oder. Reform ist die Antwort, nicht Abschaffung.
+        </div>
+      </div>
+
+      <div class="score-grid">
+        <div class="score-cell">
+          <div class="score-num" style="color:var(--green);">4/4</div>
+          <div class="score-lbl">SEKTOREN</div>
+        </div>
+        <div class="score-cell">
+          <div class="score-num" style="color:var(--green);">16/16</div>
+          <div class="score-lbl">AUFGABEN</div>
+        </div>
+        <div class="score-cell">
+          <div class="score-num" style="color:var(--green);">JA</div>
+          <div class="score-lbl">UN HANDLUNGSFÄHIG</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="window.location.href='../index.html'" style="background: var(--green); color: #052e16;">
+        ↺ NEU STARTEN
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════ ENDING NO ═══════════ -->
+  <div class="task-wrap hidden" id="ending-no">
+    <div class="ending-panel" style="border-color: rgba(245,158,11,0.3); box-shadow: 0 0 60px rgba(245,158,11,0.08);">
+      <span class="ending-icon">🔄</span>
+      <div class="ending-title" style="color: var(--amber);">SYSTEM-NEUSTART</div>
+
+      <div class="dialogue-block">
+        <div class="d-line marco">
+          <div class="d-who">MARCO — MODERATOR</div>
+          Ihr habt entschieden: Das System muss grundlegend neu gedacht werden. Ein mutiges Urteil.
+        </div>
+        <div class="d-line lukas">
+          <div class="d-who lukas">LUKAS</div>
+          Das P5-Veto macht echte Reformen unmöglich. Solange die Mächtigen das System kontrollieren, kann es die Machtlosen nicht schützen.
+        </div>
+        <div class="d-line sarah">
+          <div class="d-who sarah">SARAH</div>
+          Vielleicht habt ihr Recht. Die Frage ist dann: Was kommt danach? Ohne die UN — was würde das bedeuten?
+        </div>
+      </div>
+
+      <div class="score-grid">
+        <div class="score-cell">
+          <div class="score-num" style="color:var(--amber);">4/4</div>
+          <div class="score-lbl">SEKTOREN</div>
+        </div>
+        <div class="score-cell">
+          <div class="score-num" style="color:var(--amber);">16/16</div>
+          <div class="score-lbl">AUFGABEN</div>
+        </div>
+        <div class="score-cell">
+          <div class="score-num" style="color:var(--amber);">REFORM</div>
+          <div class="score-lbl">NOTWENDIG</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="window.location.href='../index.html'">
+        ↺ NEU STARTEN
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script src="../effects.js"></script>
+<script>
+// ══════════════════════════════════════
+// TASK 1 — WAAGE
+// ══════════════════════════════════════
+const scaleChips = [
+  { id: 'c0', text: 'Universelle Mitgliedschaft',  side: 'pro' },
+  { id: 'c1', text: 'UN-Gesundheitserfolge',        side: 'pro' },
+  { id: 'c2', text: 'IStGH als Rechtsinstanz',       side: 'pro' },
+  { id: 'c3', text: 'Einziges globales Forum',       side: 'pro' },
+  { id: 'c4', text: 'P5-Veto blockiert Krisen',      side: 'con' },
+  { id: 'c5', text: '85% SDGs verfehlt',             side: 'con' },
+  { id: 'c6', text: 'Finanzabhängigkeit',            side: 'con' },
+  { id: 'c7', text: 'Charta unreformiert',           side: 'con' },
+];
+
+let chipLocations = {}; // id → 'pool'|'pro'|'con'
+scaleChips.forEach(c => chipLocations[c.id] = 'pool');
+
+function buildScaleChips() {
+  const pool = document.getElementById('chip-pool');
+  pool.innerHTML = '';
+  const shuffled = [...scaleChips].sort(() => Math.random() - 0.5);
+  shuffled.forEach(chip => {
+    const el = document.createElement('div');
+    el.className = 'scale-chip-pool';
+    el.id = `chip-${chip.id}`;
+    el.textContent = chip.text;
+    el.draggable = true;
+    el.dataset.chipId = chip.id;
+    el.addEventListener('dragstart', e => {
+      e.dataTransfer.setData('chipId', chip.id);
+      el.classList.add('dragging');
+    });
+    el.addEventListener('dragend', () => el.classList.remove('dragging'));
+    pool.appendChild(el);
+  });
+}
+
+function dropChip(e, target) {
+  e.preventDefault();
+  document.querySelectorAll('.scale-drop, .scale-chips-pool').forEach(d => d.classList.remove('drag-over'));
+  const chipId = e.dataTransfer.getData('chipId');
+  if (!chipId) return;
+
+  chipLocations[chipId] = target;
+
+  // Move DOM element
+  const chipEl = document.getElementById(`chip-${chipId}`);
+  if (!chipEl) return;
+
+  if (target === 'pool') {
+    document.getElementById('chip-pool').appendChild(chipEl);
+  } else if (target === 'pro') {
+    document.getElementById('drop-pro').appendChild(chipEl);
+  } else if (target === 'con') {
+    document.getElementById('drop-con').appendChild(chipEl);
+  }
+
+  updateScale();
+}
+
+function updateScale() {
+  const proCount = scaleChips.filter(c => chipLocations[c.id] === 'pro').length;
+  const conCount = scaleChips.filter(c => chipLocations[c.id] === 'con').length;
+  const diff = proCount - conCount;
+
+  document.getElementById('scale-beam').style.transform = `rotate(${diff * -7}deg)`;
+
+  // Update pan chips display
+  const panLeft = document.getElementById('pan-left');
+  const panRight = document.getElementById('pan-right');
+  panLeft.innerHTML = '';
+  panRight.innerHTML = '';
+
+  scaleChips.filter(c => chipLocations[c.id] === 'pro').forEach(c => {
+    const chip = document.createElement('div');
+    chip.className = 'pan-chip';
+    chip.textContent = c.text.substring(0, 12) + (c.text.length > 12 ? '…' : '');
+    panLeft.appendChild(chip);
+  });
+  scaleChips.filter(c => chipLocations[c.id] === 'con').forEach(c => {
+    const chip = document.createElement('div');
+    chip.className = 'pan-chip';
+    chip.textContent = c.text.substring(0, 12) + (c.text.length > 12 ? '…' : '');
+    panRight.appendChild(chip);
+  });
+
+  // Check if pool is empty
+  const poolCount = scaleChips.filter(c => chipLocations[c.id] === 'pool').length;
+  if (poolCount === 0) {
+    document.getElementById('scale-next-btn').classList.remove('hidden');
+    flashScreen('#a78bfa');
+    showOverlay('granted', 'ALLE ARGUMENTE SORTIERT');
+    setProgress(33);
+  } else {
+    document.getElementById('scale-next-btn').classList.add('hidden');
+  }
+}
+
+buildScaleChips();
+
+// ══════════════════════════════════════
+// TASK 2 — STATEMENT DIALS
+// ══════════════════════════════════════
+const statements = [
+  { who: 'lukas', text: '"Das System schützt keine Menschen. Es schützt die Mächtigen."' },
+  { who: 'sarah', text: '"Ohne UN gäbe es nicht mal diesen langsamen Fortschritt."' },
+  { who: 'lukas', text: '"Wenn Bomben fallen, funktioniert die UN nicht."' },
+  { who: 'sarah', text: '"Vielleicht ist die Frage: Wann kann sie handeln — und warum nicht immer?"' },
+];
+
+const dialPositions = [0, 0, 0, 0]; // -1=Nicht überzeugt, 0=Teilweise, 1=Überzeugt
+const dialRated = [false, false, false, false];
+const dialLabels = ['Nicht überzeugt', 'Teilweise', 'Überzeugt'];
+// Needle angles: position 0=Nicht überzeugt → -60°, 1=Teilweise → 0°, 2=Überzeugt → +60°
+// Store as index 0,1,2
+const dialStates = [1, 1, 1, 1]; // start center
+
+function buildStatements() {
+  const container = document.getElementById('stmt-list');
+  container.innerHTML = '';
+  statements.forEach((stmt, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'dial-stmt-wrap';
+    wrap.innerHTML = `
+      <div class="dial-stmt-card">
+        <div class="dial-stmt-text">
+          <div class="dial-stmt-who ${stmt.who}">${stmt.who.toUpperCase()}</div>
+          ${stmt.text}
+        </div>
+        <div class="mini-dial-wrap">
+          <div class="mini-dial" id="mdial-${i}" onclick="cycleDial(${i})">
+            <div class="mini-needle" id="mneedle-${i}" style="transform: translateX(-50%) rotate(0deg);"></div>
+          </div>
+          <div class="mini-dial-label" id="mdlbl-${i}">Teilweise</div>
+        </div>
+      </div>`;
+    container.appendChild(wrap);
+  });
+}
+
+function cycleDial(i) {
+  dialStates[i] = (dialStates[i] + 1) % 3;
+  dialRated[i] = true;
+  const angles = [-60, 0, 60];
+  const angle = angles[dialStates[i]];
+  document.getElementById(`mneedle-${i}`).style.transform = `translateX(-50%) rotate(${angle}deg)`;
+  document.getElementById(`mdlbl-${i}`).textContent = dialLabels[dialStates[i]];
+  document.getElementById(`mdial-${i}`).classList.add('rated');
+
+  // Enable button if all rated
+  if (dialRated.every(Boolean)) {
+    document.getElementById('stmt-check-btn').disabled = false;
+  }
+}
+
+function checkStatements() {
+  flashScreen('#a78bfa');
+  showOverlay('granted', 'ALLE STANDPUNKTE BEWERTET');
+  setProgress(66);
+  setTimeout(() => showTask('t3', 3, 3), 1500);
+}
+
+buildStatements();
+
+// ══════════════════════════════════════
+// TASK 3 — LEVER
+// ══════════════════════════════════════
+let leverPulled = false;
+
+function pullLever(choice) {
+  if (leverPulled) return;
+  leverPulled = true;
+
+  const slot = document.getElementById(`lever-${choice}`);
+  slot.classList.add('pulled');
+  slot.style.cursor = 'default';
+  document.getElementById(choice === 'yes' ? 'lever-no' : 'lever-yes').style.opacity = '0.3';
+  document.getElementById(choice === 'yes' ? 'lever-no' : 'lever-yes').style.cursor = 'default';
+
+  setProgress(100);
+
+  if (choice === 'yes') {
+    flashScreen('#4ade80');
+    showOverlay('granted', 'SYSTEM STABILISIERT');
+    setTimeout(() => {
+      document.querySelectorAll('.task-wrap').forEach(el => el.classList.add('hidden'));
+      document.getElementById('ending-yes').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 1500);
+  } else {
+    flashScreen('#f59e0b');
+    showOverlay('denied', 'SYSTEM-NEUSTART EINGELEITET');
+    setTimeout(() => {
+      document.querySelectorAll('.task-wrap').forEach(el => el.classList.add('hidden'));
+      document.getElementById('ending-no').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 1500);
+  }
+}
+</script>
+</body>
+</html>

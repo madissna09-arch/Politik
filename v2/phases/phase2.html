@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEKTOR 02 — Juristische Datenbank</title>
+  <link rel="stylesheet" href="../style.css">
+  <style>
+    :root { --phase-color: #ef4444; }
+
+    /* Veto stamp card layout */
+    .veto-card-wrap { position: relative; }
+    .case-progress { font-family: 'IBM Plex Mono', monospace; font-size: 0.65rem; color: var(--muted); letter-spacing: 0.12em; margin-bottom: 1rem; text-align: center; }
+
+    /* Vote calculator */
+    .vote-scenario { background: rgba(239,68,68,0.06); border: 1px solid rgba(239,68,68,0.2); border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem; font-size: 0.82rem; line-height: 1.6; }
+    .vote-scenario-label { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--red); letter-spacing: 0.12em; margin-bottom: 0.4rem; }
+    .veto-tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-family: 'IBM Plex Mono', monospace; font-size: 0.58rem; background: rgba(239,68,68,0.15); color: var(--red); border: 1px solid rgba(239,68,68,0.3); margin-left: 0.4rem; vertical-align: middle; }
+    .vote-status-box { background: rgba(0,0,0,0.3); border: 1px solid var(--border); border-radius: 10px; padding: 0.8rem 1.2rem; text-align: center; margin-bottom: 1.2rem; transition: all 0.3s; }
+    .vote-status-text { font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 0.08em; }
+    .p5-section td:first-child { font-weight: 600; }
+
+    /* Map */
+    .found-chips { display: flex; gap: 0.4rem; flex-wrap: wrap; padding: 0.6rem 0; min-height: 2rem; }
+  </style>
+</head>
+<body>
+<div class="screen">
+
+  <div class="game-header">
+    <span class="phase-badge">SEKTOR 02 — JURISTISCHE DATENBANK</span>
+    <span class="task-badge" id="task-counter">TASK 01 / 05</span>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span class="progress-label">DATENBANKZUGRIFF</span>
+      <span class="progress-pct" id="progress-pct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-bar" id="progress-bar"></div></div>
+  </div>
+
+  <div class="phase-stepper">
+    <div class="step done"><div class="step-dot">01</div><div class="step-label">Init</div></div>
+    <div class="step-line done"></div>
+    <div class="step active"><div class="step-dot">02</div><div class="step-label">Jura</div></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-dot">03</div><div class="step-label">SDGs</div></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-dot">04</div><div class="step-label">Finale</div></div>
+  </div>
+
+  <!-- ═══════════ TASK 1 — VETO SIMULATOR ═══════════ -->
+  <div class="task-wrap" id="t1">
+    <div class="panel">
+      <div class="panel-accent"></div>
+      <div class="panel-title"><span class="dot"></span>TASK_01 :: STEMPEL-MECHANIK — VETO-SIMULATOR</div>
+      <div class="task-title">Veto-Entscheidungen stempeln</div>
+      <div class="task-desc">Drei historische UN-Resolutionen liegen zur Abstimmung. Wähle jeweils die korrekte Entscheidung des Sicherheitsrats.</div>
+
+      <div class="case-progress" id="case-progress">Fall 1 / 3</div>
+
+      <div class="veto-card-wrap">
+        <!-- Case 1 -->
+        <div class="stamp-card" id="case-0">
+          <div class="stamp-overlay" id="stamp-overlay-0">VETOT</div>
+          <div class="stamp-file-ref">AKTE-SR/2012/538 — SYRIEN</div>
+          <div class="stamp-text">Eine Resolution zur Beendigung des syrischen Bürgerkriegs wurde im Sicherheitsrat eingebracht. Welches Mitglied (oder welche Mitglieder) legten ihr <span class="stamp-highlight">Veto</span> ein?</div>
+          <div class="stamp-btns">
+            <button class="stamp-btn vetoed" onclick="checkVeto(0,0)">VETOT — Russland &amp; China</button>
+            <button class="stamp-btn vetoed" onclick="checkVeto(0,1)">VETOT — USA</button>
+            <button class="stamp-btn passed" onclick="checkVeto(0,2)">VERABSCHIEDET</button>
+          </div>
+        </div>
+
+        <!-- Case 2 -->
+        <div class="stamp-card hidden" id="case-1">
+          <div class="stamp-overlay" id="stamp-overlay-1">VETOT</div>
+          <div class="stamp-file-ref">AKTE-SR/2014/KRIM — UKRAINE</div>
+          <div class="stamp-text">Nach der russischen Annexion der Krim 2014 sollte eine Resolution die Volksabstimmung für rechtsungültig erklären. Wer legte das <span class="stamp-highlight">Veto</span> ein?</div>
+          <div class="stamp-btns">
+            <button class="stamp-btn vetoed" onclick="checkVeto(1,0)">VETOT — Russland</button>
+            <button class="stamp-btn vetoed" onclick="checkVeto(1,1)">VETOT — USA &amp; China</button>
+            <button class="stamp-btn passed" onclick="checkVeto(1,2)">VERABSCHIEDET</button>
+          </div>
+        </div>
+
+        <!-- Case 3 -->
+        <div class="stamp-card hidden" id="case-2">
+          <div class="stamp-overlay" id="stamp-overlay-2">VETOT</div>
+          <div class="stamp-file-ref">AKTE-SR/2023/GAZA — NAHER OSTEN</div>
+          <div class="stamp-text">Resolutionen zur humanitären Waffenruhe im Gazastreifen wurden mehrfach blockiert. Welches P5-Mitglied setzte sein <span class="stamp-highlight">Veto</span> ein?</div>
+          <div class="stamp-btns">
+            <button class="stamp-btn vetoed" onclick="checkVeto(2,0)">VETOT — USA (zweimal)</button>
+            <button class="stamp-btn vetoed" onclick="checkVeto(2,1)">VETOT — Russland</button>
+            <button class="stamp-btn passed" onclick="checkVeto(2,2)">VERABSCHIEDET</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center; margin-top:1.2rem;">
+        <button class="btn btn-primary hidden" id="veto-next-btn" onclick="showTask('t2',2,5); setProgress(20);">WEITER →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ TASK 2 — SLIDER SPEKTRUM ═══════════ -->
+  <div class="task-wrap hidden" id="t2">
+    <div class="panel">
+      <div class="panel-accent"></div>
+      <div class="panel-title"><span class="dot"></span>TASK_02 :: SLIDER-SPEKTRUM — MENSCHENRECHTE KLASSIFIZIEREN</div>
+      <div class="task-title">Rechtsbindung einordnen</div>
+      <div class="task-desc">Ordne jede Aussage auf dem Bindungs-Spektrum ein. Schiebe den Regler auf die korrekte Position.</div>
+
+      <div id="spectrum-items"></div>
+
+      <div style="text-align:center; margin-top:0.5rem;">
+        <button class="btn btn-primary" onclick="checkSpectrum()">ALLE PRÜFEN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ TASK 3 — SIMON SEQUENZ ═══════════ -->
+  <div class="task-wrap hidden" id="t3">
+    <div class="panel">
+      <div class="panel-accent"></div>
+      <div class="panel-title"><span class="dot"></span>TASK_03 :: SIMON-SEQUENZ — CHRONOLOGIE</div>
+      <div class="task-title">UN-Zeitleiste rekonstruieren</div>
+      <div class="task-desc">Merke dir die Reihenfolge der aufleuchtenden Ereignisse. Dann klicke sie in chronologischer Reihenfolge.</div>
+
+      <div class="simon-status" id="simon-status">Bereit — Sequenz wird gezeigt...</div>
+
+      <div class="simon-grid" id="simon-grid"></div>
+
+      <div style="text-align:center;">
+        <button class="btn btn-primary hidden" id="simon-start-btn" onclick="startSimon()">SEQUENZ ZEIGEN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ TASK 4 — ABSTIMMUNGSRECHNER ═══════════ -->
+  <div class="task-wrap hidden" id="t4">
+    <div class="panel">
+      <div class="panel-accent"></div>
+      <div class="panel-title"><span class="dot"></span>TASK_04 :: ABSTIMMUNGS-RECHNER — REFORM-SIMULATION</div>
+      <div class="task-title">Können Reformen passieren?</div>
+      <div class="task-desc">Zeige, dass selbst eine Mehrheit scheitert, wenn ein P5-Mitglied sein Veto einsetzt. Stelle Russland auf VETO und alle anderen auf JA.</div>
+
+      <div class="vote-scenario">
+        <div class="vote-scenario-label">RESOLUTION — REFORM B</div>
+        Erweiterung des Sicherheitsrats auf 25 Mitglieder. Benötigt: 9 Stimmen UND kein P5-Veto.
+      </div>
+
+      <div class="vote-status-box" id="vote-status-box">
+        <div class="vote-status-text" id="vote-status-text" style="color:var(--muted);">Ausstehend</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:0.6rem; color:var(--muted); margin-top:0.2rem;" id="vote-status-sub"></div>
+      </div>
+
+      <div class="vote-total-box">
+        <div class="vote-total-num" id="vote-total">0 / 15</div>
+        <div class="vote-total-label">JA-STIMMEN IM SICHERHEITSRAT</div>
+      </div>
+
+      <table class="vote-table" id="vote-table"></table>
+
+      <div style="text-align:center;">
+        <button class="btn btn-primary" onclick="checkVoteCalc()">ABSTIMMUNG AUSWERTEN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ TASK 5 — WELTKARTE P5 ═══════════ -->
+  <div class="task-wrap hidden" id="t5">
+    <div class="panel">
+      <div class="panel-accent"></div>
+      <div class="panel-title"><span class="dot"></span>TASK_05 :: WELTKARTE — P5-LÄNDER MARKIEREN</div>
+      <div class="task-title">Ständige Mitglieder lokalisieren</div>
+      <div class="task-desc">Klicke die 5 ständigen Mitglieder des UN-Sicherheitsrats auf der Weltkarte.</div>
+
+      <div class="map-wrap">
+        <div class="map-instruction">Klicke alle 5 P5-Staaten • Gefunden: <span id="map-found-count">0</span> / 5</div>
+        <svg class="world-map" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" id="world-svg">
+          <!-- Background ocean -->
+          <rect width="800" height="400" fill="#0a0c18"/>
+
+          <!-- Non-clickable continents / countries for context -->
+          <!-- Africa -->
+          <path d="M360 180 L400 175 L420 200 L415 250 L390 290 L365 280 L345 260 L340 220 Z" class="map-country" />
+          <!-- South America -->
+          <path d="M195 195 L230 190 L245 220 L240 275 L215 300 L190 285 L175 255 L180 220 Z" class="map-country" />
+          <!-- Australia -->
+          <path d="M590 240 L650 235 L665 265 L645 290 L595 290 L578 265 Z" class="map-country" />
+          <!-- Canada -->
+          <path d="M75 80 L195 75 L200 130 L165 135 L80 130 Z" class="map-country" />
+          <!-- India -->
+          <path d="M480 175 L515 172 L520 215 L500 235 L475 215 L472 190 Z" class="map-country" />
+          <!-- Brazil interior -->
+          <path d="M195 195 L245 195 L248 250 L215 260 L190 245 Z" class="map-country" />
+          <!-- Central Africa -->
+          <path d="M370 210 L405 208 L408 240 L372 242 Z" class="map-country" />
+          <!-- Greenland -->
+          <path d="M185 30 L255 25 L260 75 L190 78 Z" class="map-country" />
+          <!-- Scandinavia -->
+          <path d="M340 60 L380 55 L382 110 L342 112 Z" class="map-country" />
+          <!-- Middle East -->
+          <path d="M420 150 L460 148 L465 180 L422 182 Z" class="map-country" />
+          <!-- Japan -->
+          <path d="M650 130 L668 128 L672 155 L652 157 Z" class="map-country" />
+          <!-- SE Asia -->
+          <path d="M560 175 L600 172 L605 210 L562 212 Z" class="map-country" />
+          <!-- Germany/Central Europe -->
+          <path d="M345 105 L375 103 L377 130 L347 132 Z" class="map-country" />
+
+          <!-- ── P5 CLICKABLE COUNTRIES ── -->
+
+          <!-- USA (contiguous) -->
+          <path id="map-usa" data-name="USA" d="M80 130 L200 128 L205 175 L185 185 L80 180 Z" class="map-country clickable" onclick="mapClick(this)" />
+          <!-- RUSSIA (huge) -->
+          <path id="map-russia" data-name="Russland" d="M395 60 L680 55 L685 145 L530 150 L395 145 Z" class="map-country clickable" onclick="mapClick(this)" />
+          <!-- CHINA -->
+          <path id="map-china" data-name="China" d="M530 130 L660 128 L662 175 L532 178 Z" class="map-country clickable" onclick="mapClick(this)" />
+          <!-- UK (small island) -->
+          <path id="map-uk" data-name="Großbritannien" d="M305 95 L328 93 L330 118 L307 120 Z" class="map-country clickable" onclick="mapClick(this)" />
+          <!-- FRANCE -->
+          <path id="map-france" data-name="Frankreich" d="M308 120 L345 118 L347 148 L310 150 Z" class="map-country clickable" onclick="mapClick(this)" />
+
+          <!-- Country labels for orientation -->
+          <text x="140" y="160" font-family="IBM Plex Mono" font-size="8" fill="rgba(255,255,255,0.25)" text-anchor="middle">USA</text>
+          <text x="535" y="105" font-family="IBM Plex Mono" font-size="8" fill="rgba(255,255,255,0.25)" text-anchor="middle">RUSSLAND</text>
+          <text x="595" y="158" font-family="IBM Plex Mono" font-size="8" fill="rgba(255,255,255,0.25)" text-anchor="middle">CHINA</text>
+          <text x="317" y="110" font-family="IBM Plex Mono" font-size="7" fill="rgba(255,255,255,0.25)" text-anchor="middle">UK</text>
+          <text x="327" y="138" font-family="IBM Plex Mono" font-size="7" fill="rgba(255,255,255,0.25)" text-anchor="middle">FR</text>
+          <text x="385" y="235" font-family="IBM Plex Mono" font-size="7" fill="rgba(255,255,255,0.2)" text-anchor="middle">AFRIKA</text>
+          <text x="213" y="248" font-family="IBM Plex Mono" font-size="7" fill="rgba(255,255,255,0.2)" text-anchor="middle">S.AM</text>
+          <text x="622" y="265" font-family="IBM Plex Mono" font-size="7" fill="rgba(255,255,255,0.2)" text-anchor="middle">AUS</text>
+          <text x="496" y="205" font-family="IBM Plex Mono" font-size="7" fill="rgba(255,255,255,0.2)" text-anchor="middle">IND</text>
+        </svg>
+        <div class="map-progress">
+          <div class="found-chips" id="found-chips"></div>
+        </div>
+      </div>
+
+      <div style="text-align:center;">
+        <button class="btn btn-primary hidden" id="map-next-btn" onclick="showTask('done',5,5); setProgress(100);">WEITER →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ DONE ═══════════ -->
+  <div class="task-wrap hidden" id="done">
+    <div class="panel" style="text-align:center;">
+      <div class="panel-accent"></div>
+      <div style="font-size:3rem; margin:1rem 0;">⚖️</div>
+      <div class="task-title" style="margin-bottom:0.5rem;">Sektor 02 freigeschaltet</div>
+      <div class="task-desc" style="margin:0 auto 1.5rem; max-width:440px;">Juristische Datenbank vollständig analysiert. Das Veto-System und Völkerrecht wurden dokumentiert.</div>
+
+      <div class="audio-block">
+        <span class="a-icon">📻</span>
+        <div class="a-title">Segment 2 — Veto-Macht &amp; Völkerrecht</div>
+        <div class="a-desc">Marco, Lukas &amp; Sarah debattieren das Veto-System und die Grenzen des Völkerrechts.<br>[audio/segment2.mp3]</div>
+      </div>
+
+      <button class="btn btn-primary" onclick="window.location.href='phase3.html'" style="margin-top:0.5rem;">
+        SEKTOR 03 BETRETEN →
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script src="../effects.js"></script>
+<script>
+// ══════════════════════════════════════
+// TASK 1 — VETO SIMULATOR
+// ══════════════════════════════════════
+const vetoCases = [
+  { correct: 0 },
+  { correct: 0 },
+  { correct: 0 },
+];
+let currentCase = 0;
+let casesDone = 0;
+
+function showCase(idx) {
+  document.querySelectorAll('.stamp-card').forEach((c, i) => {
+    c.classList.toggle('hidden', i !== idx);
+  });
+  document.getElementById('case-progress').textContent = `Fall ${idx + 1} / 3`;
+}
+
+showCase(0);
+
+function checkVeto(caseIdx, btnIdx) {
+  if (caseIdx !== currentCase) return;
+  const card = document.getElementById(`case-${caseIdx}`);
+  const correct = vetoCases[caseIdx].correct;
+
+  if (btnIdx === correct) {
+    card.classList.add('stamped-vetoed');
+    flashScreen('#1a0000');
+    showOverlay('granted', 'KORREKTE ENTSCHEIDUNG — VETOT');
+    casesDone++;
+    currentCase++;
+    setTimeout(() => {
+      if (casesDone >= 3) {
+        document.getElementById('veto-next-btn').classList.remove('hidden');
+        document.getElementById('case-progress').textContent = 'Alle 3 Fälle bearbeitet ✓';
+      } else {
+        showCase(currentCase);
+      }
+    }, 1200);
+  } else {
+    flashScreen('#1a0000');
+    showOverlay('denied', 'FALSCHE ENTSCHEIDUNG — NOCHMAL');
+    const btn = event.target;
+    btn.classList.add('wrong-stamp');
+    setTimeout(() => btn.classList.remove('wrong-stamp'), 600);
+  }
+}
+
+// ══════════════════════════════════════
+// TASK 2 — SLIDER SPEKTRUM
+// ══════════════════════════════════════
+const spectrumItems = [
+  { text: '"Jeder Mensch hat das Recht auf Leben, Freiheit und Sicherheit der Person." (Art. 3 AEMR)', correct: 0 },
+  { text: '"Staaten müssen Klimaflüchtlinge aufnehmen und ihnen dauerhaften Schutz gewähren."', correct: 2 },
+  { text: '"Niemand darf der Folter oder grausamer, unmenschlicher Behandlung unterworfen werden." (Art. 5 AEMR)', correct: 0 },
+  { text: '"Der IStGH kann Kriegsverbrecher verurteilen — wenn der Staat Mitglied des Römischen Statuts ist."', correct: 1 },
+  { text: '"Alle Staaten müssen Resolutionen der UN-Generalversammlung verbindlich umsetzen."', correct: 2 },
+];
+
+const labelMap = ['BINDEND', 'BEDINGT', 'NICHT BINDEND'];
+
+function buildSpectrum() {
+  const container = document.getElementById('spectrum-items');
+  container.innerHTML = '';
+  spectrumItems.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'spectrum-item';
+    div.innerHTML = `
+      <div class="spectrum-text">${item.text}</div>
+      <div class="spectrum-track">
+        <div class="spectrum-labels"><span>BINDEND (0)</span><span>BEDINGT (1)</span><span>NICHT BINDEND (2)</span></div>
+        <input type="range" class="spectrum-slider" id="slider-${i}" min="0" max="2" step="1" value="1" oninput="updateSliderLabel(${i})">
+        <div class="spectrum-value" id="slider-lbl-${i}">BEDINGT</div>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+function updateSliderLabel(i) {
+  const val = parseInt(document.getElementById(`slider-${i}`).value);
+  document.getElementById(`slider-lbl-${i}`).textContent = labelMap[val];
+}
+
+function checkSpectrum() {
+  let allCorrect = true;
+  let wrongCount = 0;
+  spectrumItems.forEach((item, i) => {
+    const val = parseInt(document.getElementById(`slider-${i}`).value);
+    if (val !== item.correct) { allCorrect = false; wrongCount++; }
+  });
+
+  if (allCorrect) {
+    flashScreen('#ef4444');
+    showOverlay('granted', 'ALLE KLASSIFIKATIONEN KORREKT');
+    setProgress(40);
+    setTimeout(() => showTask('t3', 3, 5), 1500);
+  } else {
+    flashScreen('#1a0000');
+    showOverlay('denied', `${wrongCount} FALSCH — ÜBERPRÜFE DEINE ANTWORTEN`);
+    spectrumItems.forEach((item, i) => {
+      const val = parseInt(document.getElementById(`slider-${i}`).value);
+      const sliderItem = document.getElementById(`slider-${i}`).closest('.spectrum-item');
+      if (val !== item.correct) {
+        sliderItem.style.borderColor = 'rgba(248,113,113,0.5)';
+        setTimeout(() => sliderItem.style.borderColor = '', 1200);
+      }
+    });
+  }
+}
+
+buildSpectrum();
+
+// ══════════════════════════════════════
+// TASK 3 — SIMON SEQUENZ
+// ══════════════════════════════════════
+const simonTiles = [
+  { year: '1945', label: 'UN-Gründung', order: 0 },
+  { year: '1948', label: 'Menschenrechtserklärung', order: 1 },
+  { year: '1994', label: 'Ruanda-Genozid', order: 2 },
+  { year: '2002', label: 'IStGH gegründet', order: 3 },
+  { year: '2011', label: 'Syrien-Vetoblockade', order: 4 },
+];
+
+const simonOrder = [0, 1, 2, 3, 4];
+let simonPhase = 'idle'; // idle, showing, player
+let simonPlayerIdx = 0;
+let simonBlocked = false;
+
+function buildSimon() {
+  const grid = document.getElementById('simon-grid');
+  grid.innerHTML = '';
+  // Shuffle display order
+  const shuffled = [...simonTiles].sort(() => Math.random() - 0.5);
+  shuffled.forEach(tile => {
+    const div = document.createElement('div');
+    div.className = 'simon-tile';
+    div.dataset.order = tile.order;
+    div.innerHTML = `<div class="tile-year">${tile.year}</div><div class="tile-label">${tile.label}</div>`;
+    div.onclick = () => simonClick(div);
+    grid.appendChild(div);
+  });
+}
+
+function getTileByOrder(order) {
+  return document.querySelector(`.simon-tile[data-order="${order}"]`);
+}
+
+function startSimon() {
+  document.getElementById('simon-start-btn').classList.add('hidden');
+  simonPhase = 'showing';
+  simonBlocked = true;
+  document.getElementById('simon-status').textContent = 'Merke dir die Reihenfolge...';
+  document.getElementById('simon-status').className = 'simon-status';
+  showSimonSequence();
+}
+
+function showSimonSequence() {
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i > 0) {
+      getTileByOrder(simonOrder[i - 1])?.classList.remove('lit');
+    }
+    if (i >= simonOrder.length) {
+      clearInterval(interval);
+      setTimeout(() => {
+        simonPhase = 'player';
+        simonPlayerIdx = 0;
+        simonBlocked = false;
+        document.getElementById('simon-status').textContent = 'Jetzt du! Klicke in der richtigen Reihenfolge.';
+        document.getElementById('simon-status').className = 'simon-status active';
+      }, 400);
+      return;
+    }
+    getTileByOrder(simonOrder[i])?.classList.add('lit');
+    i++;
+  }, 900);
+}
+
+function simonClick(tile) {
+  if (simonPhase !== 'player' || simonBlocked) return;
+  const clickedOrder = parseInt(tile.dataset.order);
+  const expectedOrder = simonOrder[simonPlayerIdx];
+
+  if (clickedOrder === expectedOrder) {
+    tile.classList.add('player-correct');
+    simonPlayerIdx++;
+    if (simonPlayerIdx >= simonOrder.length) {
+      simonBlocked = true;
+      document.getElementById('simon-status').textContent = '✓ Chronologie korrekt!';
+      flashScreen('#ef4444');
+      showOverlay('granted', 'ZEITLEISTE REKONSTRUIERT');
+      setProgress(60);
+      setTimeout(() => showTask('t4', 4, 5), 1500);
+    }
+  } else {
+    simonBlocked = true;
+    tile.classList.add('player-wrong');
+    flashScreen('#1a0000');
+    showOverlay('denied', 'FALSCHE REIHENFOLGE — NOCHMAL');
+    document.getElementById('simon-status').textContent = 'Falsch — Sequenz wird wiederholt...';
+    document.getElementById('simon-status').className = 'simon-status';
+    setTimeout(() => {
+      document.querySelectorAll('.simon-tile').forEach(t => {
+        t.classList.remove('player-correct', 'player-wrong', 'lit');
+      });
+      simonPhase = 'showing';
+      simonPlayerIdx = 0;
+      showSimonSequence();
+    }, 1200);
+  }
+}
+
+buildSimon();
+setTimeout(() => {
+  document.getElementById('simon-start-btn').classList.remove('hidden');
+}, 100);
+
+// ══════════════════════════════════════
+// TASK 4 — ABSTIMMUNGSRECHNER
+// ══════════════════════════════════════
+const p5Members = [
+  { name: 'USA', flag: '🇺🇸', isP5: true },
+  { name: 'Russland', flag: '🇷🇺', isP5: true },
+  { name: 'China', flag: '🇨🇳', isP5: true },
+  { name: 'UK', flag: '🇬🇧', isP5: true },
+  { name: 'Frankreich', flag: '🇫🇷', isP5: true },
+];
+
+const electedMembers = [
+  { name: 'Algerien', flag: '🇩🇿', isP5: false },
+  { name: 'Guyana', flag: '🇬🇾', isP5: false },
+  { name: 'Sierra Leone', flag: '🇸🇱', isP5: false },
+  { name: 'Slowenien', flag: '🇸🇮', isP5: false },
+  { name: 'Südkorea', flag: '🇰🇷', isP5: false },
+  { name: 'Panama', flag: '🇵🇦', isP5: false },
+  { name: 'Japan', flag: '🇯🇵', isP5: false },
+  { name: 'Malta', flag: '🇲🇹', isP5: false },
+  { name: 'Mosambik', flag: '🇲🇿', isP5: false },
+  { name: 'Ecuador', flag: '🇪🇨', isP5: false },
+];
+
+const allMembers = [...p5Members, ...electedMembers];
+const voteState = {};
+const vetoState = {};
+allMembers.forEach(m => { voteState[m.name] = 0; vetoState[m.name] = false; });
+
+function buildVoteTable() {
+  const table = document.getElementById('vote-table');
+  table.innerHTML = '';
+
+  // P5 Section
+  const p5Header = document.createElement('tr');
+  p5Header.innerHTML = `<td colspan="3" style="padding:0.4rem 0.8rem; font-family:'IBM Plex Mono',monospace; font-size:0.6rem; color:var(--red); letter-spacing:0.15em;">P5 — STÄNDIGE MITGLIEDER</td>`;
+  table.appendChild(p5Header);
+
+  p5Members.forEach(m => {
+    const tr = document.createElement('tr');
+    tr.className = 'vote-row p5-section';
+    tr.id = `vrow-${m.name}`;
+    tr.innerHTML = `
+      <td><span class="vote-flag">${m.flag}</span>${m.name} <span class="veto-tag" id="veto-tag-${m.name}" style="display:none;">VETO</span></td>
+      <td>
+        <div class="vote-ctrl">
+          <button class="vote-btn" onclick="adjustVote('${m.name}',-1)">−</button>
+          <span class="vote-count" id="vc-${m.name}">0</span>
+          <button class="vote-btn" onclick="adjustVote('${m.name}',1)">+</button>
+        </div>
+      </td>
+      <td>
+        <button class="btn btn-ghost" style="padding:0.3rem 0.6rem; font-size:0.65rem;" onclick="toggleVeto('${m.name}')" id="veto-btn-${m.name}">VETO</button>
+      </td>`;
+    table.appendChild(tr);
+  });
+
+  // Elected members
+  const elHeader = document.createElement('tr');
+  elHeader.innerHTML = `<td colspan="3" style="padding:0.4rem 0.8rem; font-family:'IBM Plex Mono',monospace; font-size:0.6rem; color:var(--muted); letter-spacing:0.15em; padding-top:1rem;">GEWÄHLTE MITGLIEDER</td>`;
+  table.appendChild(elHeader);
+
+  electedMembers.forEach(m => {
+    const tr = document.createElement('tr');
+    tr.className = 'vote-row';
+    tr.id = `vrow-${m.name}`;
+    tr.innerHTML = `
+      <td><span class="vote-flag">${m.flag}</span>${m.name}</td>
+      <td>
+        <div class="vote-ctrl">
+          <button class="vote-btn" onclick="adjustVote('${m.name}',-1)">−</button>
+          <span class="vote-count" id="vc-${m.name}">0</span>
+          <button class="vote-btn" onclick="adjustVote('${m.name}',1)">+</button>
+        </div>
+      </td>
+      <td></td>`;
+    table.appendChild(tr);
+  });
+}
+
+function adjustVote(name, delta) {
+  voteState[name] = Math.max(0, Math.min(1, voteState[name] + delta));
+  document.getElementById(`vc-${name}`).textContent = voteState[name];
+  updateVoteStatus();
+}
+
+function toggleVeto(name) {
+  vetoState[name] = !vetoState[name];
+  const btn = document.getElementById(`veto-btn-${name}`);
+  const tag = document.getElementById(`veto-tag-${name}`);
+  if (vetoState[name]) {
+    btn.style.color = 'var(--red)';
+    btn.style.borderColor = 'rgba(239,68,68,0.5)';
+    btn.style.background = 'rgba(239,68,68,0.1)';
+    tag.style.display = 'inline-block';
+    // Set vote to 0 if vetoing
+    voteState[name] = 0;
+    document.getElementById(`vc-${name}`).textContent = 0;
+  } else {
+    btn.style.color = '';
+    btn.style.borderColor = '';
+    btn.style.background = '';
+    tag.style.display = 'none';
+  }
+  updateVoteStatus();
+}
+
+function updateVoteStatus() {
+  const totalYes = allMembers.reduce((sum, m) => sum + voteState[m.name], 0);
+  const anyVeto = p5Members.some(m => vetoState[m.name]);
+
+  document.getElementById('vote-total').textContent = `${totalYes} / 15`;
+
+  const box = document.getElementById('vote-status-box');
+  const text = document.getElementById('vote-status-text');
+  const sub = document.getElementById('vote-status-sub');
+
+  if (anyVeto && totalYes >= 9) {
+    text.textContent = 'RESOLUTION SCHEITERT AM VETO';
+    text.style.color = 'var(--red)';
+    sub.textContent = 'Trotz ausreichender Stimmen blockiert das Veto die Resolution';
+    box.style.borderColor = 'rgba(239,68,68,0.4)';
+  } else if (!anyVeto && totalYes >= 9) {
+    text.textContent = 'RESOLUTION ANGENOMMEN';
+    text.style.color = 'var(--green)';
+    sub.textContent = `${totalYes} Stimmen — kein Veto`;
+    box.style.borderColor = 'rgba(74,222,128,0.4)';
+  } else if (anyVeto) {
+    text.textContent = 'VETO AKTIV — RESOLUTION BLOCKIERT';
+    text.style.color = 'var(--red)';
+    sub.textContent = 'Nicht genug Stimmen und Veto aktiv';
+    box.style.borderColor = 'rgba(239,68,68,0.3)';
+  } else {
+    text.textContent = `${totalYes} Stimmen — Noch ${Math.max(0, 9 - totalYes)} fehlen`;
+    text.style.color = 'var(--muted)';
+    sub.textContent = 'Kein Veto aktiv';
+    box.style.borderColor = 'rgba(255,255,255,0.08)';
+  }
+}
+
+function checkVoteCalc() {
+  const totalYes = allMembers.reduce((sum, m) => sum + voteState[m.name], 0);
+  const rusVeto = vetoState['Russland'];
+  // Correct answer: Russland has veto + enough other votes to show the paradox
+  // Accept if: any P5 has veto AND totalYes >= 9 (demonstrating the paradox)
+  if (rusVeto && totalYes >= 9) {
+    flashScreen('#ef4444');
+    showOverlay('granted', 'PARADOX DEMONSTRIERT — DAS VETO VERHINDERT JEDE REFORM');
+    setProgress(80);
+    setTimeout(() => showTask('t5', 5, 5), 1500);
+  } else if (!rusVeto && totalYes >= 9) {
+    flashScreen('#1a0000');
+    showOverlay('denied', 'SETZE EIN P5-VETO UND ZEIGE DAS PARADOX');
+  } else {
+    flashScreen('#1a0000');
+    showOverlay('denied', 'SAMMLE ZUERST GENUG STIMMEN UND TESTE EIN VETO');
+  }
+}
+
+buildVoteTable();
+
+// ══════════════════════════════════════
+// TASK 5 — MAP CLICK
+// ══════════════════════════════════════
+const p5Countries = ['USA', 'Russland', 'China', 'Großbritannien', 'Frankreich'];
+let foundCountries = [];
+
+function mapClick(el) {
+  const name = el.dataset.name;
+  if (foundCountries.includes(name)) return;
+
+  if (p5Countries.includes(name)) {
+    el.classList.add('selected');
+    foundCountries.push(name);
+    const chip = document.createElement('div');
+    chip.className = 'map-found-chip';
+    chip.textContent = name;
+    document.getElementById('found-chips').appendChild(chip);
+    document.getElementById('map-found-count').textContent = foundCountries.length;
+    flashScreen('#ef4444');
+    if (foundCountries.length === 5) {
+      showOverlay('granted', 'ALLE P5-STAATEN MARKIERT');
+      setTimeout(() => document.getElementById('map-next-btn').classList.remove('hidden'), 1200);
+    } else {
+      showOverlay('granted', `${name} MARKIERT — ${5 - foundCountries.length} VERBLEIBEN`);
+    }
+  } else {
+    el.classList.add('wrong-click');
+    flashScreen('#1a0000');
+    showOverlay('denied', 'KEIN P5-MITGLIED');
+    setTimeout(() => el.classList.remove('wrong-click'), 500);
+  }
+}
+</script>
+</body>
+</html>
