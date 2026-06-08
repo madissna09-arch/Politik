@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Crisis Monitor — UN Mainframe Recovery</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    :root { --phase-color: #f59e0b; }
+
+    .boot-screen {
+      position: fixed; inset: 0; background: #0d0f1a;
+      z-index: 1000; display: flex; flex-direction: column;
+      justify-content: flex-end; padding: 3rem;
+    }
+
+    .boot-line {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.78rem;
+      line-height: 1.9; opacity: 0; transition: opacity 0.1s;
+    }
+
+    .boot-line.ok    { color: #4ade80; }
+    .boot-line.err   { color: #f87171; }
+    .boot-line.warn  { color: #f59e0b; }
+    .boot-line.dim   { color: #334155; }
+
+    /* Main screen */
+    .dossier {
+      background: var(--glass); backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: 16px;
+      padding: 2rem; max-width: 680px; width: 100%;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5),
+                  inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    .dossier-header {
+      display: flex; align-items: center; gap: 1rem;
+      padding-bottom: 1rem; margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dossier-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem; letter-spacing: 0.1em;
+      background: linear-gradient(135deg, #f59e0b, #fcd34d);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; line-height: 1;
+    }
+
+    .dossier-subtitle {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem; color: var(--muted); letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .classified-badge {
+      margin-left: auto; padding: 0.3rem 0.7rem;
+      border: 1px solid rgba(248,113,113,0.4); border-radius: 4px;
+      font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem;
+      letter-spacing: 0.2em; color: var(--red);
+      background: rgba(248,113,113,0.06);
+    }
+
+    .status-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 0.5rem; margin-bottom: 1.5rem;
+    }
+
+    .status-row {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.5rem 0.6rem; border-radius: 8px;
+      background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+      font-size: 0.72rem;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+    }
+
+    .status-dot.offline { background: var(--red); box-shadow: 0 0 6px var(--red); animation: status-blink 1s infinite; }
+    .status-dot.online  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+    @keyframes status-blink {
+      0%,100% { opacity:1; } 50% { opacity:0.3; }
+    }
+
+    .status-name { flex:1; color: var(--text); }
+    .status-val { font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem; color: var(--muted); }
+
+    .mission-brief {
+      background: rgba(245,158,11,0.04); border: 1px solid rgba(245,158,11,0.15);
+      border-radius: 10px; padding: 1rem; margin-bottom: 1.5rem;
+    }
+
+    .brief-title {
+      font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
+      color: var(--amber); letter-spacing: 0.15em; text-transform: uppercase;
+      margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.4rem;
+    }
+
+    .brief-title::before { content: '▶'; animation: pulse-glow 1.5s infinite; }
+
+    .brief-text { font-size: 0.8rem; line-height: 1.7; color: var(--muted); }
+    .brief-text strong { color: var(--text); }
+  </style>
+</head>
+<body>
+
+<div class="boot-screen" id="boot">
+  <div id="boot-lines"></div>
+</div>
+
+<div class="screen hidden" id="main" style="gap:1.5rem;">
+
+  <div class="dossier">
+    <div class="dossier-header">
+      <div>
+        <div class="dossier-logo">Global Crisis Monitor</div>
+        <div class="dossier-subtitle">UN Mainframe Recovery System // v2.0</div>
+      </div>
+      <div class="classified-badge">CLASSIFIED</div>
+    </div>
+
+    <div class="status-grid">
+      <div class="status-row"><div class="status-dot offline"></div><span class="status-name">Sicherheitsrat-Protokolle</span><span class="status-val">OFFLINE</span></div>
+      <div class="status-row"><div class="status-dot offline"></div><span class="status-name">Menschenrechtsdatenbank</span><span class="status-val">KORRUPT</span></div>
+      <div class="status-row"><div class="status-dot offline"></div><span class="status-name">SDG-Relaisstation</span><span class="status-val">INSTABIL</span></div>
+      <div class="status-row"><div class="status-dot offline"></div><span class="status-name">Generalversammlung Feed</span><span class="status-val">GETRENNT</span></div>
+      <div class="status-row"><div class="status-dot online"></div><span class="status-name">Audio-Verbindung</span><span class="status-val">AKTIV</span></div>
+      <div class="status-row"><div class="status-dot online"></div><span class="status-name">Rettungs-Agent</span><span class="status-val">VERBUNDEN</span></div>
+    </div>
+
+    <div class="mission-brief">
+      <div class="brief-title">MISSIONSPROTOKOLL</div>
+      <div class="brief-text">
+        Der <strong>UN-Mainframe ist abgestürzt</strong>. Jahrzehnte diplomatischer Protokolle,
+        Menschenrechtsdaten und SDG-Berichte sind vom Verlust bedroht.<br><br>
+        Du wurdest als <strong>Rettungs-Agent</strong> aktiviert. Stabilisiere alle vier Systemsektoren
+        — und entscheide am Ende selbst, ob das System es wert ist, gerettet zu werden.
+      </div>
+    </div>
+
+    <div class="audio-block">
+      <span class="a-icon">📻</span>
+      <div class="a-title">Global Crisis Monitor — Folge 47</div>
+      <div class="a-desc">[ audio/intro.mp3 — wird nach Fertigstellung eingebunden ]</div>
+    </div>
+
+    <button class="btn btn-primary" onclick="window.location.href='phases/phase1.html'" style="width:100%; font-size:1rem; padding:1rem; font-family:'Bebas Neue',sans-serif; letter-spacing:0.1em; font-size:1.1rem;">
+      MISSION STARTEN
+    </button>
+  </div>
+
+</div>
+
+<script>
+const lines = [
+  { t:'BIOS v3.1.2 — initialisiert...', c:'dim', d:0 },
+  { t:'RAM-Check: 32768 MB [OK]', c:'ok', d:150 },
+  { t:'Netzwerk: Verbinde mit UN-Mainframe...', c:'', d:300 },
+  { t:'[ERR] Hauptknoten antwortet nicht', c:'err', d:700 },
+  { t:'[ERR] Sicherheitsrat-Protokolle: KORRUPT', c:'err', d:900 },
+  { t:'[ERR] SDG-Relaisstation: OFFLINE', c:'err', d:1100 },
+  { t:'[WARN] Kritischer Datenverlust — Sektoren 1-4', c:'warn', d:1400 },
+  { t:'Aktiviere Notfall-Wiederherstellungsprotokoll...', c:'warn', d:1800 },
+  { t:'Scanne nach verfügbaren Agenten...', c:'dim', d:2200 },
+  { t:'Agent gefunden. Biometrische Verifikation läuft...', c:'', d:2700 },
+  { t:'Zugang gewährt. Willkommen, Agent.', c:'ok', d:3200 },
+];
+
+const container = document.getElementById('boot-lines');
+lines.forEach(({ t, c, d }) => {
+  setTimeout(() => {
+    const el = document.createElement('div');
+    el.className = `boot-line ${c}`;
+    el.textContent = t;
+    container.appendChild(el);
+    requestAnimationFrame(() => requestAnimationFrame(() => el.style.opacity = '1'));
+    el.scrollIntoView({ behavior: 'smooth' });
+  }, d);
+});
+
+setTimeout(() => {
+  const boot = document.getElementById('boot');
+  boot.style.transition = 'opacity 0.6s';
+  boot.style.opacity = '0';
+  setTimeout(() => {
+    boot.style.display = 'none';
+    const main = document.getElementById('main');
+    main.classList.remove('hidden');
+    main.style.opacity = '0';
+    main.style.transition = 'opacity 0.6s';
+    requestAnimationFrame(() => requestAnimationFrame(() => main.style.opacity = '1'));
+  }, 600);
+}, 4000);
+</script>
+</body>
+</html>

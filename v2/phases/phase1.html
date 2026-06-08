@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEKTOR 01 — Initialisierung</title>
+  <link rel="stylesheet" href="../style.css">
+  <style> :root { --phase-color: #f59e0b; } </style>
+</head>
+<body>
+<div class="screen">
+
+  <div class="game-header">
+    <span class="phase-badge">SEKTOR 01 — INITIALISIERUNG</span>
+    <span class="task-badge" id="task-counter">TASK 01 / 03</span>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span class="progress-label">SYSTEMSTABILITÄT</span>
+      <span class="progress-pct" id="progress-pct">0%</span>
+    </div>
+    <div class="progress-track"><div class="progress-bar" id="progress-bar"></div></div>
+  </div>
+
+  <div class="phase-stepper">
+    <div class="step active"><div class="step-dot">01</div><div class="step-label">Init</div></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-dot">02</div><div class="step-label">Jura</div></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-dot">03</div><div class="step-label">SDGs</div></div>
+    <div class="step-line"></div>
+    <div class="step"><div class="step-dot">04</div><div class="step-label">Finale</div></div>
+  </div>
+
+  <!-- ═══════════ TASK 1 — KOMBINATIONSSCHLOSS ═══════════ -->
+  <div class="task-wrap" id="t1">
+    <div class="panel">
+      <div class="panel-accent"></div>
+      <div class="panel-title"><span class="dot"></span>TASK_01 :: ARCHIV-SCHLOSS ÖFFNEN</div>
+      <div class="task-title">Kombinationsschloss knacken</div>
+      <div class="task-desc">Das UN-Archiv ist mit einem 4-stelligen Code gesichert. Der Code ist das Gründungsjahr der Vereinten Nationen. Drehe die Ziffernräder auf die richtige Kombination.</div>
+
+      <div class="lock-hint">Hinweis: Die UN wurde gegründet, nachdem der Zweite Weltkrieg endete.</div>
+
+      <div class="lock-wrap" id="lock">
+        <div class="lock-drum"><button class="drum-btn" onclick="spin(0,-1)">▲</button><div class="drum-display" id="d0">0</div><button class="drum-btn" onclick="spin(0,1)">▼</button></div>
+        <div class="lock-drum"><button class="drum-btn" onclick="spin(1,-1)">▲</button><div class="drum-display" id="d1">0</div><button class="drum-btn" onclick="spin(1,1)">▼</button></div>
+        <div class="lock-drum"><button class="drum-btn" onclick="spin(2,-1)">▲</button><div class="drum-display" id="d2">0</div><button class="drum-btn" onclick="spin(2,1)">▼</button></div>
+        <div class="lock-drum"><button class="drum-btn" onclick="spin(3,-1)">▲</button><div class="drum-display" id="d3">0</div><button class="drum-btn" onclick="spin(3,1)">▼</button></div>
+      </div>
+
+      <div style="text-align:center; margin-bottom:1.5rem;">
+        <button class="btn btn-primary" onclick="checkLock()">SCHLOSS ÖFFNEN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ TASK 2 — TIPPEN ═══════════ -->
+  <div class="task-wrap hidden" id="t2">
+    <div class="panel">
+      <div class="panel-accent"></div>
+      <div class="panel-title"><span class="dot"></span>TASK_02 :: SYSTEMORGANE IDENTIFIZIEREN</div>
+      <div class="task-title">UN-Organe erkennen & eingeben</div>
+      <div class="task-desc">Lies die Beschreibung und tippe den Namen des UN-Hauptorgans. 6 Organe müssen identifiziert werden.</div>
+
+      <div class="type-card" id="type-card">
+        <div class="type-counter" id="type-counter">Organ 1 / 6</div>
+        <div class="type-desc" id="type-desc">Lade...</div>
+        <div class="type-input-wrap">
+          <input class="type-input" id="type-in" type="text"
+            placeholder="Namen des Organs eingeben..."
+            autocomplete="off" spellcheck="false"
+            onkeydown="if(event.key==='Enter') checkType()">
+        </div>
+      </div>
+
+      <div id="type-hint" style="font-family:'IBM Plex Mono',monospace; font-size:0.7rem; color:var(--muted); text-align:center; min-height:1.4em; margin-bottom:1rem;"></div>
+
+      <div style="text-align:center;">
+        <button class="btn btn-primary" onclick="checkType()">BESTÄTIGEN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ TASK 3 — UNSCRAMBLE ═══════════ -->
+  <div class="task-wrap hidden" id="t3">
+    <div class="panel">
+      <div class="panel-accent"></div>
+      <div class="panel-title"><span class="dot"></span>TASK_03 :: GRÜNDUNGSPROTOKOLL ENTSCHLÜSSELN</div>
+      <div class="task-title">Schlüsselwörter rekonstruieren</div>
+      <div class="task-desc">Das Gründungsprotokoll ist verschlüsselt. Klicke die Buchstaben in der richtigen Reihenfolge, um drei Schlüsselwörter zu entziffern.</div>
+
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:0.72rem; color:var(--muted); margin-bottom:1.5rem; line-height:1.8;">
+        Die Vereinten Nationen wurden im Jahr
+        <span style="color:var(--amber); font-weight:600;" id="word1-display">____</span>
+        in
+        <span style="color:var(--amber); font-weight:600;" id="word2-display">______________</span>
+        gegründet, nach dem
+        <span style="color:var(--amber); font-weight:600;" id="word3-display">___________________</span>.
+      </div>
+
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:0.65rem; color:var(--amber); letter-spacing:0.1em; margin-bottom:0.5rem;" id="current-word-label">WORT 1 / 3 — Jahr der Gründung</div>
+
+      <div class="unscramble-target" id="target-slots"></div>
+      <div class="letter-pool" id="letter-pool"></div>
+
+      <div style="text-align:center; margin-top:0.5rem;">
+        <button class="btn btn-ghost" onclick="resetCurrentWord()" style="margin-right:0.5rem; padding:0.5rem 1.2rem;">↺ ZURÜCKSETZEN</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ PHASE DONE ═══════════ -->
+  <div class="task-wrap hidden" id="done">
+    <div class="panel" style="text-align:center;">
+      <div class="panel-accent"></div>
+      <div style="font-size:3rem; margin:1rem 0;">✅</div>
+      <div class="task-title" style="margin-bottom:0.5rem;">Sektor 01 stabilisiert</div>
+      <div class="task-desc" style="margin:0 auto 1.5rem; max-width:440px;">Grundstruktur der UN erfolgreich rekonstruiert. Der Podcast läuft weiter.</div>
+
+      <div class="audio-block">
+        <span class="a-icon">📻</span>
+        <div class="a-title">Segment 1 — UN-Grundstruktur</div>
+        <div class="a-desc">Marco, Lukas & Sarah diskutieren Generalversammlung, Sicherheitsrat und das P5-Veto.<br>[audio/segment1.mp3]</div>
+      </div>
+
+      <button class="btn btn-primary" onclick="window.location.href='phase2.html'" style="margin-top:0.5rem;">
+        SEKTOR 02 BETRETEN →
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script src="../effects.js"></script>
+<script>
+// ── TASK 1: COMBINATION LOCK ──
+const correct = [1,9,4,5];
+const digits  = [0,0,0,0];
+
+function spin(i, dir) {
+  digits[i] = (digits[i] + dir + 10) % 10;
+  const el = document.getElementById('d' + i);
+  el.textContent = digits[i];
+  el.classList.add('flash');
+  setTimeout(() => el.classList.remove('flash'), 150);
+}
+
+function checkLock() {
+  if (digits.join('') === '1945') {
+    showOverlay('granted', 'ARCHIV ENTSPERRT');
+    flashScreen('#1a1400');
+    setProgress(33);
+    setTimeout(() => showTask('t2', 2, 3), 1500);
+  } else {
+    showOverlay('denied', 'FALSCHER CODE — NOCHMAL VERSUCHEN');
+    flashScreen('#1a0000');
+    document.getElementById('lock').style.animation = 'shake 0.4s';
+    setTimeout(() => document.getElementById('lock').style.animation = '', 450);
+  }
+}
+
+// ── TASK 2: TYPING ──
+const organs = [
+  { q: 'Das einzige Organ, in dem ALLE 193 Mitgliedsstaaten mit je einer Stimme vertreten sind.', a: 'Generalversammlung', hints: ['Beginnt mit "G"', '18 Buchstaben'] },
+  { q: 'Dieses Organ trägt die Hauptverantwortung für internationale Frieden und Sicherheit — 15 Mitglieder, davon 5 permanent.', a: 'Sicherheitsrat', hints: ['Beginnt mit "S"', '14 Buchstaben'] },
+  { q: 'Wird vom Generalsekretär geleitet und ist der administrative Kern der UN — zuständig für den täglichen Betrieb.', a: 'Sekretariat', hints: ['Beginnt mit "S"', '10 Buchstaben'] },
+  { q: 'Das Hauptrechtsprechungsorgan der UN. Löst Streitigkeiten zwischen Staaten auf Basis des Völkerrechts.', a: 'Internationaler Gerichtshof', hints: ['Drei Wörter', 'Sitzt in Den Haag'] },
+  { q: 'Koordiniert die wirtschaftliche und soziale Arbeit der UN sowie ihrer Sonderorganisationen wie UNICEF und WHO.', a: 'Wirtschafts- und Sozialrat', hints: ['Enthält "Wirtschafts"', '5 Wörter'] },
+  { q: 'Historisch für die Verwaltung von Kolonialgebieten zuständig — heute weitgehend inaktiv.', a: 'Treuhandrat', hints: ['Beginnt mit "T"', '10 Buchstaben'] },
+];
+
+let typeIdx = 0;
+let wrongCount = 0;
+
+function loadTypeQ() {
+  const q = organs[typeIdx];
+  document.getElementById('type-counter').textContent = `Organ ${typeIdx+1} / 6`;
+  document.getElementById('type-desc').textContent = q.q;
+  document.getElementById('type-in').value = '';
+  document.getElementById('type-in').className = 'type-input';
+  document.getElementById('type-hint').textContent = '';
+  wrongCount = 0;
+  document.getElementById('type-in').focus();
+}
+
+loadTypeQ();
+
+function normalize(s) {
+  return s.trim().toLowerCase()
+    .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
+    .replace(/[-–]/g,' ').replace(/\s+/g,' ');
+}
+
+function checkType() {
+  const input = document.getElementById('type-in').value;
+  const q = organs[typeIdx];
+
+  // Accept abbreviations and alt spellings
+  const alts = {
+    'Generalversammlung': ['gv','general versammlung'],
+    'Sicherheitsrat': ['sr','sicherheits rat'],
+    'Sekretariat': [],
+    'Internationaler Gerichtshof': ['igh','int. gerichtshof','internationaler gerichtshof'],
+    'Wirtschafts- und Sozialrat': ['ecosoc','wirtschafts und sozialrat','wirtschafts- und sozialrat'],
+    'Treuhandrat': [],
+  };
+
+  const norm = normalize(input);
+  const normCorrect = normalize(q.a);
+  const extra = (alts[q.a] || []).map(normalize);
+
+  if (norm === normCorrect || extra.includes(norm)) {
+    document.getElementById('type-in').classList.add('correct');
+    showOverlay('granted', q.a.toUpperCase() + ' — KORREKT');
+    flashScreen('#001a00');
+    typeIdx++;
+    if (typeIdx >= organs.length) {
+      setProgress(66);
+      setTimeout(() => showTask('t3', 3, 3), 1500);
+    } else {
+      setTimeout(loadTypeQ, 1200);
+    }
+  } else {
+    document.getElementById('type-in').classList.add('wrong');
+    flashScreen('#1a0000');
+    wrongCount++;
+    const hints = q.hints;
+    document.getElementById('type-hint').textContent =
+      wrongCount === 1 ? `Tipp: ${hints[0]}` :
+      wrongCount === 2 ? `Tipp: ${hints[1]}` :
+      `Lösung: ${q.a}`;
+    setTimeout(() => {
+      document.getElementById('type-in').classList.remove('wrong');
+      document.getElementById('type-in').value = '';
+      document.getElementById('type-in').focus();
+    }, 600);
+  }
+}
+
+// ── TASK 3: LETTER UNSCRAMBLE ──
+const words = [
+  { answer: '1945',            label: 'Jahr der Gründung' },
+  { answer: 'San Francisco',   label: 'Gründungsstadt' },
+  { answer: 'Zweiten Weltkrieg', label: 'Auslösender Konflikt' },
+];
+
+let wordIdx = 0;
+let slotData = [];
+
+function loadWord() {
+  const w = words[wordIdx];
+  document.getElementById('current-word-label').textContent = `WORT ${wordIdx+1} / 3 — ${w.label}`;
+  slotData = Array(w.answer.length).fill(null);
+
+  // Build slots
+  const target = document.getElementById('target-slots');
+  target.innerHTML = '';
+  w.answer.split('').forEach((ch, i) => {
+    const slot = document.createElement('div');
+    slot.className = 'letter-slot';
+    slot.id = `slot-${i}`;
+    if (ch === ' ') { slot.style.width = '24px'; slot.style.background = 'transparent'; slot.style.border = 'none'; slotData[i] = ' '; }
+    target.appendChild(slot);
+  });
+
+  // Build scrambled pool (exclude spaces)
+  const letters = w.answer.split('').filter(c => c !== ' ');
+  // Shuffle
+  for (let i = letters.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [letters[i], letters[j]] = [letters[j], letters[i]];
+  }
+
+  const pool = document.getElementById('letter-pool');
+  pool.innerHTML = '';
+  letters.forEach((ch, i) => {
+    const tile = document.createElement('div');
+    tile.className = 'letter-tile';
+    tile.textContent = ch.toUpperCase();
+    tile.dataset.letter = ch;
+    tile.dataset.poolIdx = i;
+    tile.onclick = () => placeLetter(tile);
+    pool.appendChild(tile);
+  });
+}
+
+function placeLetter(tile) {
+  if (tile.classList.contains('used')) return;
+  const ch = tile.dataset.letter;
+  // Find first empty slot (skip spaces)
+  const w = words[wordIdx];
+  for (let i = 0; i < slotData.length; i++) {
+    if (slotData[i] === null) {
+      slotData[i] = ch;
+      tile.classList.add('used');
+      tile.dataset.slotIdx = i;
+      const slot = document.getElementById(`slot-${i}`);
+      slot.textContent = ch.toUpperCase();
+      slot.classList.add('filled');
+      break;
+    }
+  }
+  // Check if all filled
+  if (slotData.every(v => v !== null)) checkUnscramble();
+}
+
+function resetCurrentWord() {
+  wordIdx === 0 ? null : null; // stay on same word
+  loadWord();
+}
+
+function checkUnscramble() {
+  const w = words[wordIdx];
+  const entered = slotData.join('');
+  if (entered.toLowerCase() === w.answer.toLowerCase()) {
+    // Flash slots green
+    for (let i = 0; i < w.answer.length; i++) {
+      const slot = document.getElementById(`slot-${i}`);
+      if (slot) { slot.style.borderColor = 'var(--green)'; slot.style.background = 'rgba(74,222,128,0.1)'; slot.style.color = 'var(--green)'; }
+    }
+
+    // Update display in sentence
+    const displays = ['word1-display','word2-display','word3-display'];
+    document.getElementById(displays[wordIdx]).textContent = w.answer;
+    document.getElementById(displays[wordIdx]).style.color = 'var(--green)';
+
+    wordIdx++;
+    if (wordIdx >= words.length) {
+      setProgress(100);
+      showOverlay('granted', 'PROTOKOLL VOLLSTÄNDIG ENTSCHLÜSSELT');
+      flashScreen('#001a00');
+      setTimeout(() => { document.getElementById('t3').classList.add('hidden'); document.getElementById('done').classList.remove('hidden'); setCounter(3,3); window.scrollTo({top:0}); }, 1500);
+    } else {
+      showOverlay('granted', words[wordIdx-1].answer.toUpperCase() + ' ✓');
+      flashScreen('#001a00');
+      setTimeout(loadWord, 1200);
+    }
+  } else {
+    flashScreen('#1a0000');
+    showOverlay('denied', 'FALSCHE REIHENFOLGE');
+    setTimeout(loadWord, 1000);
+  }
+}
+
+loadWord();
+</script>
+</body>
+</html>
