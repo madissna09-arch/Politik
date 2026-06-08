@@ -107,10 +107,9 @@ body::after {
   margin-bottom: 0.4rem;
 }
 
-.progress-label {
+.progress-label, .progress-label-text {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 0.6rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase;
-  display: flex; justify-content: space-between; width: 100%; margin-bottom: 0.4rem;
 }
 
 .progress-pct {
@@ -845,38 +844,52 @@ input[type=range].spectrum-slider:active::-webkit-slider-thumb { cursor: grabbin
 ══════════════════════════════ */
 .sort-pool {
   display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 1rem;
-  background: rgba(0,0,0,0.15); border-radius: 10px;
-  border: 1px solid var(--border); margin-bottom: 1rem; min-height: 56px;
+  background: rgba(0,0,0,0.25); border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.14); margin-bottom: 1rem; min-height: 64px;
 }
 
-.sort-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 1.2rem; }
+.sort-pool::before {
+  content: 'ZIEHE DIE KARTEN IN DIE KATEGORIEN ↓';
+  display: block; width: 100%;
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.56rem;
+  color: var(--muted); letter-spacing: 0.1em; margin-bottom: 0.2rem;
+  opacity: 0.6;
+}
+
+.sort-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 1.2rem; }
 
 .sort-zone {
-  border: 1px dashed rgba(255,255,255,0.1); border-radius: 10px;
-  padding: 0.8rem; min-height: 100px; transition: all 0.2s;
+  border: 2px dashed rgba(255,255,255,0.15); border-radius: 10px;
+  padding: 0.8rem; min-height: 110px; transition: all 0.2s;
+  background: rgba(0,0,0,0.1);
 }
 
-.sort-zone.drag-over { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.2); }
-.sort-zone.pro.drag-over { border-color: rgba(74,222,128,0.3); }
-.sort-zone.con.drag-over { border-color: rgba(248,113,113,0.3); }
+.sort-zone.drag-over { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.3); }
+.sort-zone.pro { border-color: rgba(74,222,128,0.25); }
+.sort-zone.pro.drag-over { border-color: rgba(74,222,128,0.6); background: rgba(74,222,128,0.05); }
+.sort-zone.con { border-color: rgba(248,113,113,0.25); }
+.sort-zone.con.drag-over { border-color: rgba(248,113,113,0.6); background: rgba(248,113,113,0.05); }
 
 .sort-zone-title {
-  font-family: 'IBM Plex Mono', monospace; font-size: 0.6rem;
-  color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase;
-  margin-bottom: 0.5rem;
+  font-family: 'IBM Plex Mono', monospace; font-size: 0.66rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.6rem;
+  padding-bottom: 0.4rem; border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
 .sort-zone.pro .sort-zone-title { color: var(--green); }
 .sort-zone.con .sort-zone-title { color: var(--red); }
 
 .sort-chip {
-  padding: 0.3rem 0.65rem; border-radius: 6px; font-size: 0.74rem;
-  cursor: grab; background: var(--bg3); border: 1px solid var(--border);
-  user-select: none; transition: all 0.15s; display: inline-block;
+  padding: 0.35rem 0.75rem; border-radius: 99px; font-size: 0.75rem;
+  cursor: grab; user-select: none; transition: all 0.15s; display: inline-block;
+  background: rgba(255,255,255,0.09);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: var(--text);
 }
 
-.sort-chip:hover { background: rgba(255,255,255,0.07); }
-.sort-chip.dragging { opacity: 0.25; cursor: grabbing; }
+.sort-chip:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.35); transform: translateY(-1px); }
+.sort-chip:active { cursor: grabbing; }
+.sort-chip.dragging { opacity: 0.3; cursor: grabbing; }
 
 /* ══════════════════════════════
    STATEMENT RATING (Phase 4)
