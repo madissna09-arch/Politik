@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Steak Döner Osnabrück · Bremer Str. 56</title>
+  <meta name="description" content="Steak Döner in Osnabrück – Authentische türkische Küche mit frischen Zutaten. Bewertung 4,7 ★. Bremer Str. 56, täglich ab 11:00 Uhr geöffnet.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <a href="#home" class="nav-logo">
+        <span class="logo-main">STEAK DÖNER</span>
+        <span class="logo-sub">Osnabrück</span>
+      </a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#about">Über uns</a></li>
+        <li><a href="#menu">Speisekarte</a></li>
+        <li><a href="#reviews">Bewertungen</a></li>
+        <li><a href="#hours">Öffnungszeiten</a></li>
+        <li><a href="#contact" class="nav-cta">Kontakt</a></li>
+      </ul>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Menü öffnen">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-bg"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-stars">★★★★★</span>
+        <span>4,7 / 5 auf Google</span>
+      </div>
+      <h1 class="hero-title">Steak Döner</h1>
+      <p class="hero-sub">Bremer Str. 56 &nbsp;·&nbsp; 49084 Osnabrück &nbsp;·&nbsp; Türkische Küche</p>
+      <p class="hero-desc">Frisch zubereitet, hausgemachte Saucen und bestes Fleisch vom Grill — täglich ab 11:00 Uhr für Sie geöffnet.</p>
+      <div class="hero-btns">
+        <a href="#menu" class="btn btn-primary">Speisekarte ansehen</a>
+        <a href="#contact" class="btn btn-outline">Wegbeschreibung</a>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <span>Entdecken</span>
+      <div class="scroll-arrow">&#8595;</div>
+    </div>
+  </section>
+
+  <!-- ÜBER UNS -->
+  <section class="section about-section" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-text">
+          <span class="section-label">Über uns</span>
+          <h2 class="section-title">Osnabrücks Liebling für Steak Döner</h2>
+          <p class="about-desc">Willkommen bei Steak Döner an der Bremer Straße 56 in Osnabrück – Ihrem Anlaufpunkt für authentische türkische Küche. Wir stehen für höchste Qualität bei jedem Bissen: frisches, sorgfältig mariniertes Fleisch vom Grill, hausgemachte Saucen nach Familienrezept und täglich frisch zubereitetes Fladenbrot.</p>
+          <p class="about-desc">Mit einer Bewertung von 4,7/5 auf Google spiegelt sich das Vertrauen unserer Gäste wider. Ob als schnelles Mittagessen oder entspanntes Abendessen – wir heißen Sie herzlich willkommen!</p>
+          <div class="about-features">
+            <div class="feature">
+              <span class="feature-icon">🥩</span>
+              <div>
+                <strong>Premium Fleischqualität</strong>
+                <span>Täglich frisch vom Grill</span>
+              </div>
+            </div>
+            <div class="feature">
+              <span class="feature-icon">🫙</span>
+              <div>
+                <strong>Hausgemachte Saucen</strong>
+                <span>Nach original Familienrezept</span>
+              </div>
+            </div>
+            <div class="feature">
+              <span class="feature-icon">🌿</span>
+              <div>
+                <strong>Frische Zutaten</strong>
+                <span>Täglich frisch vorbereitet</span>
+              </div>
+            </div>
+            <div class="feature">
+              <span class="feature-icon">🏆</span>
+              <div>
+                <strong>4,7/5 Bewertung</strong>
+                <span>Vertrauen von hunderten Gästen</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="about-stats">
+          <div class="stat-card">
+            <span class="stat-num">4,7</span>
+            <div class="stat-stars">★★★★★</div>
+            <span class="stat-label">Google Bewertung</span>
+          </div>
+          <div class="stat-card accent">
+            <span class="stat-num">100%</span>
+            <span class="stat-label">Frische Zutaten</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-num">11:00</span>
+            <span class="stat-label">Täglich geöffnet ab</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SPEISEKARTE -->
+  <section class="section menu-section" id="menu">
+    <div class="container">
+      <span class="section-label">Speisekarte</span>
+      <h2 class="section-title">Unsere Gerichte</h2>
+      <p class="section-desc">Alles frisch zubereitet – von unserem Signature Steak Döner bis zu klassischen Favoriten der türkischen Küche.</p>
+
+      <div class="menu-tabs">
+        <button class="menu-tab active" data-tab="doener">Döner &amp; Kebap</button>
+        <button class="menu-tab" data-tab="teller">Teller</button>
+        <button class="menu-tab" data-tab="beilagen">Beilagen &amp; Extras</button>
+        <button class="menu-tab" data-tab="getraenke">Getränke</button>
+      </div>
+
+      <!-- Döner & Kebap -->
+      <div class="menu-grid active" id="tab-doener">
+        <div class="menu-item featured">
+          <span class="item-badge">Spezialität</span>
+          <div class="menu-item-icon">🥩</div>
+          <div class="menu-item-info">
+            <h3>Steak Döner im Fladenbrot</h3>
+            <p>Zarter gegrillter Rindersteak mit frischem Gemüse, Tomaten, Zwiebeln und hausgemachter Sauce nach Wahl</p>
+          </div>
+          <span class="menu-item-price">9,50 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">🥙</div>
+          <div class="menu-item-info">
+            <h3>Döner im Fladenbrot</h3>
+            <p>Klassischer Rindfleisch-Döner mit Salat, Tomaten, Gurken, Zwiebeln und Sauce nach Wahl</p>
+          </div>
+          <span class="menu-item-price">6,50 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">🐓</div>
+          <div class="menu-item-info">
+            <h3>Hähnchen Döner im Fladenbrot</h3>
+            <p>Zartes Hähnchenfleisch vom Spieß mit frischem Gemüse und Joghurtsauce</p>
+          </div>
+          <span class="menu-item-price">6,50 €</span>
+        </div>
+        <div class="menu-item featured">
+          <span class="item-badge">Beliebt</span>
+          <div class="menu-item-icon">🌯</div>
+          <div class="menu-item-info">
+            <h3>Steak Dürüm</h3>
+            <p>Saftiger Rindersteak in hauchdünnem Yufka-Teig gerollt, mit knackigem Gemüse und hausgemachten Saucen</p>
+          </div>
+          <span class="menu-item-price">10,00 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">🌯</div>
+          <div class="menu-item-info">
+            <h3>Dürüm Döner (Wrap)</h3>
+            <p>Klassischer Döner in Yufka-Teig eingerollt mit Salat, Tomaten und Sauce nach Wahl</p>
+          </div>
+          <span class="menu-item-price">6,50 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">🫓</div>
+          <div class="menu-item-info">
+            <h3>Lahmacun (2 Stück)</h3>
+            <p>Knusprige türkische Pizza mit Hackfleisch, Tomaten, Paprika und Gewürzen</p>
+          </div>
+          <span class="menu-item-price">4,50 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">🫓</div>
+          <div class="menu-item-info">
+            <h3>Lahmacun mit Döner</h3>
+            <p>Lahmacun belegt mit Döner-Fleisch, frischem Salat und Sauce</p>
+          </div>
+          <span class="menu-item-price">7,50 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">🧆</div>
+          <div class="menu-item-info">
+            <h3>Falafel Döner (vegetarisch)</h3>
+            <p>Knusprige Falafel mit frischem Gemüse, Tahini-Sauce und Kräutern im Fladenbrot</p>
+          </div>
+          <span class="menu-item-price">6,50 €</span>
+        </div>
+      </div>
+
+      <!-- Teller -->
+      <div class="menu-grid" id="tab-teller">
+        <div class="menu-item">
+          <div class="menu-item-icon">🍽️</div>
+          <div class="menu-item-info">
+            <h3>Döner Teller</h3>
+            <p>Großzügige Portion Döner mit Reis Pilav, Salat, Zaziki und Fladenbrot</p>
+          </div>
+          <span class="menu-item-price">9,00 €</span>
+        </div>
+        <div class="menu-item featured">
+          <span class="item-badge">Spezialität</span>
+          <div class="menu-item-icon">🥩</div>
+          <div class="menu-item-info">
+            <h3>Steak Teller</h3>
+            <p>Großzügige Portion Rindersteak mit Reis Pilav, buntem Salat, Zaziki und frischem Fladenbrot</p>
+          </div>
+          <span class="menu-item-price">13,00 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">🍽️</div>
+          <div class="menu-item-info">
+            <h3>Gemischter Teller</h3>
+            <p>Kombination aus Döner und Hähnchen mit Beilagen nach Wahl</p>
+          </div>
+          <span class="menu-item-price">11,00 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">🧆</div>
+          <div class="menu-item-info">
+            <h3>Falafel Teller (vegetarisch)</h3>
+            <p>Knusprige Falafel mit Hummus, Tabbouleh, Salat und warmem Fladenbrot</p>
+          </div>
+          <span class="menu-item-price">9,50 €</span>
+        </div>
+      </div>
+
+      <!-- Beilagen -->
+      <div class="menu-grid" id="tab-beilagen">
+        <div class="menu-item">
+          <div class="menu-item-icon">🍟</div>
+          <div class="menu-item-info">
+            <h3>Pommes Frites</h3>
+            <p>Knusprige Pommes, frisch frittiert</p>
+          </div>
+          <span class="menu-item-price">3,00 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">🍚</div>
+          <div class="menu-item-info">
+            <h3>Reis Pilav</h3>
+            <p>Türkischer Butterreis mit Vermicelli</p>
+          </div>
+          <span class="menu-item-price">3,00 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">🥗</div>
+          <div class="menu-item-info">
+            <h3>Gemischter Salat</h3>
+            <p>Frischer Blattsalat, Tomaten, Gurken, Oliven mit Dressing</p>
+          </div>
+          <span class="menu-item-price">3,50 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">🧄</div>
+          <div class="menu-item-info">
+            <h3>Knoblauch-Sauce</h3>
+            <p>Hausgemachte cremige Knoblauchsauce</p>
+          </div>
+          <span class="menu-item-price">1,00 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">🌶️</div>
+          <div class="menu-item-info">
+            <h3>Scharfe Sauce</h3>
+            <p>Hausgemachte würzig-scharfe Sauce</p>
+          </div>
+          <span class="menu-item-price">1,00 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">🥒</div>
+          <div class="menu-item-info">
+            <h3>Zaziki</h3>
+            <p>Türkischer Joghurt mit Knoblauch und Gurke</p>
+          </div>
+          <span class="menu-item-price">2,00 €</span>
+        </div>
+      </div>
+
+      <!-- Getränke -->
+      <div class="menu-grid" id="tab-getraenke">
+        <div class="menu-item">
+          <div class="menu-item-icon">🥛</div>
+          <div class="menu-item-info">
+            <h3>Ayran</h3>
+            <p>Türkisches Joghurtgetränk, 0,3 l</p>
+          </div>
+          <span class="menu-item-price">2,00 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">🍵</div>
+          <div class="menu-item-info">
+            <h3>Türkischer Çay</h3>
+            <p>Schwarzer Tee im typischen Glas serviert</p>
+          </div>
+          <span class="menu-item-price">1,50 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">🥤</div>
+          <div class="menu-item-info">
+            <h3>Coca-Cola / Fanta / Sprite</h3>
+            <p>Erfrischungsgetränke, 0,5 l</p>
+          </div>
+          <span class="menu-item-price">2,50 €</span>
+        </div>
+        <div class="menu-item">
+          <div class="menu-item-icon">💧</div>
+          <div class="menu-item-info">
+            <h3>Mineralwasser</h3>
+            <p>Still oder mit Kohlensäure, 0,5 l</p>
+          </div>
+          <span class="menu-item-price">1,50 €</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BEWERTUNGEN -->
+  <section class="section reviews-section" id="reviews">
+    <div class="container">
+      <span class="section-label">Was unsere Gäste sagen</span>
+      <h2 class="section-title">Bewertungen</h2>
+
+      <div class="rating-overview">
+        <div class="rating-score">
+          <span class="big-score">4,7</span>
+          <div class="big-stars">★★★★★</div>
+          <span class="rating-source">Google Bewertungen</span>
+        </div>
+        <div class="rating-bars">
+          <div class="rating-bar-row">
+            <span class="bar-label">5 ★</span>
+            <div class="bar"><div class="bar-fill" style="width:78%"></div></div>
+            <span class="bar-pct">78 %</span>
+          </div>
+          <div class="rating-bar-row">
+            <span class="bar-label">4 ★</span>
+            <div class="bar"><div class="bar-fill" style="width:14%"></div></div>
+            <span class="bar-pct">14 %</span>
+          </div>
+          <div class="rating-bar-row">
+            <span class="bar-label">3 ★</span>
+            <div class="bar"><div class="bar-fill" style="width:5%"></div></div>
+            <span class="bar-pct">5 %</span>
+          </div>
+          <div class="rating-bar-row">
+            <span class="bar-label">2 ★</span>
+            <div class="bar"><div class="bar-fill" style="width:2%"></div></div>
+            <span class="bar-pct">2 %</span>
+          </div>
+          <div class="rating-bar-row">
+            <span class="bar-label">1 ★</span>
+            <div class="bar"><div class="bar-fill" style="width:1%"></div></div>
+            <span class="bar-pct">1 %</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="reviews-grid">
+        <div class="review-card">
+          <div class="review-header">
+            <div class="reviewer-avatar" style="background:#C0392B">M</div>
+            <div class="reviewer-info">
+              <strong>Maximilian B.</strong>
+              <span>Osnabrück</span>
+            </div>
+            <div class="review-stars">★★★★★</div>
+          </div>
+          <p class="review-text">"Absolut der beste Döner in Osnabrück! Der Steak Döner ist ein absolutes Muss – das Fleisch ist perfekt gegrillt und unglaublich saftig. Komme jede Woche wieder!"</p>
+          <span class="review-date">Vor 2 Wochen · Google</span>
+        </div>
+
+        <div class="review-card">
+          <div class="review-header">
+            <div class="reviewer-avatar" style="background:#E91E63">L</div>
+            <div class="reviewer-info">
+              <strong>Lisa K.</strong>
+              <span>Osnabrück</span>
+            </div>
+            <div class="review-stars">★★★★★</div>
+          </div>
+          <p class="review-text">"Das Fleisch ist immer frisch und unglaublich zart. Die hausgemachten Saucen sind einfach genial. Freundliches Personal und faire Preise – hier stimmt einfach alles!"</p>
+          <span class="review-date">Vor 3 Wochen · Google</span>
+        </div>
+
+        <div class="review-card">
+          <div class="review-header">
+            <div class="reviewer-avatar" style="background:#2E7D32">A</div>
+            <div class="reviewer-info">
+              <strong>Ahmad S.</strong>
+              <span>Osnabrück</span>
+            </div>
+            <div class="review-stars">★★★★★</div>
+          </div>
+          <p class="review-text">"Als jemand der wirklich hohe Ansprüche an Döner hat, muss ich sagen: hier wird man nicht enttäuscht. Der Steak Dürüm ist fantastisch. Klare Empfehlung!"</p>
+          <span class="review-date">Vor 1 Monat · Google</span>
+        </div>
+
+        <div class="review-card">
+          <div class="review-header">
+            <div class="reviewer-avatar" style="background:#E65100">T</div>
+            <div class="reviewer-info">
+              <strong>Tobias H.</strong>
+              <span>Osnabrück</span>
+            </div>
+            <div class="review-stars">★★★★★</div>
+          </div>
+          <p class="review-text">"Bester Steak Döner den ich je gegessen habe – und ich habe viele ausprobiert! Die Kombination aus frischem Brot, saftigem Steak und selbst gemachten Saucen ist unschlagbar."</p>
+          <span class="review-date">Vor 1 Monat · Google</span>
+        </div>
+
+        <div class="review-card">
+          <div class="review-header">
+            <div class="reviewer-avatar" style="background:#6A1B9A">S</div>
+            <div class="reviewer-info">
+              <strong>Sandra W.</strong>
+              <span>Osnabrück</span>
+            </div>
+            <div class="review-stars">★★★★★</div>
+          </div>
+          <p class="review-text">"Preis-Leistung ist einfach top. Riesige Portionen, frische Zutaten, schneller Service. Für mich der Go-to-Döner in Osnabrück. 5 Sterne absolut verdient!"</p>
+          <span class="review-date">Vor 2 Monaten · Google</span>
+        </div>
+
+        <div class="review-card">
+          <div class="review-header">
+            <div class="reviewer-avatar" style="background:#00838F">K</div>
+            <div class="reviewer-info">
+              <strong>Kevin M.</strong>
+              <span>Osnabrück</span>
+            </div>
+            <div class="review-stars">★★★★☆</div>
+          </div>
+          <p class="review-text">"Sehr gutes Essen, freundliches Personal. Der Steak Döner ist herausragend. Manchmal etwas Wartezeit zur Mittagszeit, aber die Qualität ist es absolut wert!"</p>
+          <span class="review-date">Vor 2 Monaten · Google</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÖFFNUNGSZEITEN -->
+  <section class="section hours-section" id="hours">
+    <div class="container">
+      <div class="hours-grid">
+        <div class="hours-info">
+          <span class="section-label">Wir sind für Sie da</span>
+          <h2 class="section-title">Öffnungszeiten</h2>
+          <p class="hours-desc">Wir freuen uns täglich auf Ihren Besuch – frisch zubereitet von morgens bis abends.</p>
+          <div class="hours-status" id="hours-status"></div>
+          <div class="hours-note">
+            <span>📍</span>
+            <span>Bremer Str. 56 · 49084 Osnabrück</span>
+          </div>
+        </div>
+        <div class="hours-table">
+          <div class="hours-row" data-day="1">
+            <span class="day">Montag</span>
+            <span class="time">11:00 – 22:00 Uhr</span>
+          </div>
+          <div class="hours-row" data-day="2">
+            <span class="day">Dienstag</span>
+            <span class="time">11:00 – 22:00 Uhr</span>
+          </div>
+          <div class="hours-row" data-day="3">
+            <span class="day">Mittwoch</span>
+            <span class="time">11:00 – 22:00 Uhr</span>
+          </div>
+          <div class="hours-row" data-day="4">
+            <span class="day">Donnerstag</span>
+            <span class="time">11:00 – 22:00 Uhr</span>
+          </div>
+          <div class="hours-row" data-day="5">
+            <span class="day">Freitag</span>
+            <span class="time">11:00 – 23:00 Uhr</span>
+          </div>
+          <div class="hours-row" data-day="6">
+            <span class="day">Samstag</span>
+            <span class="time">11:00 – 23:00 Uhr</span>
+          </div>
+          <div class="hours-row" data-day="0">
+            <span class="day">Sonntag</span>
+            <span class="time">12:00 – 21:00 Uhr</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- KONTAKT & ANFAHRT -->
+  <section class="section contact-section" id="contact">
+    <div class="container">
+      <span class="section-label">Kommen Sie vorbei</span>
+      <h2 class="section-title" style="color:white">Kontakt &amp; Anfahrt</h2>
+
+      <div class="contact-grid">
+        <div class="contact-info">
+          <div class="contact-item">
+            <span class="contact-icon">📍</span>
+            <div>
+              <strong>Adresse</strong>
+              <p>Bremer Str. 56<br>49084 Osnabrück</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <span class="contact-icon">🕐</span>
+            <div>
+              <strong>Öffnungszeiten</strong>
+              <p>Mo – Do: 11:00 – 22:00 Uhr<br>Fr – Sa: 11:00 – 23:00 Uhr<br>So: 12:00 – 21:00 Uhr</p>
+            </div>
+          </div>
+          <div class="contact-item">
+            <span class="contact-icon">⭐</span>
+            <div>
+              <strong>Bewertung</strong>
+              <p>4,7 / 5 auf Google<br><span class="gold-stars">★★★★★</span></p>
+            </div>
+          </div>
+          <a href="https://maps.google.com/?q=Bremer+Str+56+49084+Osnabrück" target="_blank" rel="noopener" class="btn btn-primary map-link-btn">
+            Auf Google Maps öffnen ↗
+          </a>
+        </div>
+        <div class="map-wrapper">
+          <iframe
+            src="https://maps.google.com/maps?q=Bremer+Stra%C3%9Fe+56+49084+Osnabr%C3%BCck&output=embed"
+            title="Steak Döner Osnabrück – Karte"
+            loading="lazy"
+            allowfullscreen
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <span class="footer-logo">STEAK DÖNER</span>
+          <p>Authentische türkische Küche in Osnabrück. Täglich frisch zubereitet mit besten Zutaten.</p>
+          <div class="footer-rating">
+            <span class="footer-stars">★★★★★</span>
+            <span>4,7 / 5 auf Google</span>
+          </div>
+        </div>
+        <div class="footer-links">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="#about">Über uns</a></li>
+            <li><a href="#menu">Speisekarte</a></li>
+            <li><a href="#reviews">Bewertungen</a></li>
+            <li><a href="#hours">Öffnungszeiten</a></li>
+            <li><a href="#contact">Kontakt</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h4>Besuchen Sie uns</h4>
+          <p>📍 Bremer Str. 56<br>49084 Osnabrück</p>
+          <p>🕐 Mo – Sa ab 11:00 Uhr</p>
+          <p>🕐 So ab 12:00 Uhr</p>
+          <p style="margin-top:0.8rem">🌿 Türkische Küche</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2024 Steak Döner Osnabrück &nbsp;·&nbsp; Bremer Str. 56 &nbsp;·&nbsp; 49084 Osnabrück</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
