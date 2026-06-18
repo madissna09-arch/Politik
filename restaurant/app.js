@@ -14,6 +14,7 @@ const navLinks   = document.getElementById('nav-links');
 
 navToggle.addEventListener('click', () => {
   const isOpen = navLinks.classList.toggle('open');
+  navToggle.classList.toggle('is-open', isOpen);
   navToggle.setAttribute('aria-expanded', isOpen);
   document.body.style.overflow = isOpen ? 'hidden' : '';
 });
@@ -21,6 +22,8 @@ navToggle.addEventListener('click', () => {
 navLinks.querySelectorAll('a').forEach(a => {
   a.addEventListener('click', () => {
     navLinks.classList.remove('open');
+    navToggle.classList.remove('is-open');
+    navToggle.setAttribute('aria-expanded', false);
     document.body.style.overflow = '';
   });
 });
